@@ -2,7 +2,6 @@ import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import AppLoading from "expo-app-loading";
 import * as NavigationBar from "expo-navigation-bar";
-import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { ScrollView, StatusBar, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,8 +9,6 @@ import BottomNav from "./components/bottomNav";
 import { styles } from "./styles/notificationsStyles";
 
 export default function Notifications() {
-  const router = useRouter();
-
   let [fontsLoaded] = useFonts({
     Pacifico_400Regular,
     Lexend_400Regular,

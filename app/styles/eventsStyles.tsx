@@ -33,15 +33,15 @@ export const styles = StyleSheet.create({
     fontFamily: "Lexend_400Regular",
   },
 
-  subscriptions: {
+  eventLegends: {
     flexDirection: "row",
     gap: 0,
     marginBottom: 30,
   },
 
   subCard: {
-    width: 95,
-    height: 95,
+    width: 65,
+    height: 65,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
@@ -61,11 +61,29 @@ export const styles = StyleSheet.create({
     }),
   },
 
+  eventCard: {
+    marginHorizontal: 15,
+    marginVertical: 6,
+    padding: 14,
+    borderRadius: 10,
+  },
+
+  eventText: {
+    color: "white",
+    fontWeight: "700",
+  },
+
   subBody: {
     fontSize: 24,
     fontWeight: "bold",
     fontFamily: "Lexend_400Regular",
     color: "white",
+  },
+
+  eventLegend: {
+    padding: 16,
+    marginBottom: 15,
+    borderRadius: 8,
   },
 
   notification: {

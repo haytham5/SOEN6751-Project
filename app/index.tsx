@@ -6,8 +6,8 @@ import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 import MapView from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { styles } from "./appStyles";
 import BottomNav from "./components/bottomNav";
+import { styles } from "./styles/indexStyles";
 
 /**
  * TODO:

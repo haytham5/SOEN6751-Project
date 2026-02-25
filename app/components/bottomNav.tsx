@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { styles } from "../appStyles";
+import { styles } from "../styles/indexStyles";
 
 export default function BottomNav() {
   const router = useRouter();
@@ -21,7 +21,10 @@ export default function BottomNav() {
           <Icon name="home" size={26} color="#276389" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.replace("../events")}
+        >
           <Icon name="calendar-month" size={26} color="#276389" />
         </TouchableOpacity>
 
@@ -32,7 +35,10 @@ export default function BottomNav() {
           <Icon name="notifications" size={26} color="#276389" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.replace("../settings")}
+        >
           <Icon name="settings" size={26} color="#276389" />
         </TouchableOpacity>
       </LinearGradient>
