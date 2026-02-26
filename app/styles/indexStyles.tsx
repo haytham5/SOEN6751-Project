@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
 
   marker: {
     backgroundColor: "#276389",
-    padding: 2,
+    padding: 20,
     borderRadius: 20,
     elevation: 5,
   },

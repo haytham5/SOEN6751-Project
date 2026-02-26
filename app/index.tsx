@@ -1,38 +1,83 @@
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import AppLoading from "expo-app-loading";
 import * as NavigationBar from "expo-navigation-bar";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StatusBar, Text, TouchableOpacity, View } from "react-native";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import BottomNav from "./components/bottomNav";
 import { styles } from "./styles/indexStyles";
 
+import ViewShot, { captureRef } from "react-native-view-shot";
+import MapInfo from "./components/mapInfo";
+
 /**
  * TODO:
- * - Limit scrolling on map to school environs
- * - custom markers that display building name and numbers for reports
  * - Filter button
  * - add button
  */
 
 export default function Index() {
-  let [fontsLoaded] = useFonts({
-    Pacifico_400Regular,
-  });
-
+  // Style Navbar
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("#F7F9FF");
     NavigationBar.setButtonStyleAsync("dark");
   }, []);
   NavigationBar.setBehaviorAsync("overlay-swipe");
 
+  //Map Refs
+  const mapRef = useRef<MapView | null>(null);
+
+  const onMapReady = () => {
+    mapRef.current &&
+      mapRef.current.setMapBoundaries(
+        { latitude: 45.5000284224813, longitude: -73.5759524037535 },
+        { latitude: 45.49070461581633, longitude: -73.58196697011486 },
+      );
+  };
+
+  // Marker Image
+  const bubbleRef = useRef(null);
+  const [markerImage, setMarkerImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const createMarker = async () => {
+      const uri = await captureRef(bubbleRef, {
+        format: "png",
+        quality: 1,
+      });
+
+      setMarkerImage(uri);
+    };
+
+    setTimeout(createMarker, 100);
+  }, []);
+
+  // Load Fonts
+  let [fontsLoaded] = useFonts({
+    Pacifico_400Regular,
+  });
+
   if (!fontsLoaded) {
     return <AppLoading />;
   }
   return (
     <SafeAreaView style={styles.background}>
+      {/* Load Marker Image In View */}
+      <View
+        style={{
+          position: "absolute",
+          top: -9999,
+          left: -9999,
+        }}
+      >
+        <ViewShot ref={bubbleRef}>
+          <MapInfo title="EV" protests={11} accessibility={3} />
+        </ViewShot>
+      </View>
+
+      {/* Status Bar */}
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
       {/* Header */}
@@ -56,31 +101,24 @@ export default function Index() {
           }}
           showsUserLocation
           showsMyLocationButton
+          moveOnMarkerPress={false}
+          showsBuildings={false}
+          minZoomLevel={16}
+          maxZoomLevel={18}
+          ref={mapRef}
+          onMapReady={onMapReady}
         >
-          {/* <Polygon
-            coordinates={[
-              { latitude: 45.49716811115521, longitude: -73.579546473066 },
-              { latitude: 45.497704051422694, longitude: -73.57903222820022 },
-              { latitude: 45.49737047268203, longitude: -73.57833980200657 },
-              { latitude: 45.49683769116792, longitude: -73.57884953594419 },
-            ]}
-            fillColor="rgba(39, 99, 137, 0.35)"
-            strokeColor="#276389"
-            strokeWidth={2}
-          /> */}
-
-          {/* <Marker
-            coordinate={{ latitude: 45.4969, longitude: -73.5786 }}
-            title="Hall Building"
-          />
-          <Marker
-            coordinate={{ latitude: 45.4978, longitude: -73.5796 }}
-            title="Library Building"
-          />
-          <Marker
-            coordinate={{ latitude: 45.4965, longitude: -73.5799 }}
-            title="EV Building"
-          /> */}
+          {markerImage && (
+            <Marker
+              style={styles.marker}
+              coordinate={{
+                latitude: 45.4954860561696,
+                longitude: -73.57820980509946,
+              }}
+              image={{ uri: markerImage }}
+              anchor={{ x: 0.5, y: 1 }}
+            />
+          )}
         </MapView>
 
         <TouchableOpacity style={styles.addReport}>
