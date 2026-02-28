@@ -4,12 +4,12 @@ import AppLoading from "expo-app-loading";
 import * as NavigationBar from "expo-navigation-bar";
 import React, { useEffect, useState } from "react";
 import {
-    ScrollView,
-    StatusBar,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StatusBar,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";

@@ -8,6 +8,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";
 import { styles } from "./styles/notificationsStyles";
 
+/**
+ * - Basic color when you press on subscription, and then in setting let the user decide the color
+ * - have a toggle to order by time, and then order by building
+ *
+ */
+
 export default function Notifications() {
   let [fontsLoaded] = useFonts({
     Pacifico_400Regular,
@@ -66,10 +72,43 @@ export default function Notifications() {
           <Text style={styles.title}>Your Notifications</Text>
         </View>
 
-        <View style={[styles.notification, styles.red]}>
-          <Text style={styles.notificationBody}>
-            <Text style={styles.bold}>EV1</Text> 11:15 AM: Protest Spotted
+        <View
+          style={[
+            styles.notification,
+            styles.red,
+            {
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              padding: 10,
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.notificationBody,
+              { marginVertical: "auto", fontSize: 22 },
+            ]}
+          >
+            <Text style={styles.bold}>EV1</Text>
           </Text>
+
+          <View
+            style={[
+              styles.notification,
+              {
+                flexDirection: "column",
+                padding: 0,
+                marginBottom: 0,
+                marginLeft: 10,
+              },
+            ]}
+          >
+            <Text style={styles.notificationBody}>Protest Spotted</Text>
+
+            <Text style={styles.notificationBody}>
+              <Text style={{ fontStyle: "italic", fontSize: 10 }}>11:00am</Text>
+            </Text>
+          </View>
         </View>
 
         <View style={[styles.notification, styles.green]}>

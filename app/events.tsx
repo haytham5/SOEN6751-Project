@@ -14,6 +14,10 @@ interface RowProps {
   date: string;
 }
 
+// TODO:
+// - only put events on calendar if the user adds them to their personal cal
+// + subbed buildings
+
 export default function Events() {
   const [selectedDate, setSelectedDate] = useState("");
 
@@ -36,18 +40,20 @@ export default function Events() {
     date: string;
     floor: string;
     location: string;
+    time: string;
   };
 
   const events: Record<string, Event[]> = {
     "2026-02-25": [
       {
         id: 1,
-        title: "11:15AM - Protest Spotted",
+        title: "Protest Spotted",
         acc: "EV",
         type: "protest",
         location: "EV",
         floor: "1",
         date: "2026-02-25",
+        time: "12:00pm",
       },
       {
         id: 2,
@@ -57,17 +63,19 @@ export default function Events() {
         floor: "2",
         type: "maintenance",
         date: "2026-02-25",
+        time: "2:00pm",
       },
     ],
     "2026-02-26": [
       {
         id: 1,
-        title: "11:15PM - Protest Seen",
+        title: "Protest Seen",
         acc: "EV",
         type: "protest",
         location: "EV",
-        floor: "1",
+        floor: "3",
         date: "2026-02-26",
+        time: "11:00am",
       },
     ],
   };
@@ -153,28 +161,48 @@ export default function Events() {
           data={selectedEvents}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            // <View
-            //   style={[
-            //     styles.eventCard,
-            //     { backgroundColor: colorMap[item.type] },
-            //   ]}
-            // >
-            //   <Text style={styles.eventText}>{item.title}</Text>
-            // </View>
-
             <View
               style={[
                 styles.notification,
-                { backgroundColor: colorMap[item.location] },
+                {
+                  backgroundColor: colorMap[item.location],
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  padding: 10,
+                },
               ]}
             >
-              <Text style={styles.notificationBody}>
+              <Text
+                style={[
+                  styles.notificationBody,
+                  { marginVertical: "auto", fontSize: 22 },
+                ]}
+              >
                 <Text style={styles.bold}>
                   {item.location}
                   {item.floor}
-                </Text>{" "}
-                {item.title}
+                </Text>
               </Text>
+
+              <View
+                style={[
+                  styles.notification,
+                  {
+                    flexDirection: "column",
+                    padding: 0,
+                    marginBottom: 0,
+                    marginLeft: 10,
+                  },
+                ]}
+              >
+                <Text style={styles.notificationBody}>{item.title}</Text>
+
+                <Text style={styles.notificationBody}>
+                  <Text style={{ fontStyle: "italic", fontSize: 10 }}>
+                    {item.time}
+                  </Text>
+                </Text>
+              </View>
             </View>
           )}
         />

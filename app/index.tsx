@@ -16,6 +16,9 @@ import MapInfo from "./components/mapInfo";
  * TODO:
  * - Filter button
  * - add button
+ * tie calm mode to settings, as a baseline remove info to a premade filter + make a preferred color
+ * - dark mode
+ * - lower map size to 50%, and if you click then it becomes bigger
  */
 
 export default function Index() {
@@ -130,7 +133,7 @@ export default function Index() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.relaxMode}>
-          <Icon name="all-inclusive" size={24} color="#276389" />
+          <Icon name="bedtime" size={24} color="#276389" />
         </TouchableOpacity>
       </View>
 
