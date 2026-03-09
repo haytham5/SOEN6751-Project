@@ -24,6 +24,7 @@ import BottomNav from "./components/bottomNav";
 
 import { styles } from "./styles/notificationsStyles";
 
+//definition of what a notification obj contains/looks like
 type NotificationItem = {
   id: string;
   buildingId: string;
@@ -32,20 +33,22 @@ type NotificationItem = {
   description: string;
   timeLabel: string;
   timeAgo: string;
-  minutesSinceMidnight: number;
-  tone: "red" | "green";
+  minutesSinceMidnight: number; // FOR TIME SORTING
+  tone: "red" | "green"; //COLORS HERE FOR THE URGENCY UI DETERMINES COLOR
 };
 
 export default function Notifications() {
   const [fontsLoaded] = useFonts({
+    // FONT LOADING
     Pacifico_400Regular,
     Lexend_400Regular,
   });
-
+  //Componenent state
   const [sortMode, setSortMode] = useState<"time" | "building">("time");
   const [selectedNotification, setSelectedNotification] =
       useState<NotificationItem | null>(null);
 
+  // List of buildings users can follow
   const initialSubscriptions = [
     { id: "EV", label: "EV", activeStyle: styles.red, isSubscribed: true },
     { id: "LB", label: "LB", activeStyle: styles.green, isSubscribed: true },
@@ -56,6 +59,7 @@ export default function Notifications() {
 
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
 
+  // mocked data for notifications
   const notifications: NotificationItem[] = [
     {
       id: "ev1",
@@ -81,18 +85,34 @@ export default function Notifications() {
       minutesSinceMidnight: 12 * 60,
       tone: "green",
     },
-  ];
 
+    {
+      id: "h1",
+      buildingId: "H",
+      buildingName: "Hall Building",
+      eventName: "Student Bake Sale",
+      description:
+          "Multiple clubs will be hosting a bake sale. Expect delays and heavier pedestrian traffic.",
+      timeLabel: "11:00am",
+      timeAgo: "about 1 hour ago",
+      minutesSinceMidnight: 11 * 60,
+      tone: "red",
+    },
+
+
+  ];
+  // Hardware navigation bar
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("#F7F9FF");
     NavigationBar.setButtonStyleAsync("dark");
     NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
 
+  // here so we dont show the UI until the right front are loaded
   if (!fontsLoaded) {
     return <AppLoading />;
   }
-
+  // logic handling
   const handleToggleSubscription = (id: string) => {
     setSubscriptions((current) =>
         current.map((sub) =>
@@ -100,7 +120,7 @@ export default function Notifications() {
         )
     );
   };
-
+  // filter notifications based on active subscriptions
   const activeBuildingIds = subscriptions
       .filter((sub) => sub.isSubscribed)
       .map((sub) => sub.id);
@@ -108,7 +128,7 @@ export default function Notifications() {
   let visibleNotifications = notifications.filter((notification) =>
       activeBuildingIds.includes(notification.buildingId)
   );
-
+  // sort the filtered list
   visibleNotifications = [...visibleNotifications].sort((a, b) => {
     if (sortMode === "time") {
       return a.minutesSinceMidnight - b.minutesSinceMidnight;
@@ -122,6 +142,7 @@ export default function Notifications() {
         <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
         <ScrollView contentContainerStyle={styles.scrollableContent}>
+          {/*SUBSCRIPTION SECTION UI */}
           <View style={styles.header}>
             <Text style={styles.title}>Your Subscriptions</Text>
           </View>
@@ -160,7 +181,7 @@ export default function Notifications() {
               );
             })}
           </ScrollView>
-
+          {/* NOTIFICATION SECTION HEADER & SORT TOGGLE */}
           <View style={styles.header}>
             <Text style={styles.title}>Your Notifications</Text>
 
