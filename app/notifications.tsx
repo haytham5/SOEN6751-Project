@@ -9,6 +9,12 @@ import * as NavigationBar from "expo-navigation-bar";
 import { useEffect, useState } from "react";
 
 import {
+  initialSubscriptions,
+  notifications,
+  NotificationItem,
+} from "/Users/ynestd/Documents/HCI/app_HCI/app/data/notificationData";
+
+import {
   Modal,
   Pressable,
   ScrollView,
@@ -24,18 +30,18 @@ import BottomNav from "./components/bottomNav";
 
 import { styles } from "./styles/notificationsStyles";
 
-//definition of what a notification obj contains/looks like
-type NotificationItem = {
-  id: string;
-  buildingId: string;
-  buildingName: string;
-  eventName: string;
-  description: string;
-  timeLabel: string;
-  timeAgo: string;
-  minutesSinceMidnight: number; // FOR TIME SORTING
-  tone: "red" | "green"; //COLORS HERE FOR THE URGENCY UI DETERMINES COLOR
-};
+// //definition of what a notification obj contains/looks like
+// type NotificationItem = {
+//   id: string;
+//   buildingId: string;
+//   buildingName: string;
+//   eventName: string;
+//   description: string;
+//   timeLabel: string;
+//   timeAgo: string;
+//   minutesSinceMidnight: number; // FOR TIME SORTING
+//   tone: "red" | "green"; //COLORS HERE FOR THE URGENCY UI DETERMINES COLOR
+// };
 
 export default function Notifications() {
   const [fontsLoaded] = useFonts({
@@ -48,59 +54,59 @@ export default function Notifications() {
   const [selectedNotification, setSelectedNotification] =
       useState<NotificationItem | null>(null);
 
-  // List of buildings users can follow
-  const initialSubscriptions = [
-    { id: "EV", label: "EV", activeStyle: styles.red, isSubscribed: true },
-    { id: "LB", label: "LB", activeStyle: styles.green, isSubscribed: true },
-    { id: "H", label: "H", activeStyle: styles.red, isSubscribed: false },
-    { id: "JM", label: "JM", activeStyle: styles.green, isSubscribed: false },
-    { id: "FB", label: "FB", activeStyle: styles.red, isSubscribed: false },
-  ];
+  // // List of buildings users can follow
+  // const initialSubscriptions = [
+  //   { id: "EV", label: "EV", activeStyle: styles.red, isSubscribed: true },
+  //   { id: "LB", label: "LB", activeStyle: styles.green, isSubscribed: true },
+  //   { id: "H", label: "H", activeStyle: styles.red, isSubscribed: false },
+  //   { id: "JM", label: "JM", activeStyle: styles.green, isSubscribed: false },
+  //   { id: "FB", label: "FB", activeStyle: styles.red, isSubscribed: false },
+  // ];
 
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
 
-  // mocked data for notifications
-  const notifications: NotificationItem[] = [
-    {
-      id: "ev1",
-      buildingId: "EV",
-      buildingName: "Engineering and Visual Arts",
-      eventName: "Protest spotted",
-      description:
-          "A protest has been reported near the main entrance. Expect delays and heavier pedestrian traffic.",
-      timeLabel: "11:00am",
-      timeAgo: "about 1 hour ago",
-      minutesSinceMidnight: 11 * 60,
-      tone: "red",
-    },
-    {
-      id: "lb1",
-      buildingId: "LB",
-      buildingName: "Main Library",
-      eventName: "Elevators out of order",
-      description:
-          "The elevators are currently unavailable. Please use the stairs or an alternate accessible route.",
-      timeLabel: "12:00pm",
-      timeAgo: "about 20 minutes ago",
-      minutesSinceMidnight: 12 * 60,
-      tone: "green",
-    },
-
-    {
-      id: "h1",
-      buildingId: "H",
-      buildingName: "Hall Building",
-      eventName: "Student Bake Sale",
-      description:
-          "Multiple clubs will be hosting a bake sale. Expect delays and heavier pedestrian traffic.",
-      timeLabel: "11:00am",
-      timeAgo: "about 1 hour ago",
-      minutesSinceMidnight: 11 * 60,
-      tone: "red",
-    },
-
-
-  ];
+  // // mocked data for notifications
+  // const notifications: NotificationItem[] = [
+  //   {
+  //     id: "ev1",
+  //     buildingId: "EV",
+  //     buildingName: "Engineering and Visual Arts",
+  //     eventName: "Protest spotted",
+  //     description:
+  //         "A protest has been reported near the main entrance. Expect delays and heavier pedestrian traffic.",
+  //     timeLabel: "11:00am",
+  //     timeAgo: "about 1 hour ago",
+  //     minutesSinceMidnight: 11 * 60,
+  //     tone: "red",
+  //   },
+  //   {
+  //     id: "lb1",
+  //     buildingId: "LB",
+  //     buildingName: "Main Library",
+  //     eventName: "Elevators out of order",
+  //     description:
+  //         "The elevators are currently unavailable. Please use the stairs or an alternate accessible route.",
+  //     timeLabel: "12:00pm",
+  //     timeAgo: "about 20 minutes ago",
+  //     minutesSinceMidnight: 12 * 60,
+  //     tone: "green",
+  //   },
+  //
+  //   {
+  //     id: "h1",
+  //     buildingId: "H",
+  //     buildingName: "Hall Building",
+  //     eventName: "Student Bake Sale",
+  //     description:
+  //         "Multiple clubs will be hosting a bake sale. Expect delays and heavier pedestrian traffic.",
+  //     timeLabel: "11:00am",
+  //     timeAgo: "about 1 hour ago",
+  //     minutesSinceMidnight: 11 * 60,
+  //     tone: "red",
+  //   },
+  //
+  //
+  // ];
   // Hardware navigation bar
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("#F7F9FF");
@@ -168,7 +174,11 @@ export default function Notifications() {
                     <View
                         style={[
                           styles.subCard,
-                          isActive ? sub.activeStyle : styles.unsubbed,
+                          isActive
+                              ? sub.tone === "red"
+                                  ? styles.red
+                                  : styles.green
+                              : styles.unsubbed,
                           isActive ? styles.subCardActive : styles.subCardInactive,
                         ]}
                     >
