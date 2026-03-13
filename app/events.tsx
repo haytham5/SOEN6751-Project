@@ -1,6 +1,5 @@
 import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
-import AppLoading from "expo-app-loading";
 import * as NavigationBar from "expo-navigation-bar";
 import React, { useEffect, useState } from "react";
 import { FlatList, ScrollView, StatusBar, Text, View } from "react-native";
@@ -111,7 +110,7 @@ export default function Events() {
   const selectedEvents = events[selectedDate] || [];
 
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
 
   return (

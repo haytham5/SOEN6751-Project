@@ -1,6 +1,7 @@
 // Import the Pacifico font and the hook used to load fonts
 import { useFonts } from "@expo-google-fonts/lexend";
-import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
+import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
+
 
 // Shows a loading screen while fonts are loading
 import AppLoading from "expo-app-loading";
@@ -192,7 +193,7 @@ export default function Index() {
    * show a loading screen instead of rendering the page.
    */
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
 
   /**

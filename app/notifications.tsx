@@ -1,9 +1,6 @@
 import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
-
-import AppLoading from "expo-app-loading";
-
 import * as NavigationBar from "expo-navigation-bar";
 
 import { useEffect, useState } from "react";
@@ -116,7 +113,7 @@ export default function Notifications() {
 
   // here so we dont show the UI until the right front are loaded
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
   // logic handling
   const handleToggleSubscription = (id: string) => {

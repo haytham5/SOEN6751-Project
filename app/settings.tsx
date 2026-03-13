@@ -1,7 +1,7 @@
 import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
-import AppLoading from "expo-app-loading";
 import * as NavigationBar from "expo-navigation-bar";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -50,7 +50,7 @@ export default function Settings() {
   NavigationBar.setBehaviorAsync("overlay-swipe");
 
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
 
   return (
@@ -80,7 +80,7 @@ export default function Settings() {
           onChange={setAccessibility}
         />
 
-        <TouchableOpacity style={styles.logout}>
+        <TouchableOpacity style={styles.logout} onPress={() => router.replace("../welcome")}>
           <Text style={(styles.label, styles.logoutLabel)}>Log Out</Text>
         </TouchableOpacity>
       </ScrollView>
