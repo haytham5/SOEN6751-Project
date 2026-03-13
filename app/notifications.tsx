@@ -10,9 +10,9 @@ import { useEffect, useState } from "react";
 
 import {
   initialSubscriptions,
-  notifications,
   NotificationItem,
-} from "/Users/ynestd/Documents/HCI/app_HCI/app/data/notificationData";
+  notifications,
+} from "./data/notificationData";
 
 import {
   Modal,
@@ -52,7 +52,7 @@ export default function Notifications() {
   //Componenent state
   const [sortMode, setSortMode] = useState<"time" | "building">("time");
   const [selectedNotification, setSelectedNotification] =
-      useState<NotificationItem | null>(null);
+    useState<NotificationItem | null>(null);
 
   // // List of buildings users can follow
   // const initialSubscriptions = [
@@ -121,18 +121,18 @@ export default function Notifications() {
   // logic handling
   const handleToggleSubscription = (id: string) => {
     setSubscriptions((current) =>
-        current.map((sub) =>
-            sub.id === id ? { ...sub, isSubscribed: !sub.isSubscribed } : sub
-        )
+      current.map((sub) =>
+        sub.id === id ? { ...sub, isSubscribed: !sub.isSubscribed } : sub,
+      ),
     );
   };
   // filter notifications based on active subscriptions
   const activeBuildingIds = subscriptions
-      .filter((sub) => sub.isSubscribed)
-      .map((sub) => sub.id);
+    .filter((sub) => sub.isSubscribed)
+    .map((sub) => sub.id);
 
   let visibleNotifications = notifications.filter((notification) =>
-      activeBuildingIds.includes(notification.buildingId)
+    activeBuildingIds.includes(notification.buildingId),
   );
   // sort the filtered list
   visibleNotifications = [...visibleNotifications].sort((a, b) => {
@@ -144,212 +144,210 @@ export default function Notifications() {
   });
 
   return (
-      <SafeAreaView style={styles.background}>
-        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+    <SafeAreaView style={styles.background}>
+      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
-        <ScrollView contentContainerStyle={styles.scrollableContent}>
-          {/*SUBSCRIPTION SECTION UI */}
-          <View style={styles.header}>
-            <Text style={styles.title}>Your Subscriptions</Text>
-          </View>
+      <ScrollView contentContainerStyle={styles.scrollableContent}>
+        {/*SUBSCRIPTION SECTION UI */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Your Subscriptions</Text>
+        </View>
 
-          <Text style={styles.sectionDescription}>
-            Tap a building to turn notifications on or off.
-          </Text>
+        <Text style={styles.sectionDescription}>
+          Tap a building to turn notifications on or off.
+        </Text>
 
-          <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.subscriptions}
-          >
-            {subscriptions.map((sub) => {
-              const isActive = sub.isSubscribed;
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.subscriptions}
+        >
+          {subscriptions.map((sub) => {
+            const isActive = sub.isSubscribed;
 
-              return (
-                  <TouchableOpacity
-                      key={sub.id}
-                      activeOpacity={0.9}
-                      onPress={() => handleToggleSubscription(sub.id)}
-                  >
-                    <View
-                        style={[
-                          styles.subCard,
-                          isActive
-                              ? sub.tone === "red"
-                                  ? styles.red
-                                  : styles.green
-                              : styles.unsubbed,
-                          isActive ? styles.subCardActive : styles.subCardInactive,
-                        ]}
-                    >
-                      <Text style={styles.subBody}>{sub.label}</Text>
-                      <Text style={styles.subLabel}>
-                        {isActive ? "On" : "Off"}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-          {/* NOTIFICATION SECTION HEADER & SORT TOGGLE */}
-          <View style={styles.header}>
-            <Text style={styles.title}>Your Notifications</Text>
-
-            <View style={styles.toggleGroup}>
+            return (
               <TouchableOpacity
-                  style={[
-                    styles.toggleOption,
-                    sortMode === "time" && styles.toggleOptionActive,
-                  ]}
-                  onPress={() => setSortMode("time")}
-              >
-                <Text
-                    style={[
-                      styles.toggleLabel,
-                      sortMode === "time" && styles.toggleLabelActive,
-                    ]}
-                >
-                  Time
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                  style={[
-                    styles.toggleOption,
-                    sortMode === "building" && styles.toggleOptionActive,
-                  ]}
-                  onPress={() => setSortMode("building")}
-              >
-                <Text
-                    style={[
-                      styles.toggleLabel,
-                      sortMode === "building" && styles.toggleLabelActive,
-                    ]}
-                >
-                  Building
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {visibleNotifications.map((notification) => (
-              <TouchableOpacity
-                  key={notification.id}
-                  activeOpacity={0.9}
-                  onPress={() => setSelectedNotification(notification)}
+                key={sub.id}
+                activeOpacity={0.9}
+                onPress={() => handleToggleSubscription(sub.id)}
               >
                 <View
-                    style={[
-                      styles.notificationCard,
-                      notification.tone === "red"
-                          ? styles.notificationRed
-                          : styles.notificationGreen,
-                    ]}
+                  style={[
+                    styles.subCard,
+                    isActive
+                      ? sub.tone === "red"
+                        ? styles.red
+                        : styles.green
+                      : styles.unsubbed,
+                    isActive ? styles.subCardActive : styles.subCardInactive,
+                  ]}
                 >
-                  <View style={styles.notificationTopRow}>
-                    <Text style={styles.notificationTitle}>
-                      {notification.eventName} - {notification.buildingName}
-                    </Text>
-
-                    <View
-                        style={[
-                          styles.badge,
-                          notification.tone === "red"
-                              ? styles.badgeRed
-                              : styles.badgeGreen,
-                        ]}
-                    >
-                      <Text style={styles.badgeText}>
-                        {notification.tone === "red" ? "High" : "Low"}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.notificationMetaRow}>
-                    <Text style={styles.notificationMeta}>
-                      {notification.buildingName}
-                    </Text>
-                    <Text style={styles.notificationMeta}>
-                      {notification.timeAgo}
-                    </Text>
-                  </View>
+                  <Text style={styles.subBody}>{sub.label}</Text>
+                  <Text style={styles.subLabel}>{isActive ? "On" : "Off"}</Text>
                 </View>
               </TouchableOpacity>
-          ))}
+            );
+          })}
+        </ScrollView>
+        {/* NOTIFICATION SECTION HEADER & SORT TOGGLE */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Your Notifications</Text>
 
-          {visibleNotifications.length === 0 && (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyStateTitle}>No notifications yet</Text>
-                <Text style={styles.emptyStateBody}>
-                  Turn on at least one building above to see updates here.
+          <View style={styles.toggleGroup}>
+            <TouchableOpacity
+              style={[
+                styles.toggleOption,
+                sortMode === "time" && styles.toggleOptionActive,
+              ]}
+              onPress={() => setSortMode("time")}
+            >
+              <Text
+                style={[
+                  styles.toggleLabel,
+                  sortMode === "time" && styles.toggleLabelActive,
+                ]}
+              >
+                Time
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.toggleOption,
+                sortMode === "building" && styles.toggleOptionActive,
+              ]}
+              onPress={() => setSortMode("building")}
+            >
+              <Text
+                style={[
+                  styles.toggleLabel,
+                  sortMode === "building" && styles.toggleLabelActive,
+                ]}
+              >
+                Building
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {visibleNotifications.map((notification) => (
+          <TouchableOpacity
+            key={notification.id}
+            activeOpacity={0.9}
+            onPress={() => setSelectedNotification(notification)}
+          >
+            <View
+              style={[
+                styles.notificationCard,
+                notification.tone === "red"
+                  ? styles.notificationRed
+                  : styles.notificationGreen,
+              ]}
+            >
+              <View style={styles.notificationTopRow}>
+                <Text style={styles.notificationTitle}>
+                  {notification.eventName} - {notification.buildingName}
+                </Text>
+
+                <View
+                  style={[
+                    styles.badge,
+                    notification.tone === "red"
+                      ? styles.badgeRed
+                      : styles.badgeGreen,
+                  ]}
+                >
+                  <Text style={styles.badgeText}>
+                    {notification.tone === "red" ? "High" : "Low"}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.notificationMetaRow}>
+                <Text style={styles.notificationMeta}>
+                  {notification.buildingName}
+                </Text>
+                <Text style={styles.notificationMeta}>
+                  {notification.timeAgo}
                 </Text>
               </View>
-          )}
-        </ScrollView>
+            </View>
+          </TouchableOpacity>
+        ))}
 
-        <Modal
-            visible={selectedNotification !== null}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setSelectedNotification(null)}
+        {visibleNotifications.length === 0 && (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateTitle}>No notifications yet</Text>
+            <Text style={styles.emptyStateBody}>
+              Turn on at least one building above to see updates here.
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+
+      <Modal
+        visible={selectedNotification !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedNotification(null)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setSelectedNotification(null)}
         >
           <Pressable
-              style={styles.modalOverlay}
-              onPress={() => setSelectedNotification(null)}
+            style={styles.modalCard}
+            onPress={(e) => e.stopPropagation()}
           >
-            <Pressable
-                style={styles.modalCard}
-                onPress={(e) => e.stopPropagation()}
-            >
-              {selectedNotification && (
-                  <>
-                    <View style={styles.modalHeader}>
-                      <Text style={styles.modalTitle}>
-                        {selectedNotification.eventName}
-                      </Text>
+            {selectedNotification && (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>
+                    {selectedNotification.eventName}
+                  </Text>
 
-                      <TouchableOpacity
-                          onPress={() => setSelectedNotification(null)}
-                          style={styles.closeButton}
-                      >
-                        <Text style={styles.closeButtonText}>×</Text>
-                      </TouchableOpacity>
-                    </View>
+                  <TouchableOpacity
+                    onPress={() => setSelectedNotification(null)}
+                    style={styles.closeButton}
+                  >
+                    <Text style={styles.closeButtonText}>×</Text>
+                  </TouchableOpacity>
+                </View>
 
-                    <Text style={styles.modalBuilding}>
-                      {selectedNotification.buildingName}
+                <Text style={styles.modalBuilding}>
+                  {selectedNotification.buildingName}
+                </Text>
+
+                <View style={styles.modalBadgeRow}>
+                  <View
+                    style={[
+                      styles.badge,
+                      selectedNotification.tone === "red"
+                        ? styles.badgeRed
+                        : styles.badgeGreen,
+                    ]}
+                  >
+                    <Text style={styles.badgeText}>
+                      {selectedNotification.tone === "red" ? "High" : "Low"}
                     </Text>
+                  </View>
 
-                    <View style={styles.modalBadgeRow}>
-                      <View
-                          style={[
-                            styles.badge,
-                            selectedNotification.tone === "red"
-                                ? styles.badgeRed
-                                : styles.badgeGreen,
-                          ]}
-                      >
-                        <Text style={styles.badgeText}>
-                          {selectedNotification.tone === "red" ? "High" : "Low"}
-                        </Text>
-                      </View>
+                  <Text style={styles.modalTime}>
+                    {selectedNotification.timeAgo}
+                  </Text>
+                </View>
 
-                      <Text style={styles.modalTime}>
-                        {selectedNotification.timeAgo}
-                      </Text>
-                    </View>
-
-                    <Text style={styles.modalSectionTitle}>Summary</Text>
-                    <Text style={styles.modalDescription}>
-                      {selectedNotification.description}
-                    </Text>
-                  </>
-              )}
-            </Pressable>
+                <Text style={styles.modalSectionTitle}>Summary</Text>
+                <Text style={styles.modalDescription}>
+                  {selectedNotification.description}
+                </Text>
+              </>
+            )}
           </Pressable>
-        </Modal>
+        </Pressable>
+      </Modal>
 
-        <BottomNav />
-      </SafeAreaView>
+      <BottomNav />
+    </SafeAreaView>
   );
 }
