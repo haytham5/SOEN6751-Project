@@ -114,4 +114,69 @@ export const styles = StyleSheet.create({
     backgroundColor: "#9c9c9c",
     opacity: 0.7,
   },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  modalCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 20,
+    width: "100%",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 5,
+        shadowColor: "#000",
+      },
+    }),
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: "Pacifico_400Regular",
+    color: "#276389",
+    flex: 1,
+  },
+  modalBuilding: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#444",
+    marginBottom: 6,
+  },
+  modalTime: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: "#888",
+    fontStyle: "italic",
+    marginBottom: 12,
+  },
+  modalDescription: {
+    fontSize: 15,
+    fontFamily: "Lexend_400Regular",
+    color: "#333",
+  },
+  closeButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  closeButtonText: {
+    fontSize: 28,
+    color: "#276389",
+    lineHeight: 28,
+  },
 });
