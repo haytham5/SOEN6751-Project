@@ -28,13 +28,21 @@ export default function Signin() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    NavigationBar.setBackgroundColorAsync("#F7F9FF");
-    NavigationBar.setButtonStyleAsync("dark");
-    NavigationBar.setBehaviorAsync("overlay-swipe");
-  }, []);
+  // useEffect(() => {
+  //   NavigationBar.setBackgroundColorAsync("#F7F9FF");
+  //   NavigationBar.setButtonStyleAsync("dark");
+  //   NavigationBar.setBehaviorAsync("overlay-swipe");
+  // }, []);
+    useEffect(() => {
+        if (Platform.OS === "android") {
+            NavigationBar.setBackgroundColorAsync("#F7F9FF");
+            NavigationBar.setButtonStyleAsync("dark");
+            NavigationBar.setBehaviorAsync("overlay-swipe");
+        }
+    }, []);
 
-  if (!fontsLoaded) {
+
+    if (!fontsLoaded) {
     return null;
   }
 

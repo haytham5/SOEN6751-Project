@@ -1,7 +1,6 @@
 // Import the Pacifico font and the hook used to load fonts
-import { useFonts } from "@expo-google-fonts/lexend";
-import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
-
+import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
+import { Lexend_400Regular, useFonts } from "@expo-google-fonts/lexend";
 
 // Shows a loading screen while fonts are loading
 import AppLoading from "expo-app-loading";
@@ -15,20 +14,25 @@ import * as NavigationBar from "expo-navigation-bar";
 // useState -> store values that can change over time
 import { useEffect, useRef, useState } from "react";
 
+
+
 import {
-    initialSubscriptions,
-    NotificationItem,
-    notifications,
+  initialSubscriptions,
+  notifications,
+  NotificationItem,
 } from "./data/notificationData";
+
+
 
 // React Native UI components
 import {
-    Modal,
-    ScrollView,
-    StatusBar,
-    Text,
-    TouchableOpacity,
-    View,
+  Modal,
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+    Pressable
 } from "react-native";
 
 // MapView = the map itself
@@ -48,7 +52,8 @@ import BottomNav from "./components/bottomNav";
 import { styles } from "./styles/indexStyles";
 
 // ViewShot lets us "take a picture" of a React Native view
-import ViewShot, { captureRef } from "react-native-view-shot";
+import ViewShot from "react-native-view-shot";
+import { captureRef } from "react-native-view-shot";
 
 // Custom component used inside the marker image
 import MapInfo from "./components/mapInfo";
@@ -61,6 +66,10 @@ export default function Index() {
    * false = map is only shown as a small preview card
    * true  = full-screen modal map is visible
    */
+  // notification state
+  const [selectedNotification, setSelectedNotification] =
+      useState<NotificationItem | null>(null);
+
   const [isMapExpanded, setIsMapExpanded] = useState(false);
 
   /**
@@ -77,15 +86,13 @@ export default function Index() {
   const [subscriptions] = useState(initialSubscriptions);
   // visible notifications
   const activeBuildingIds = subscriptions
-    .filter((sub) => sub.isSubscribed)
-    .map((sub) => sub.id);
+      .filter((sub) => sub.isSubscribed)
+      .map((sub) => sub.id);
 
   const visibleNotifications: NotificationItem[] = [...notifications]
-    .filter((notification) =>
-      activeBuildingIds.includes(notification.buildingId),
-    )
-    .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
-    .slice(0, 3);
+      .filter((notification) => activeBuildingIds.includes(notification.buildingId))
+      .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
+      .slice(0, 3);
 
   /**
    * REFS FOR THE MAPS
@@ -115,11 +122,11 @@ export default function Index() {
     if (!mapInstance) return;
 
     mapInstance.setMapBoundaries(
-      // one corner of the allowed map area
-      { latitude: 45.5000284224813, longitude: -73.5759524037535 },
+        // one corner of the allowed map area
+        { latitude: 45.5000284224813, longitude: -73.5759524037535 },
 
-      // opposite corner of the allowed map area
-      { latitude: 45.49070461581633, longitude: -73.58196697011486 },
+        // opposite corner of the allowed map area
+        { latitude: 45.49070461581633, longitude: -73.58196697011486 }
     );
   };
 
@@ -186,6 +193,7 @@ export default function Index() {
    */
   const [fontsLoaded] = useFonts({
     Pacifico_400Regular,
+    Lexend_400Regular,
   });
 
   /**
@@ -193,7 +201,7 @@ export default function Index() {
    * show a loading screen instead of rendering the page.
    */
   if (!fontsLoaded) {
-    return null;
+    return <AppLoading />;
   }
 
   /**
@@ -209,232 +217,270 @@ export default function Index() {
     longitudeDelta: 0.005,
   };
 
-  /**
-   * HELPER FUNCTION: renderMap
-   *
-   * Instead of repeating the same <MapView> code twice
-   * (once for preview and once for full-screen),
-   * we put the map JSX in a function and reuse it.
-   *
-   * It receives a ref so we can attach the correct map reference.
-   */
-  // const renderMap = (mapRef: React.RefObject<MapView | null>) => (
-  //     <MapView
-  //         style={styles.map}
-  //         initialRegion={mapRegion}
-  //         showsUserLocation
-  //         showsMyLocationButton
-  //         moveOnMarkerPress={false}
-  //         showsBuildings={false}
-  //         minZoomLevel={16}
-  //         maxZoomLevel={18}
-  //         ref={mapRef}
-  //         onMapReady={() => onMapReady(mapRef.current)}
-  //     >
-  //         {/* Only show the marker after the custom image has been created */}
-  //         {markerImage && (
-  //             <Marker
-  //                 style={styles.marker}
-  //                 coordinate={{
-  //                     latitude: 45.4954860561696,
-  //                     longitude: -73.57820980509946,
-  //                 }}
-  //                 image={{ uri: markerImage }}
-  //                 anchor={{ x: 0.5, y: 1 }}
-  //             />
-  //         )}
-  //     </MapView>
-  // );
+
   const renderMap = (mapRef: { current: MapView | null }) => {
     return (
-      <MapView
-        style={styles.map}
-        initialRegion={mapRegion}
-        showsUserLocation
-        showsMyLocationButton
-        moveOnMarkerPress={false}
-        showsBuildings={false}
-        minZoomLevel={16}
-        maxZoomLevel={18}
-        ref={mapRef}
-        onMapReady={() => onMapReady(mapRef.current)}
-      >
-        {markerImage && (
-          <Marker
-            style={styles.marker}
-            coordinate={{
-              latitude: 45.4954860561696,
-              longitude: -73.57820980509946,
-            }}
-            image={{ uri: markerImage }}
-            anchor={{ x: 0.5, y: 1 }}
-          />
-        )}
-      </MapView>
+        <MapView
+            style={styles.map}
+            initialRegion={mapRegion}
+            showsUserLocation
+            showsMyLocationButton
+            moveOnMarkerPress={false}
+            showsBuildings={false}
+            minZoomLevel={16}
+            maxZoomLevel={18}
+            ref={mapRef}
+            onMapReady={() => onMapReady(mapRef.current)}
+        >
+          {markerImage && (
+              <Marker
+                  style={styles.marker}
+                  coordinate={{
+                    latitude: 45.4954860561696,
+                    longitude: -73.57820980509946,
+                  }}
+                  image={{ uri: markerImage }}
+                  anchor={{ x: 0.5, y: 1 }}
+              />
+          )}
+        </MapView>
     );
   };
 
   return (
-    <SafeAreaView style={styles.background}>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/*
+      <SafeAreaView style={styles.background}>
+
+        <ScrollView
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
+        >
+          {/*
         HIDDEN MARKER RENDER
 
         This view is placed off-screen so the user never sees it.
         Its only purpose is to render the MapInfo component,
         then capture it as an image using ViewShot.
       */}
-        <View style={styles.hiddenMarkerContainer}>
-          <ViewShot ref={bubbleRef}>
-            <MapInfo title="EV" protests={11} accessibility={3} />
-          </ViewShot>
-        </View>
-
-        {/* Top phone status bar styling */}
-        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-
-        {/* HEADER */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Home</Text>
-
-          <View style={styles.userCircle}>
-            <Icon name="person" size={20} color="white" />
+          <View style={styles.hiddenMarkerContainer}>
+            <ViewShot ref={bubbleRef}>
+              <MapInfo title="EV" protests={11} accessibility={3} />
+            </ViewShot>
           </View>
-        </View>
 
-        {/*
+          {/* Top phone status bar styling */}
+          <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+
+          {/* HEADER */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Home Screen</Text>
+
+            {/*<View style={styles.userCircle}>*/}
+            {/*    <Icon name="person" size={20} color="white" />*/}
+            {/*</View>*/}
+          </View>
+
+          {/*
         SMALL CLICKABLE MAP PREVIEW
 
         This is the rectangle/card shown on the main page.
         The whole thing is wrapped in TouchableOpacity,
         so tapping it opens the full-screen map.
       */}
-        <TouchableOpacity
-          activeOpacity={0.9}
-          style={styles.mapPreviewWrapper}
-          onPress={() => setIsMapExpanded(true)}
-        >
-          {/* Render the smaller preview map */}
-          {renderMap(previewMapRef)}
+          <TouchableOpacity
+              activeOpacity={0.9}
+              style={styles.mapPreviewWrapper}
+              onPress={() => setIsMapExpanded(true)}
+          >
+            {/* Render the smaller preview map */}
+            {renderMap(previewMapRef)}
 
-          {/* Small label on top of the preview map */}
-          <View style={styles.mapPreviewOverlay}>
-            <Text style={styles.mapPreviewText}>Tap to expand map</Text>
-          </View>
+            {/* Small label on top of the preview map */}
+            <View style={styles.mapPreviewOverlay}>
+              <Text style={styles.mapPreviewText}>Tap to expand map</Text>
+            </View>
 
-          {/* Floating action buttons on top of the preview map */}
-          <TouchableOpacity style={styles.addReport}>
-            <Icon name="add-circle" size={24} color="#276389" />
+            {/* Floating action buttons on top of the preview map */}
+            <TouchableOpacity style={styles.addReport}>
+              <Icon name="add-circle" size={24} color="#276389" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.reportFilters}>
+              <Icon name="filter-alt" size={24} color="#276389" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.relaxMode}>
+              <Icon name="bedtime" size={24} color="#276389" />
+            </TouchableOpacity>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.reportFilters}>
-            <Icon name="filter-alt" size={24} color="#276389" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.relaxMode}>
-            <Icon name="bedtime" size={24} color="#276389" />
-          </TouchableOpacity>
-        </TouchableOpacity>
-
-        {/*
+          {/*
         FULL-SCREEN MAP MODAL
 
         A Modal is like a screen that appears on top of the current one.
         It becomes visible only when isMapExpanded === true
       */}
-        <Modal visible={isMapExpanded} animationType="slide">
-          <View style={styles.fullScreenContainer}>
-            {/* Render the full-screen version of the map */}
-            {renderMap(expandedMapRef)}
+          <Modal visible={isMapExpanded} animationType="slide">
+            <View style={styles.fullScreenContainer}>
+              {/* Render the full-screen version of the map */}
+              {renderMap(expandedMapRef)}
 
-            {/* Close button in the top-right corner */}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setIsMapExpanded(false)}
-            >
-              <Icon name="close" size={28} color="#276389" />
-            </TouchableOpacity>
+              {/* Close button in the top-right corner */}
+              <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setIsMapExpanded(false)}
+              >
+                <Icon name="close" size={28} color="#276389" />
+              </TouchableOpacity>
 
-            {/* Floating buttons for the full-screen map */}
-            <TouchableOpacity style={styles.fullScreenAddReport}>
-              <Icon name="add-circle" size={24} color="#276389" />
-            </TouchableOpacity>
+              {/* Floating buttons for the full-screen map */}
+              <TouchableOpacity style={styles.fullScreenAddReport}>
+                <Icon name="add-circle" size={24} color="#276389" />
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.fullScreenReportFilters}>
-              <Icon name="filter-alt" size={24} color="#276389" />
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.fullScreenReportFilters}>
+                <Icon name="filter-alt" size={24} color="#276389" />
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.fullScreenRelaxMode}>
-              <Icon name="bedtime" size={24} color="#276389" />
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.fullScreenRelaxMode}>
+                <Icon name="bedtime" size={24} color="#276389" />
+              </TouchableOpacity>
+            </View>
+          </Modal>
+
+          {/* Bottom navigation always stays on the main page */}
+
+          <View style={styles.updatesSection}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Your Notifications</Text>
+            </View>
+
+            <Text style={styles.sectionDescription}>
+              Subscribed reports and alerts at a glance.
+            </Text>
+
+            {visibleNotifications.length > 0 ? (
+                visibleNotifications.map((notification) => (
+                    <TouchableOpacity
+                        key={notification.id}
+                        activeOpacity={0.9}
+                        onPress={() => setSelectedNotification(notification)}
+                    >
+                      <View
+                          style={[
+                            styles.notificationCard,
+                            notification.tone === "red"
+                                ? styles.notificationRed
+                                : styles.notificationGreen,
+                          ]}
+                      >
+                        <View style={styles.notificationTopRow}>
+                          <Text style={styles.notificationTitle}>
+                            {notification.eventName} - {notification.buildingName}
+                          </Text>
+
+                          <View
+                              style={[
+                                styles.badge,
+                                notification.tone === "red"
+                                    ? styles.badgeRed
+                                    : styles.badgeGreen,
+                              ]}
+                          >
+                            <Text style={styles.badgeText}>
+                              {notification.tone === "red" ? "High" : "Low"}
+                            </Text>
+                          </View>
+                        </View>
+
+                        <View style={styles.notificationMetaRow}>
+                          <Text style={styles.notificationMeta}>
+                            {notification.buildingName}
+                          </Text>
+                          <Text style={styles.notificationMeta}>
+                            {notification.timeAgo}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                ))
+            ) : (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateTitle}>No notifications yet</Text>
+                  <Text style={styles.emptyStateBody}>
+                    Turn on at least one building to see updates here.
+                  </Text>
+                </View>
+            )}
           </View>
+
+
+        </ScrollView>
+
+        <Modal
+            visible={selectedNotification !== null}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setSelectedNotification(null)}
+        >
+          <Pressable
+              style={styles.modalOverlay}
+              onPress={() => setSelectedNotification(null)}
+          >
+            <Pressable
+                style={styles.modalCard}
+                onPress={(e) => e.stopPropagation()}
+            >
+              {selectedNotification && (
+                  <>
+                    <View style={styles.modalHeader}>
+                      <Text style={styles.modalTitle}>
+                        {selectedNotification.eventName}
+                      </Text>
+
+                      <TouchableOpacity
+                          onPress={() => setSelectedNotification(null)}
+                          style={styles.closeButton}
+                      >
+                        <Text style={styles.closeButtonText}>×</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.modalBuilding}>
+                      {selectedNotification.buildingName}
+                    </Text>
+
+                    <View style={styles.modalBadgeRow}>
+                      <View
+                          style={[
+                            styles.badge,
+                            selectedNotification.tone === "red"
+                                ? styles.badgeRed
+                                : styles.badgeGreen,
+                          ]}
+                      >
+                        <Text style={styles.badgeText}>
+                          {selectedNotification.tone === "red" ? "High" : "Low"}
+                        </Text>
+                      </View>
+
+                      <Text style={styles.modalTime}>
+                        {selectedNotification.timeAgo}
+                      </Text>
+                    </View>
+
+                    <Text style={styles.modalSectionTitle}>Summary</Text>
+                    <Text style={styles.modalDescription}>
+                      {selectedNotification.description}
+                    </Text>
+                  </>
+              )}
+            </Pressable>
+          </Pressable>
         </Modal>
 
-        {/* Bottom navigation always stays on the main page */}
 
-        <View style={styles.updatesSection}>
-          <View style={styles.updatesHeader}>
-            <Text style={styles.updatesTitle}>Your Updates</Text>
-            <Text style={styles.updatesSubtitle}>
-              Subscribed reports and alerts
-            </Text>
-          </View>
 
-          {visibleNotifications.length > 0 ? (
-            visibleNotifications.map((notification) => (
-              <TouchableOpacity
-                key={notification.id}
-                activeOpacity={0.9}
-                style={[
-                  styles.updateCard,
-                  notification.tone === "red"
-                    ? styles.updateCardRed
-                    : styles.updateCardGreen,
-                ]}
-              >
-                <View style={styles.updateTopRow}>
-                  <Text style={styles.updateEventTitle}>
-                    {notification.eventName}
-                  </Text>
-
-                  <View
-                    style={[
-                      styles.updateBadge,
-                      notification.tone === "red"
-                        ? styles.updateBadgeRed
-                        : styles.updateBadgeGreen,
-                    ]}
-                  >
-                    <Text style={styles.updateBadgeText}>
-                      {notification.tone === "red" ? "High" : "Low"}
-                    </Text>
-                  </View>
-                </View>
-
-                <Text style={styles.updateBuilding}>
-                  {notification.buildingName}
-                </Text>
-
-                <Text style={styles.updateMeta}>{notification.timeAgo}</Text>
-              </TouchableOpacity>
-            ))
-          ) : (
-            <View style={styles.emptyUpdatesState}>
-              <Text style={styles.emptyUpdatesTitle}>
-                No subscribed updates
-              </Text>
-              <Text style={styles.emptyUpdatesBody}>
-                Turn on notifications for buildings to see alerts here.
-              </Text>
-            </View>
-          )}
-        </View>
-      </ScrollView>
-
-      <BottomNav />
-    </SafeAreaView>
+        <BottomNav />
+      </SafeAreaView>
   );
 }

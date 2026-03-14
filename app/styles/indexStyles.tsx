@@ -1,200 +1,3 @@
-// import { Platform, StyleSheet } from "react-native";
-//
-// export const styles = StyleSheet.create({
-//   background: {
-//     flex: 1,
-//     backgroundColor: "#FFFFFF",
-//     justifyContent: "space-between",
-//   },
-//
-//   hiddenMarkerContainer: {
-//     position: "absolute",
-//     top: -9999,
-//     left: -9999,
-//   },
-//
-//   header: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingHorizontal: 20,
-//     paddingTop: 10,
-//   },
-//
-//   title: {
-//     fontSize: 25,
-//     fontFamily: "Lexend_400Regular",
-//   },
-//
-//   userCircle: {
-//     width: 45,
-//     height: 45,
-//     borderRadius: 25,
-//     backgroundColor: "#276389",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//
-//   marker: {
-//     backgroundColor: "#276389",
-//     padding: 20,
-//     borderRadius: 20,
-//     elevation: 5,
-//   },
-//
-//   mapPreviewWrapper: {
-//     height: 250,
-//     marginHorizontal: 20,
-//     marginTop: 20,
-//     marginBottom: 10,
-//     overflow: "hidden",
-//     backgroundColor: "#ddd",
-//     borderRadius: 20,
-//     position: "relative",
-//     ...Platform.select({
-//       ios: {
-//         shadowColor: "#000",
-//         shadowOffset: { width: 0, height: 1 },
-//         shadowOpacity: 0.15,
-//         shadowRadius: 6,
-//       },
-//       android: {
-//         elevation: 3,
-//       },
-//     }),
-//   },
-//
-//   map: {
-//     width: "100%",
-//     height: "100%",
-//   },
-//
-//   mapPreviewOverlay: {
-//     position: "absolute",
-//     top: 12,
-//     alignSelf: "center",
-//     backgroundColor: "rgba(255,255,255,0.9)",
-//     paddingHorizontal: 12,
-//     paddingVertical: 6,
-//     borderRadius: 20,
-//   },
-//
-//   mapPreviewText: {
-//     fontSize: 12,
-//     color: "#276389",
-//     fontWeight: "600",
-//   },
-//
-//   addReport: {
-//     position: "absolute",
-//     bottom: 75,
-//     left: 15,
-//     backgroundColor: "white",
-//     padding: 12,
-//     borderRadius: 20,
-//     elevation: 5,
-//     shadowColor: "#000",
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//   },
-//
-//   reportFilters: {
-//     position: "absolute",
-//     bottom: 15,
-//     left: 15,
-//     backgroundColor: "white",
-//     padding: 12,
-//     borderRadius: 20,
-//     elevation: 5,
-//     shadowColor: "#000",
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//   },
-//
-//   relaxMode: {
-//     position: "absolute",
-//     bottom: 15,
-//     right: 15,
-//     backgroundColor: "white",
-//     padding: 12,
-//     borderRadius: 20,
-//     elevation: 5,
-//     shadowColor: "#000",
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//   },
-//
-//   fullScreenContainer: {
-//     flex: 1,
-//     backgroundColor: "#FFFFFF",
-//   },
-//
-//   closeButton: {
-//     position: "absolute",
-//     top: 60,
-//     right: 20,
-//     backgroundColor: "white",
-//     padding: 10,
-//     borderRadius: 22,
-//     elevation: 6,
-//     shadowColor: "#000",
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//   },
-//
-//   fullScreenAddReport: {
-//     position: "absolute",
-//     bottom: 140,
-//     left: 15,
-//     backgroundColor: "white",
-//     padding: 12,
-//     borderRadius: 20,
-//     elevation: 5,
-//     shadowColor: "#000",
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//   },
-//
-//   fullScreenReportFilters: {
-//     position: "absolute",
-//     bottom: 80,
-//     left: 15,
-//     backgroundColor: "white",
-//     padding: 12,
-//     borderRadius: 20,
-//     elevation: 5,
-//     shadowColor: "#000",
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//   },
-//
-//   fullScreenRelaxMode: {
-//     position: "absolute",
-//     bottom: 80,
-//     right: 15,
-//     backgroundColor: "white",
-//     padding: 12,
-//     borderRadius: 20,
-//     elevation: 5,
-//     shadowColor: "#000",
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//   },
-//
-//   bottomNav: {
-//     flexDirection: "row",
-//     justifyContent: "space-around",
-//     alignItems: "center",
-//     paddingVertical: 15,
-//     borderTopWidth: 1,
-//     borderTopColor: "#DDE3EA",
-//   },
-//
-//   navItem: {
-//     alignItems: "center",
-//   },
-// });
-
 import { Platform, StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -575,6 +378,171 @@ export const styles = StyleSheet.create({
     fontFamily: "Lexend_400Regular",
     color: "#5A6B80",
     textAlign: "center",
+  },
+
+
+  sectionDescription: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#5A6B80",
+    marginBottom: 10,
+  },
+
+  emptyState: {
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+
+  emptyStateTitle: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    fontWeight: "600",
+    color: "#276389",
+    marginBottom: 4,
+  },
+
+  emptyStateBody: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#5A6B80",
+    textAlign: "center",
+  },
+
+  notificationCard: {
+    padding: 18,
+    marginBottom: 15,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    backgroundColor: "#F5F8F4",
+  },
+
+  notificationRed: {
+    borderColor: "#E98A8A",
+  },
+
+  notificationGreen: {
+    borderColor: "#9FD8AE",
+  },
+
+  notificationTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    gap: 12,
+  },
+
+  notificationTitle: {
+    flex: 1,
+    fontSize: 20,
+    fontFamily: "Lexend_400Regular",
+    color: "#1F1F1F",
+  },
+
+  notificationMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    marginTop: 10,
+  },
+
+  notificationMeta: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#2F2F2F",
+  },
+
+  badge: {
+    backgroundColor: "#16A34A",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+
+  badgeText: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: "#FFFFFF",
+  },
+
+  badgeRed: {
+    backgroundColor: "#D9534F",
+  },
+
+  badgeGreen: {
+    backgroundColor: "#1FA64A",
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+
+  modalCard: {
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 20,
+  },
+
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 8,
+  },
+
+  modalTitle: {
+    flex: 1,
+    fontSize: 22,
+    fontFamily: "Lexend_400Regular",
+    color: "#1F1F1F",
+    marginRight: 10,
+  },
+
+  modalBuilding: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#276389",
+    marginBottom: 12,
+  },
+
+  modalBadgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 18,
+  },
+
+  modalTime: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#5A6B80",
+  },
+
+  modalSectionTitle: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#1F1F1F",
+    marginBottom: 8,
+  },
+
+  modalDescription: {
+    fontSize: 15,
+    lineHeight: 22,
+    fontFamily: "Lexend_400Regular",
+    color: "#3E4B57",
+  },
+
+  closeButtonText: {
+    fontSize: 22,
+    lineHeight: 24,
+    color: "#276389",
+    fontFamily: "Lexend_400Regular",
   },
 
 

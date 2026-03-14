@@ -27,11 +27,19 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // useEffect(() => {
+  //   NavigationBar.setBackgroundColorAsync("#F7F9FF");
+  //   NavigationBar.setButtonStyleAsync("dark");
+  //   NavigationBar.setBehaviorAsync("overlay-swipe");
+  // }, []);
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync("#F7F9FF");
-    NavigationBar.setButtonStyleAsync("dark");
-    NavigationBar.setBehaviorAsync("overlay-swipe");
+    if (Platform.OS === "android") {
+      NavigationBar.setBackgroundColorAsync("#F7F9FF");
+      NavigationBar.setButtonStyleAsync("dark");
+      NavigationBar.setBehaviorAsync("overlay-swipe");
+    }
   }, []);
+
 
   if (!fontsLoaded) {
     return null;
@@ -135,7 +143,9 @@ export default function SignUp() {
             <Text style={styles.footerText}>Already have an account? </Text>
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => router.push("../signin")}
+              // onPress={() => router.push("../signin")}
+              onPress={() => router.push("/signin")}
+
             >
               <Text style={styles.footerLink}>Sign In</Text>
             </TouchableOpacity>
