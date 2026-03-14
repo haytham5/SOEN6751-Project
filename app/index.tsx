@@ -14,11 +14,15 @@ import * as NavigationBar from "expo-navigation-bar";
 // useState -> store values that can change over time
 import { useEffect, useRef, useState } from "react";
 
+
+
 import {
   initialSubscriptions,
   notifications,
   NotificationItem,
-} from "/Users/ynestd/Documents/HCI/app_HCI/app/data/notificationData";
+} from "./data/notificationData";
+
+
 
 // React Native UI components
 import {
@@ -28,6 +32,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+    Pressable
 } from "react-native";
 
 // MapView = the map itself
@@ -61,6 +66,10 @@ export default function Index() {
    * false = map is only shown as a small preview card
    * true  = full-screen modal map is visible
    */
+  // notification state
+  const [selectedNotification, setSelectedNotification] =
+      useState<NotificationItem | null>(null);
+
   const [isMapExpanded, setIsMapExpanded] = useState(false);
 
   /**
@@ -184,6 +193,7 @@ export default function Index() {
    */
   const [fontsLoaded] = useFonts({
     Pacifico_400Regular,
+    Lexend_400Regular,
   });
 
   /**
@@ -339,54 +349,65 @@ export default function Index() {
 
           {/* Bottom navigation always stays on the main page */}
 
-
           <View style={styles.updatesSection}>
-            <View style={styles.updatesHeader}>
-              <Text style={styles.updatesTitle}>Your Updates</Text>
-              <Text style={styles.updatesSubtitle}>Subscribed reports and alerts</Text>
+            <View style={styles.header}>
+              <Text style={styles.title}>Your Notifications</Text>
             </View>
+
+            <Text style={styles.sectionDescription}>
+              Subscribed reports and alerts at a glance.
+            </Text>
 
             {visibleNotifications.length > 0 ? (
                 visibleNotifications.map((notification) => (
                     <TouchableOpacity
                         key={notification.id}
                         activeOpacity={0.9}
-                        style={[
-                          styles.updateCard,
-                          notification.tone === "red"
-                              ? styles.updateCardRed
-                              : styles.updateCardGreen,
-                        ]}
+                        onPress={() => setSelectedNotification(notification)}
                     >
-                      <View style={styles.updateTopRow}>
-                        <Text style={styles.updateEventTitle}>
-                          {notification.eventName}
-                        </Text>
+                      <View
+                          style={[
+                            styles.notificationCard,
+                            notification.tone === "red"
+                                ? styles.notificationRed
+                                : styles.notificationGreen,
+                          ]}
+                      >
+                        <View style={styles.notificationTopRow}>
+                          <Text style={styles.notificationTitle}>
+                            {notification.eventName} - {notification.buildingName}
+                          </Text>
 
-                        <View
-                            style={[
-                              styles.updateBadge,
-                              notification.tone === "red"
-                                  ? styles.updateBadgeRed
-                                  : styles.updateBadgeGreen,
-                            ]}
-                        >
-                          <Text style={styles.updateBadgeText}>
-                            {notification.tone === "red" ? "High" : "Low"}
+                          <View
+                              style={[
+                                styles.badge,
+                                notification.tone === "red"
+                                    ? styles.badgeRed
+                                    : styles.badgeGreen,
+                              ]}
+                          >
+                            <Text style={styles.badgeText}>
+                              {notification.tone === "red" ? "High" : "Low"}
+                            </Text>
+                          </View>
+                        </View>
+
+                        <View style={styles.notificationMetaRow}>
+                          <Text style={styles.notificationMeta}>
+                            {notification.buildingName}
+                          </Text>
+                          <Text style={styles.notificationMeta}>
+                            {notification.timeAgo}
                           </Text>
                         </View>
                       </View>
-
-                      <Text style={styles.updateBuilding}>{notification.buildingName}</Text>
-
-                      <Text style={styles.updateMeta}>{notification.timeAgo}</Text>
                     </TouchableOpacity>
                 ))
             ) : (
-                <View style={styles.emptyUpdatesState}>
-                  <Text style={styles.emptyUpdatesTitle}>No subscribed updates</Text>
-                  <Text style={styles.emptyUpdatesBody}>
-                    Turn on notifications for buildings to see alerts here.
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateTitle}>No notifications yet</Text>
+                  <Text style={styles.emptyStateBody}>
+                    Turn on at least one building to see updates here.
                   </Text>
                 </View>
             )}
@@ -394,6 +415,70 @@ export default function Index() {
 
 
         </ScrollView>
+
+        <Modal
+            visible={selectedNotification !== null}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setSelectedNotification(null)}
+        >
+          <Pressable
+              style={styles.modalOverlay}
+              onPress={() => setSelectedNotification(null)}
+          >
+            <Pressable
+                style={styles.modalCard}
+                onPress={(e) => e.stopPropagation()}
+            >
+              {selectedNotification && (
+                  <>
+                    <View style={styles.modalHeader}>
+                      <Text style={styles.modalTitle}>
+                        {selectedNotification.eventName}
+                      </Text>
+
+                      <TouchableOpacity
+                          onPress={() => setSelectedNotification(null)}
+                          style={styles.closeButton}
+                      >
+                        <Text style={styles.closeButtonText}>×</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.modalBuilding}>
+                      {selectedNotification.buildingName}
+                    </Text>
+
+                    <View style={styles.modalBadgeRow}>
+                      <View
+                          style={[
+                            styles.badge,
+                            selectedNotification.tone === "red"
+                                ? styles.badgeRed
+                                : styles.badgeGreen,
+                          ]}
+                      >
+                        <Text style={styles.badgeText}>
+                          {selectedNotification.tone === "red" ? "High" : "Low"}
+                        </Text>
+                      </View>
+
+                      <Text style={styles.modalTime}>
+                        {selectedNotification.timeAgo}
+                      </Text>
+                    </View>
+
+                    <Text style={styles.modalSectionTitle}>Summary</Text>
+                    <Text style={styles.modalDescription}>
+                      {selectedNotification.description}
+                    </Text>
+                  </>
+              )}
+            </Pressable>
+          </Pressable>
+        </Modal>
+
+
 
         <BottomNav />
       </SafeAreaView>
