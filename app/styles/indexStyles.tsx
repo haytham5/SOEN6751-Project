@@ -576,4 +576,67 @@ export const styles = StyleSheet.create({
     color: "#5A6B80",
     textAlign: "center",
   },
+
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.4)",
+  justifyContent: "center",
+  alignItems: "center",
+  paddingHorizontal: 20,
+  },
+
+  modalCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 20,
+    width: "100%",
+    elevation: 5,
+  },
+
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 14,
+  },
+
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: "Pacifico_400Regular",
+    color: "#276389",
+    flex: 1,
+  },
+
+  modalRow: {
+    backgroundColor: "#F0F4FF",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 6,
+  },
+
+  modalRowText: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#333",
+  },
+
+  modalRowMeta: {
+    fontSize: 11,
+    color: "#888",
+    fontStyle: "italic",
+    marginTop: 2,
+  },
+
+  modalSecurityCount: {
+    fontSize: 13,
+    color: "#276389",
+    fontWeight: "600",
+    marginTop: 10,
+  },
+  
+  modalEmptyText: {
+    fontSize: 13,
+    color: "#aaa",
+    fontStyle: "italic",
+  },
 });
