@@ -1,6 +1,6 @@
 // Import the Pacifico font and the hook used to load fonts
-import { useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
+import { Lexend_400Regular, useFonts } from "@expo-google-fonts/lexend";
 
 // Shows a loading screen while fonts are loading
 
@@ -12,6 +12,8 @@ import * as NavigationBar from "expo-navigation-bar";
 // useRef -> keep a reference to something without causing re-renders
 // useState -> store values that can change over time
 import { useEffect, useRef, useState } from "react";
+
+
 
 import {
   initialSubscriptions,
@@ -29,6 +31,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+    Pressable
 } from "react-native";
 
 // MapView = the map itself
@@ -48,7 +51,8 @@ import BottomNav from "./components/bottomNav";
 import { styles } from "./styles/indexStyles";
 
 // ViewShot lets us "take a picture" of a React Native view
-import ViewShot, { captureRef } from "react-native-view-shot";
+import ViewShot from "react-native-view-shot";
+import { captureRef } from "react-native-view-shot";
 
 // Custom component used inside the marker image
 import { useRouter } from "expo-router";
@@ -62,6 +66,10 @@ export default function Index() {
    * false = map is only shown as a small preview card
    * true  = full-screen modal map is visible
    */
+  // notification state
+  const [selectedNotification, setSelectedNotification] =
+      useState<NotificationItem | null>(null);
+
   const [isMapExpanded, setIsMapExpanded] = useState(false);
 
   const router = useRouter();
@@ -80,15 +88,13 @@ export default function Index() {
   const [subscriptions] = useState(initialSubscriptions);
   // visible notifications
   const activeBuildingIds = subscriptions
-    .filter((sub) => sub.isSubscribed)
-    .map((sub) => sub.id);
+      .filter((sub) => sub.isSubscribed)
+      .map((sub) => sub.id);
 
   const visibleNotifications: NotificationItem[] = [...notifications]
-    .filter((notification) =>
-      activeBuildingIds.includes(notification.buildingId),
-    )
-    .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
-    .slice(0, 3);
+      .filter((notification) => activeBuildingIds.includes(notification.buildingId))
+      .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
+      .slice(0, 3);
 
   const [reports, setReports] = useState<Report[]>([]);
   const [loadingReports, setLoading] = useState(true);
@@ -137,11 +143,11 @@ export default function Index() {
     if (!mapInstance) return;
 
     mapInstance.setMapBoundaries(
-      // one corner of the allowed map area
-      { latitude: 45.5000284224813, longitude: -73.5759524037535 },
+        // one corner of the allowed map area
+        { latitude: 45.5000284224813, longitude: -73.5759524037535 },
 
-      // opposite corner of the allowed map area
-      { latitude: 45.49070461581633, longitude: -73.58196697011486 },
+        // opposite corner of the allowed map area
+        { latitude: 45.49070461581633, longitude: -73.58196697011486 }
     );
   };
 
@@ -261,6 +267,7 @@ export default function Index() {
    */
   const [fontsLoaded] = useFonts({
     Pacifico_400Regular,
+    Lexend_400Regular,
   });
 
   /**
@@ -268,7 +275,7 @@ export default function Index() {
    * show a loading screen instead of rendering the page.
    */
   if (!fontsLoaded || loadingReports) {
-    return null;
+    return <AppLoading />;
   }
 
   /**
@@ -355,12 +362,13 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView style={styles.background}>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/*
+      <SafeAreaView style={styles.background}>
+
+        <ScrollView
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
+        >
+          {/*
         HIDDEN MARKER RENDER
 
         This view is placed off-screen so the user never sees it.
@@ -379,19 +387,19 @@ export default function Index() {
           ))}
         </View>
 
-        {/* Top phone status bar styling */}
-        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+          {/* Top phone status bar styling */}
+          <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
-        {/* HEADER */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Home</Text>
+          {/* HEADER */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Home Screen</Text>
 
-          <View style={styles.userCircle}>
-            <Icon name="person" size={20} color="white" />
+            {/*<View style={styles.userCircle}>*/}
+            {/*    <Icon name="person" size={20} color="white" />*/}
+            {/*</View>*/}
           </View>
-        </View>
 
-        {/*
+          {/*
         SMALL CLICKABLE MAP PREVIEW
 
         This is the rectangle/card shown on the main page.
@@ -419,33 +427,26 @@ export default function Index() {
             <Icon name="add-circle" size={24} color="#276389" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.reportFilters}>
-            <Icon name="filter-alt" size={24} color="#276389" />
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.reportFilters}>
+              <Icon name="filter-alt" size={24} color="#276389" />
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.relaxMode}>
-            <Icon name="bedtime" size={24} color="#276389" />
+            <TouchableOpacity style={styles.relaxMode}>
+              <Icon name="bedtime" size={24} color="#276389" />
+            </TouchableOpacity>
           </TouchableOpacity>
         </View>
 
-        {/*
+          {/*
         FULL-SCREEN MAP MODAL
 
         A Modal is like a screen that appears on top of the current one.
         It becomes visible only when isMapExpanded === true
       */}
-        <Modal visible={isMapExpanded} animationType="slide">
-          <View style={styles.fullScreenContainer}>
-            {/* Render the full-screen version of the map */}
-            {renderMap(expandedMapRef)}
-
-            {/* Close button in the top-right corner */}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setIsMapExpanded(false)}
-            >
-              <Icon name="close" size={28} color="#276389" />
-            </TouchableOpacity>
+          <Modal visible={isMapExpanded} animationType="slide">
+            <View style={styles.fullScreenContainer}>
+              {/* Render the full-screen version of the map */}
+              {renderMap(expandedMapRef)}
 
             {/* Floating buttons for the full-screen map */}
             <TouchableOpacity
@@ -455,78 +456,155 @@ export default function Index() {
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.fullScreenReportFilters}>
-              <Icon name="filter-alt" size={24} color="#276389" />
-            </TouchableOpacity>
+              {/* Floating buttons for the full-screen map */}
+              <TouchableOpacity style={styles.fullScreenAddReport}>
+                <Icon name="add-circle" size={24} color="#276389" />
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.fullScreenRelaxMode}>
-              <Icon name="bedtime" size={24} color="#276389" />
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.fullScreenReportFilters}>
+                <Icon name="filter-alt" size={24} color="#276389" />
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.fullScreenRelaxMode}>
+                <Icon name="bedtime" size={24} color="#276389" />
+              </TouchableOpacity>
+            </View>
+          </Modal>
+
+          {/* Bottom navigation always stays on the main page */}
+
+          <View style={styles.updatesSection}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Your Notifications</Text>
+            </View>
+
+            <Text style={styles.sectionDescription}>
+              Subscribed reports and alerts at a glance.
+            </Text>
+
+            {visibleNotifications.length > 0 ? (
+                visibleNotifications.map((notification) => (
+                    <TouchableOpacity
+                        key={notification.id}
+                        activeOpacity={0.9}
+                        onPress={() => setSelectedNotification(notification)}
+                    >
+                      <View
+                          style={[
+                            styles.notificationCard,
+                            notification.tone === "red"
+                                ? styles.notificationRed
+                                : styles.notificationGreen,
+                          ]}
+                      >
+                        <View style={styles.notificationTopRow}>
+                          <Text style={styles.notificationTitle}>
+                            {notification.eventName} - {notification.buildingName}
+                          </Text>
+
+                          <View
+                              style={[
+                                styles.badge,
+                                notification.tone === "red"
+                                    ? styles.badgeRed
+                                    : styles.badgeGreen,
+                              ]}
+                          >
+                            <Text style={styles.badgeText}>
+                              {notification.tone === "red" ? "High" : "Low"}
+                            </Text>
+                          </View>
+                        </View>
+
+                        <View style={styles.notificationMetaRow}>
+                          <Text style={styles.notificationMeta}>
+                            {notification.buildingName}
+                          </Text>
+                          <Text style={styles.notificationMeta}>
+                            {notification.timeAgo}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                ))
+            ) : (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateTitle}>No notifications yet</Text>
+                  <Text style={styles.emptyStateBody}>
+                    Turn on at least one building to see updates here.
+                  </Text>
+                </View>
+            )}
           </View>
+
+
+        </ScrollView>
+
+        <Modal
+            visible={selectedNotification !== null}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setSelectedNotification(null)}
+        >
+          <Pressable
+              style={styles.modalOverlay}
+              onPress={() => setSelectedNotification(null)}
+          >
+            <Pressable
+                style={styles.modalCard}
+                onPress={(e) => e.stopPropagation()}
+            >
+              {selectedNotification && (
+                  <>
+                    <View style={styles.modalHeader}>
+                      <Text style={styles.modalTitle}>
+                        {selectedNotification.eventName}
+                      </Text>
+
+                      <TouchableOpacity
+                          onPress={() => setSelectedNotification(null)}
+                          style={styles.closeButton}
+                      >
+                        <Text style={styles.closeButtonText}>×</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.modalBuilding}>
+                      {selectedNotification.buildingName}
+                    </Text>
+
+                    <View style={styles.modalBadgeRow}>
+                      <View
+                          style={[
+                            styles.badge,
+                            selectedNotification.tone === "red"
+                                ? styles.badgeRed
+                                : styles.badgeGreen,
+                          ]}
+                      >
+                        <Text style={styles.badgeText}>
+                          {selectedNotification.tone === "red" ? "High" : "Low"}
+                        </Text>
+                      </View>
+
+                      <Text style={styles.modalTime}>
+                        {selectedNotification.timeAgo}
+                      </Text>
+                    </View>
+
+                    <Text style={styles.modalSectionTitle}>Summary</Text>
+                    <Text style={styles.modalDescription}>
+                      {selectedNotification.description}
+                    </Text>
+                  </>
+              )}
+            </Pressable>
+          </Pressable>
         </Modal>
 
-        {/* Bottom navigation always stays on the main page */}
 
-        <View style={styles.updatesSection}>
-          <View style={styles.updatesHeader}>
-            <Text style={styles.updatesTitle}>Your Updates</Text>
-            <Text style={styles.updatesSubtitle}>
-              Subscribed reports and alerts
-            </Text>
-          </View>
 
-          {visibleNotifications.length > 0 ? (
-            visibleNotifications.map((notification) => (
-              <TouchableOpacity
-                key={notification.id}
-                activeOpacity={0.9}
-                style={[
-                  styles.updateCard,
-                  notification.tone === "red"
-                    ? styles.updateCardRed
-                    : styles.updateCardGreen,
-                ]}
-              >
-                <View style={styles.updateTopRow}>
-                  <Text style={styles.updateEventTitle}>
-                    {notification.eventName}
-                  </Text>
-
-                  <View
-                    style={[
-                      styles.updateBadge,
-                      notification.tone === "red"
-                        ? styles.updateBadgeRed
-                        : styles.updateBadgeGreen,
-                    ]}
-                  >
-                    <Text style={styles.updateBadgeText}>
-                      {notification.tone === "red" ? "High" : "Low"}
-                    </Text>
-                  </View>
-                </View>
-
-                <Text style={styles.updateBuilding}>
-                  {notification.buildingName}
-                </Text>
-
-                <Text style={styles.updateMeta}>{notification.timeAgo}</Text>
-              </TouchableOpacity>
-            ))
-          ) : (
-            <View style={styles.emptyUpdatesState}>
-              <Text style={styles.emptyUpdatesTitle}>
-                No subscribed updates
-              </Text>
-              <Text style={styles.emptyUpdatesBody}>
-                Turn on notifications for buildings to see alerts here.
-              </Text>
-            </View>
-          )}
-        </View>
-      </ScrollView>
-
-      <BottomNav />
-    </SafeAreaView>
+        <BottomNav />
+      </SafeAreaView>
   );
 }
