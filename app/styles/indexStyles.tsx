@@ -23,6 +23,7 @@ export const styles = StyleSheet.create({
 
   title: {
     fontSize: 25,
+    width: "70%",
     fontFamily: "Lexend_400Regular",
     color: "#1F1F1F",
   },
@@ -269,7 +270,6 @@ export const styles = StyleSheet.create({
   navItem: {
     alignItems: "center",
   },
-
 
   updatesSection: {
     marginBottom: 16,

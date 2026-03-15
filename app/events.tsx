@@ -6,6 +6,7 @@ import { FlatList, ScrollView, StatusBar, Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";
+import { getReports, Report } from "./data/reportSH";
 import { styles } from "./styles/eventsStyles";
 
 interface RowProps {
@@ -13,36 +14,25 @@ interface RowProps {
   date: string;
 }
 
+type Event = {
+  id: number;
+  title: string;
+  acc: string;
+  type: string;
+  date: string;
+  floor: string;
+  location: string;
+  time: string;
+};
+
 // TODO:
-// - only put events on calendar if the user adds them to their personal cal
-// + subbed buildings
+// - calendar events are only from reputable sources
 
 export default function Events() {
-  const [selectedDate, setSelectedDate] = useState("");
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loadingReports, setLoading] = useState(true);
 
-  let [fontsLoaded] = useFonts({
-    Pacifico_400Regular,
-    Lexend_400Regular,
-  });
-
-  useEffect(() => {
-    NavigationBar.setBackgroundColorAsync("#F7F9FF");
-    NavigationBar.setButtonStyleAsync("dark");
-  }, []);
-  NavigationBar.setBehaviorAsync("overlay-swipe");
-
-  type Event = {
-    id: number;
-    title: string;
-    acc: string;
-    type: string;
-    date: string;
-    floor: string;
-    location: string;
-    time: string;
-  };
-
-  const events: Record<string, Event[]> = {
+  const [events, setEvents] = useState<Record<string, Event[]>>({
     "2026-02-25": [
       {
         id: 1,
@@ -77,7 +67,58 @@ export default function Events() {
         time: "11:00am",
       },
     ],
-  };
+  });
+
+  useEffect(() => {
+    async function loadReports() {
+      const data = await getReports();
+      setReports(data);
+      setLoading(false);
+    }
+
+    loadReports();
+  }, []);
+
+  useEffect(() => {
+    const newEvents: Record<string, Event[]> = {};
+
+    reports.forEach((report) => {
+      if (!newEvents[report.date]) {
+        newEvents[report.date] = [];
+      }
+
+      newEvents[report.date].push({
+        id: newEvents[report.date].length + 1,
+        title: report.name,
+        acc: report.building,
+        type: report.type,
+        date: report.date,
+        floor: report.floor,
+        location: report.building,
+        time: report.time,
+      });
+    });
+
+    setEvents((prev) => ({
+      ...prev,
+      ...newEvents,
+    }));
+  }, [reports]);
+
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+
+  let [fontsLoaded] = useFonts({
+    Pacifico_400Regular,
+    Lexend_400Regular,
+  });
+
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync("#F7F9FF");
+    NavigationBar.setButtonStyleAsync("dark");
+    NavigationBar.setBehaviorAsync("overlay-swipe");
+  }, []);
 
   const colorMap: Record<string, string> = {
     EV: "#E98A8A",
@@ -99,6 +140,23 @@ export default function Events() {
     {},
   );
 
+  reports.forEach((report) => {
+    if (!markedDates[report.date]) {
+      markedDates[report.date] = { dots: [] };
+    }
+
+    const colorMap = {
+      protest: "#FF6B6B",
+      event: "#4D96FF",
+      accessibility: "#6BCB77",
+    };
+
+    markedDates[report.date].dots.push({
+      key: report.id,
+      color: colorMap[report.type],
+    });
+  });
+
   if (selectedDate) {
     markedDates[selectedDate] = {
       ...markedDates[selectedDate],
@@ -109,9 +167,12 @@ export default function Events() {
 
   const selectedEvents = events[selectedDate] || [];
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || loadingReports) {
     return null;
   }
+
+  console.log("Selected:", selectedDate);
+  console.log("Events:", events[selectedDate]);
 
   return (
     <SafeAreaView style={styles.background}>
@@ -155,56 +216,63 @@ export default function Events() {
           onDayPress={(day) => setSelectedDate(day.dateString)}
         />
 
-        <FlatList
-          style={{ marginTop: 8 }}
-          data={selectedEvents}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View
-              style={[
-                styles.notification,
-                {
-                  backgroundColor: colorMap[item.location],
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
-                  padding: 10,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.notificationBody,
-                  { marginVertical: "auto", fontSize: 22 },
-                ]}
-              >
-                <Text style={styles.bold}>
-                  {item.location}
-                  {item.floor}
-                </Text>
-              </Text>
-
+        {events[selectedDate] && (
+          <FlatList
+            style={{ marginTop: 8 }}
+            data={events[selectedDate]}
+            keyExtractor={(item) => `${item.id}-${item.date}`}
+            renderItem={({ item }) => (
               <View
                 style={[
                   styles.notification,
                   {
-                    flexDirection: "column",
-                    padding: 0,
-                    marginBottom: 0,
-                    marginLeft: 10,
+                    backgroundColor: colorMap[item.location] || "#DDD",
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    padding: 10,
                   },
                 ]}
               >
-                <Text style={styles.notificationBody}>{item.title}</Text>
-
-                <Text style={styles.notificationBody}>
-                  <Text style={{ fontStyle: "italic", fontSize: 10 }}>
-                    {item.time}
+                <Text
+                  style={[
+                    styles.notificationBody,
+                    { marginVertical: "auto", fontSize: 22 },
+                  ]}
+                >
+                  <Text style={styles.bold}>
+                    {item.location}
+                    {item.floor}
                   </Text>
                 </Text>
+
+                <View
+                  style={[
+                    styles.notification,
+                    {
+                      flexDirection: "column",
+                      padding: 0,
+                      marginBottom: 0,
+                      marginLeft: 10,
+                    },
+                  ]}
+                >
+                  <Text style={styles.notificationBody}>{item.title}</Text>
+
+                  <Text style={styles.notificationBody}>
+                    <Text style={{ fontStyle: "italic", fontSize: 10 }}>
+                      {item.time}
+                    </Text>
+                  </Text>
+                </View>
               </View>
-            </View>
-          )}
-        />
+            )}
+          />
+        )}
+
+        {events[selectedDate] === undefined ||
+          (events[selectedDate]?.length === 0 && (
+            <Text style={styles.title}>No events for this day</Text>
+          ))}
       </ScrollView>
 
       {/* Bottom Navigation */}
