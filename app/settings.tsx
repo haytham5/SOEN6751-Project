@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";
+import { deleteAllReports } from "./data/reportSH";
 import { styles } from "./styles/settingsStyles";
 
 interface RowProps {
@@ -80,8 +81,18 @@ export default function Settings() {
           onChange={setAccessibility}
         />
 
-        <TouchableOpacity style={styles.logout} onPress={() => router.replace("/")}>
+        <TouchableOpacity
+          style={styles.logout}
+          onPress={() => router.replace("/")}
+        >
           <Text style={(styles.label, styles.logoutLabel)}>Log Out</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.logout}
+          onPress={() => deleteAllReports()}
+        >
+          <Text style={(styles.label, styles.logoutLabel)}>Clear Reports</Text>
         </TouchableOpacity>
       </ScrollView>
 

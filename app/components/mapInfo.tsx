@@ -9,9 +9,16 @@ type Props = {
 };
 
 export default function MapInfo({ title, protests, accessibility }: Props) {
+  const buildingColors: any = {
+    EV: "#FF9898",
+    H: "#4CAF50",
+    JMSB: "#2196F3",
+    LB: "#FFC107",
+  };
+
   return (
     <View style={styles.markerRoot}>
-      <View style={styles.bubble}>
+      <View style={[styles.bubble, { backgroundColor: buildingColors[title] }]}>
         <Text style={styles.title}>{title}</Text>
 
         <View style={styles.row}>
@@ -27,7 +34,7 @@ export default function MapInfo({ title, protests, accessibility }: Props) {
         </View>
       </View>
 
-      <View style={styles.arrow} />
+      <View style={[styles.arrow, { borderTopColor: buildingColors[title] }]} />
     </View>
   );
 }
@@ -47,7 +54,6 @@ const styles = StyleSheet.create({
   },
 
   bubble: {
-    backgroundColor: "#FF9898",
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 12,
@@ -98,7 +104,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 10,
     borderLeftColor: "transparent",
     borderRightColor: "transparent",
-    borderTopColor: "#FF9898",
     marginTop: -2,
     zIndex: 0,
   },

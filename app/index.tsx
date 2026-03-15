@@ -43,23 +43,23 @@ export default function Welcome() {
           >
             <Text style={styles.primaryButtonText}>Log In</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            activeOpacity={0.85}
-            onPress={() => router.push("../signup")}
-          >
-            <Text style={styles.secondaryButtonText}>Sign Up</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.ghostButton}
-            activeOpacity={0.7}
-            onPress={() => router.push("../home")}
-          >
-            <Text style={styles.ghostButtonText}>Continue without account</Text>
-          </TouchableOpacity>
         </View>
+
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          activeOpacity={0.85}
+          onPress={() => router.push("../signup")}
+        >
+          <Text style={styles.secondaryButtonText}>Sign Up</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.ghostButton}
+          activeOpacity={0.7}
+          onPress={() => router.push("../home")}
+        >
+          <Text style={styles.ghostButtonText}>Continue without account</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
