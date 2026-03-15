@@ -4,6 +4,7 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -55,7 +56,7 @@ export default function SignUp() {
       return;
     }
     setError(null);
-    router.push("/");
+    router.push("../home");
   };
 
   return (
@@ -115,9 +116,13 @@ export default function SignUp() {
                 onPress={() => setShowPassword((v) => !v)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.showHideText}>
-                  {showPassword ? "Hide" : "Show"}
-                </Text>
+                <Image source={
+                  showPassword
+                  ? require("../assets/images/iconmonstr-eye-off-thin-240.png")
+                  : require("../assets/images/iconmonstr-eye-thin-240.png")
+                }
+                style={{width: 24, height: 24}}
+                />
               </TouchableOpacity>
             </View>
 

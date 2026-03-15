@@ -83,7 +83,7 @@ export default function Settings() {
 
         <TouchableOpacity
           style={styles.logout}
-          onPress={() => router.replace("../welcome")}
+          onPress={() => router.replace("/")}
         >
           <Text style={(styles.label, styles.logoutLabel)}>Log Out</Text>
         </TouchableOpacity>

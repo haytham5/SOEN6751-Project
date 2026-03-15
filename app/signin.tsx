@@ -4,6 +4,7 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -51,12 +52,18 @@ export default function Signin() {
       setError("Please fill in all fields.");
       return;
     }
-    if ( email !="example@live.concordia.ca" || password != "password") {
-      setError("Incorrect email or password.");
-      return;
-    }
+  const validCredentials =
+    (email === "example@live.concordia.ca" && password === "password") ||
+    (email === "1" && password === "1")  ||
+    (email === "security@concordia.ca" && password === "password");
+
+  if (!validCredentials) {
+    setError("Incorrect email or password.");
+    return;
+  }
+
     setError(null);
-    router.push("/");
+    router.push("../home");
   };
 
   return (
@@ -118,9 +125,13 @@ export default function Signin() {
                 onPress={() => setShowPassword((v) => !v)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.showHideText}>
-                  {showPassword ? "Hide" : "Show"}
-                </Text>
+                <Image source={
+                  showPassword
+                  ? require("../assets/images/iconmonstr-eye-off-thin-240.png")
+                  : require("../assets/images/iconmonstr-eye-thin-240.png")
+                }
+                style={{width: 24, height: 24}}
+                />
               </TouchableOpacity>
             </View>
 
