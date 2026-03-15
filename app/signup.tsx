@@ -4,6 +4,7 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -27,11 +28,19 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // useEffect(() => {
+  //   NavigationBar.setBackgroundColorAsync("#F7F9FF");
+  //   NavigationBar.setButtonStyleAsync("dark");
+  //   NavigationBar.setBehaviorAsync("overlay-swipe");
+  // }, []);
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync("#F7F9FF");
-    NavigationBar.setButtonStyleAsync("dark");
-    NavigationBar.setBehaviorAsync("overlay-swipe");
+    if (Platform.OS === "android") {
+      NavigationBar.setBackgroundColorAsync("#F7F9FF");
+      NavigationBar.setButtonStyleAsync("dark");
+      NavigationBar.setBehaviorAsync("overlay-swipe");
+    }
   }, []);
+
 
   if (!fontsLoaded) {
     return null;
@@ -47,7 +56,7 @@ export default function SignUp() {
       return;
     }
     setError(null);
-    router.push("/");
+    router.push("../home");
   };
 
   return (
@@ -107,9 +116,13 @@ export default function SignUp() {
                 onPress={() => setShowPassword((v) => !v)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.showHideText}>
-                  {showPassword ? "Hide" : "Show"}
-                </Text>
+                <Image source={
+                  showPassword
+                  ? require("../assets/images/iconmonstr-eye-off-thin-240.png")
+                  : require("../assets/images/iconmonstr-eye-thin-240.png")
+                }
+                style={{width: 24, height: 24}}
+                />
               </TouchableOpacity>
             </View>
 
@@ -135,7 +148,9 @@ export default function SignUp() {
             <Text style={styles.footerText}>Already have an account? </Text>
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => router.push("../signin")}
+              // onPress={() => router.push("../signin")}
+              onPress={() => router.push("/signin")}
+
             >
               <Text style={styles.footerLink}>Sign In</Text>
             </TouchableOpacity>
