@@ -24,6 +24,7 @@ import { getReports, Report } from "./data/reportSH";
 // React Native UI components
 import {
   Modal,
+  Pressable,
   ScrollView,
   StatusBar,
   Text,
@@ -89,6 +90,16 @@ export default function Home() {
     )
     .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
     .slice(0, 3);
+
+  const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null);
+  const [buildingReports, setBuildingReports] = useState<Report[]>([]);
+
+  const handleMarkerPress = async (buildingId: string) => {
+    const allReports = await getReports();
+    const filtered = allReports.filter((r) => r.building === buildingId);
+    setBuildingReports(filtered);
+    setSelectedBuilding(buildingId);
+  };
 
   const [reports, setReports] = useState<Report[]>([]);
   const [loadingReports, setLoading] = useState(true);
@@ -347,6 +358,7 @@ export default function Home() {
               coordinate={coord}
               image={{ uri: markerImages[b] }}
               anchor={{ x: 0.5, y: 1 }}
+              onPress={() => handleMarkerPress(b)}
             />
           );
         })}
@@ -525,6 +537,57 @@ export default function Home() {
           )}
         </View>
       </ScrollView>
+      <Modal
+        visible={selectedBuilding !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedBuilding(null)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setSelectedBuilding(null)}
+        >
+          <Pressable
+            style={styles.modalCard}
+            onPress={(e) => e.stopPropagation()}
+          >
+            {selectedBuilding && (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>{selectedBuilding}</Text>
+                  <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
+                    <Icon name="close" size={24} color="#276389" />
+                  </TouchableOpacity>
+                </View>
+
+                {buildingReports.length === 0 ? (
+                  <Text style={styles.modalEmptyText}>
+                    No reports submitted for this building yet.
+                  </Text>
+                ) : (
+                  buildingReports.map((report) => (
+                    <View key={report.id} style={styles.modalRow}>
+                      <Text style={styles.modalRowText}>{report.name}</Text>
+                      <Text style={styles.modalRowMeta}>
+                        {report.type} · Floor {report.floor} · {report.time}
+                      </Text>
+                      {report.description ? (
+                        <Text style={styles.modalRowMeta}>
+                          {report.description}
+                        </Text>
+                      ) : null}
+                    </View>
+                  ))
+                )}
+
+                <Text style={styles.modalSecurityCount}>
+                  Total reports: {buildingReports.length}
+                </Text>
+              </>
+            )}
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       <BottomNav />
     </SafeAreaView>
