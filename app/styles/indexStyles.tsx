@@ -380,7 +380,6 @@ export const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-
   sectionDescription: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
@@ -492,17 +491,58 @@ export const styles = StyleSheet.create({
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+
     alignItems: "flex-start",
     marginBottom: 8,
   },
 
   modalTitle: {
+    fontSize: 18,
+    fontFamily: "Pacifico_400Regular",
+    color: "#276389",
     flex: 1,
-    fontSize: 22,
-    fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
-    marginRight: 10,
   },
+
+  modalRow: {
+    backgroundColor: "#F0F4FF",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 6,
+  },
+
+  modalRowText: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#333",
+  },
+
+  modalRowMeta: {
+    fontSize: 11,
+    color: "#888",
+    fontStyle: "italic",
+    marginTop: 2,
+  },
+
+  modalSecurityCount: {
+    fontSize: 13,
+    color: "#276389",
+    fontWeight: "600",
+    marginTop: 10,
+  },
+
+  modalEmptyText: {
+    fontSize: 13,
+    color: "#aaa",
+    fontStyle: "italic",
+  },
+
+  // modalTitle: {
+  //   flex: 1,
+  //   fontSize: 22,
+  //   fontFamily: "Lexend_400Regular",
+  //   color: "#1F1F1F",
+  //   marginRight: 10,
+  // },
 
   modalBuilding: {
     fontSize: 16,
@@ -544,6 +584,4 @@ export const styles = StyleSheet.create({
     color: "#276389",
     fontFamily: "Lexend_400Regular",
   },
-
-
 });
