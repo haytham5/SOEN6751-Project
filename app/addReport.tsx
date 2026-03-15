@@ -57,7 +57,7 @@ export default function AddReport() {
 
     console.log("Report added");
 
-    router.replace("/");
+    router.replace("/home");
   };
 
   return (

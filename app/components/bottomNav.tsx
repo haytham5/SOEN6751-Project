@@ -6,23 +6,23 @@ import { bottomNavStyles as styles } from "../styles/bottomNavStyles";
 
 const navItems = [
   {
-    route: "/",
-    icon: require("../assets/images/icons/home.png"),
+    route: "/home",
+    icon: require("../../assets/images/icons/home.png"),
     key: "home",
   },
   {
     route: "/events",
-    icon: require("../assets/images/icons/calendar.png"),
+    icon: require("../../assets/images/icons/calendar.png"),
     key: "events",
   },
   {
     route: "/notifications",
-    icon: require("../assets/images/icons/bell.png"),
+    icon: require("../../assets/images/icons/bell.png"),
     key: "notifications",
   },
   {
     route: "/settings",
-    icon: require("../assets/images/icons/profile.png"),
+    icon: require("../../assets/images/icons/profile.png"),
     key: "profile",
   },
 ];

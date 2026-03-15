@@ -1,6 +1,6 @@
 // Import the Pacifico font and the hook used to load fonts
-import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
-
+import { useFonts } from "@expo-google-fonts/lexend";
+import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 
 // Shows a loading screen while fonts are loading
 
@@ -18,6 +18,8 @@ import {
   NotificationItem,
   notifications,
 } from "./data/notificationData";
+
+import { getReports, Report } from "./data/reportSH";
 
 // React Native UI components
 import {
@@ -49,9 +51,10 @@ import { styles } from "./styles/indexStyles";
 import ViewShot, { captureRef } from "react-native-view-shot";
 
 // Custom component used inside the marker image
+import { useRouter } from "expo-router";
 import MapInfo from "./components/mapInfo";
 
-export default function Index() {
+export default function Home() {
   /**
    * STATE: isMapExpanded
    * This stores whether the full-screen map modal is open or not.
@@ -60,6 +63,8 @@ export default function Index() {
    * true  = full-screen modal map is visible
    */
   const [isMapExpanded, setIsMapExpanded] = useState(false);
+
+  const router = useRouter();
 
   /**
    * useEffect with [] runs only once when the component first loads.
@@ -84,6 +89,25 @@ export default function Index() {
     )
     .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
     .slice(0, 3);
+
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loadingReports, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadReports() {
+      try {
+        const data = await getReports();
+        setReports(data);
+        console.log("Reports loaded:", data);
+      } catch (e) {
+        console.log("report load error", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadReports();
+  }, []);
 
   /**
    * REFS FOR THE MAPS
@@ -121,6 +145,59 @@ export default function Index() {
     );
   };
 
+  const buildings: Record<string, { latitude: number; longitude: number }> = {
+    EV: { latitude: 45.49548608640669, longitude: -73.57806007167528 },
+    H: { latitude: 45.49721390474658, longitude: -73.57906858227709 },
+    JMSB: { latitude: 45.49515518152054, longitude: -73.57885668774541 },
+    LB: { latitude: 45.49677584482701, longitude: -73.57789645692377 },
+  };
+
+  const buildingCounts: any = {};
+
+  reports.forEach((r) => {
+    if (!buildingCounts[r.building]) {
+      buildingCounts[r.building] = {
+        protests: 0,
+        accessibility: 0,
+      };
+    }
+
+    if (r.type === "accessibility") buildingCounts[r.building].accessibility++;
+    else buildingCounts[r.building].protests++;
+  });
+
+  const bubbleRefs: any = {
+    EV: useRef(null),
+    H: useRef(null),
+    JMSB: useRef(null),
+    LB: useRef(null),
+  };
+
+  const [markerImages, setMarkerImages] = useState<any>({});
+
+  useEffect(() => {
+    const createMarkers = async () => {
+      const images: any = {};
+
+      for (const key of Object.keys(buildings)) {
+        const ref = bubbleRefs[key];
+
+        if (ref?.current) {
+          const uri = await captureRef(ref, {
+            format: "png",
+            quality: 1,
+          });
+
+          images[key] = uri;
+        }
+      }
+
+      setMarkerImages(images);
+    };
+
+    setTimeout(createMarkers, 150);
+  }, [reports]);
+
   /**
    * REF FOR THE HIDDEN MARKER VIEW
    *
@@ -131,52 +208,52 @@ export default function Index() {
    * Because the Marker component can display an image,
    * and we want a custom marker design.
    */
-  const bubbleRef = useRef<ViewShot | null>(null);
+  // const bubbleRef = useRef<ViewShot | null>(null);
 
-  /**
-   * STATE: markerImage
-   * Stores the URI/path of the generated marker image.
-   *
-   * null means the image has not been created yet.
-   * string means the image exists and can be used in <Marker image={{ uri: ... }} />
-   */
-  const [markerImage, setMarkerImage] = useState<string | null>(null);
+  // /**
+  //  * STATE: markerImage
+  //  * Stores the URI/path of the generated marker image.
+  //  *
+  //  * null means the image has not been created yet.
+  //  * string means the image exists and can be used in <Marker image={{ uri: ... }} />
+  //  */
+  // const [markerImage, setMarkerImage] = useState<string | null>(null);
 
-  /**
-   * This effect creates the custom marker image after the component loads.
-   *
-   * Steps:
-   * 1. Wait a tiny bit so the hidden ViewShot content has time to render
-   * 2. Capture the ViewShot as an image
-   * 3. Save the image URI in state
-   *
-   * The timeout is cleaned up when the component unmounts.
-   */
-  useEffect(() => {
-    const createMarker = async () => {
-      // If the hidden view isn't ready yet, do nothing
-      if (!bubbleRef.current) return;
+  // /**
+  //  * This effect creates the custom marker image after the component loads.
+  //  *
+  //  * Steps:
+  //  * 1. Wait a tiny bit so the hidden ViewShot content has time to render
+  //  * 2. Capture the ViewShot as an image
+  //  * 3. Save the image URI in state
+  //  *
+  //  * The timeout is cleaned up when the component unmounts.
+  //  */
+  // useEffect(() => {
+  //   const createMarker = async () => {
+  //     // If the hidden view isn't ready yet, do nothing
+  //     if (!bubbleRef.current) return;
 
-      try {
-        // Capture the hidden ViewShot and return the image URI
-        const uri = await captureRef(bubbleRef.current, {
-          format: "png",
-          quality: 1,
-        });
+  //     try {
+  //       // Capture the hidden ViewShot and return the image URI
+  //       const uri = await captureRef(bubbleRef.current, {
+  //         format: "png",
+  //         quality: 1,
+  //       });
 
-        // Save that image path into state
-        setMarkerImage(uri);
-      } catch (error) {
-        console.log("Error creating marker image:", error);
-      }
-    };
+  //       // Save that image path into state
+  //       setMarkerImage(uri);
+  //     } catch (error) {
+  //       console.log("Error creating marker image:", error);
+  //     }
+  //   };
 
-    // Small delay to make sure the hidden content is rendered first
-    const timeout = setTimeout(createMarker, 150);
+  //   // Small delay to make sure the hidden content is rendered first
+  //   const timeout = setTimeout(createMarker, 150);
 
-    // Cleanup
-    return () => clearTimeout(timeout);
-  }, []);
+  //   // Cleanup
+  //   return () => clearTimeout(timeout);
+  // }, []);
 
   /**
    * Load custom fonts.
@@ -190,7 +267,7 @@ export default function Index() {
    * If the fonts are not ready yet,
    * show a loading screen instead of rendering the page.
    */
-  if (!fontsLoaded) {
+  if (!fontsLoaded || loadingReports) {
     return null;
   }
 
@@ -215,34 +292,36 @@ export default function Index() {
    * we put the map JSX in a function and reuse it.
    *
    * It receives a ref so we can attach the correct map reference.
+   * 
+   *   const renderMap = (mapRef: React.RefObject<MapView | null>) => (
+      <MapView
+          style={styles.map}
+          initialRegion={mapRegion}
+          showsUserLocation
+          showsMyLocationButton
+          moveOnMarkerPress={false}
+          showsBuildings={false}
+          minZoomLevel={16}
+          maxZoomLevel={18}
+          ref={mapRef}
+          onMapReady={() => onMapReady(mapRef.current)}
+      >
+           Only show the marker after the custom image has been created
+          {markerImage && (
+              <Marker
+                  style={styles.marker}
+                  coordinate={{
+                      latitude: 45.4954860561696,
+                      longitude: -73.57820980509946,
+                  }}
+                  image={{ uri: markerImage }}
+                  anchor={{ x: 0.5, y: 1 }}
+              />
+          )}
+      </MapView>
+  );
    */
-  // const renderMap = (mapRef: React.RefObject<MapView | null>) => (
-  //     <MapView
-  //         style={styles.map}
-  //         initialRegion={mapRegion}
-  //         showsUserLocation
-  //         showsMyLocationButton
-  //         moveOnMarkerPress={false}
-  //         showsBuildings={false}
-  //         minZoomLevel={16}
-  //         maxZoomLevel={18}
-  //         ref={mapRef}
-  //         onMapReady={() => onMapReady(mapRef.current)}
-  //     >
-  //         {/* Only show the marker after the custom image has been created */}
-  //         {markerImage && (
-  //             <Marker
-  //                 style={styles.marker}
-  //                 coordinate={{
-  //                     latitude: 45.4954860561696,
-  //                     longitude: -73.57820980509946,
-  //                 }}
-  //                 image={{ uri: markerImage }}
-  //                 anchor={{ x: 0.5, y: 1 }}
-  //             />
-  //         )}
-  //     </MapView>
-  // );
+
   const renderMap = (mapRef: { current: MapView | null }) => {
     return (
       <MapView
@@ -257,17 +336,20 @@ export default function Index() {
         ref={mapRef}
         onMapReady={() => onMapReady(mapRef.current)}
       >
-        {markerImage && (
-          <Marker
-            style={styles.marker}
-            coordinate={{
-              latitude: 45.4954860561696,
-              longitude: -73.57820980509946,
-            }}
-            image={{ uri: markerImage }}
-            anchor={{ x: 0.5, y: 1 }}
-          />
-        )}
+        {Object.keys(buildings).map((b) => {
+          const coord = buildings[b];
+
+          if (!markerImages[b]) return null;
+
+          return (
+            <Marker
+              key={b}
+              coordinate={coord}
+              image={{ uri: markerImages[b] }}
+              anchor={{ x: 0.5, y: 1 }}
+            />
+          );
+        })}
       </MapView>
     );
   };
@@ -285,10 +367,16 @@ export default function Index() {
         Its only purpose is to render the MapInfo component,
         then capture it as an image using ViewShot.
       */}
-        <View style={styles.hiddenMarkerContainer}>
-          <ViewShot ref={bubbleRef}>
-            <MapInfo title="EV" protests={11} accessibility={3} />
-          </ViewShot>
+        <View style={{ position: "absolute", top: -9999, left: -9999 }}>
+          {Object.keys(buildings).map((b) => (
+            <ViewShot key={b} ref={bubbleRefs[b]}>
+              <MapInfo
+                title={b}
+                protests={buildingCounts[b]?.protests || 0}
+                accessibility={buildingCounts[b]?.accessibility || 0}
+              />
+            </ViewShot>
+          ))}
         </View>
 
         {/* Top phone status bar styling */}
@@ -310,21 +398,24 @@ export default function Index() {
         The whole thing is wrapped in TouchableOpacity,
         so tapping it opens the full-screen map.
       */}
-        <TouchableOpacity
-          activeOpacity={0.9}
-          style={styles.mapPreviewWrapper}
-          onPress={() => setIsMapExpanded(true)}
-        >
+        <View style={styles.mapPreviewWrapper}>
           {/* Render the smaller preview map */}
           {renderMap(previewMapRef)}
 
           {/* Small label on top of the preview map */}
-          <View style={styles.mapPreviewOverlay}>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={styles.mapPreviewOverlay}
+            onPress={() => setIsMapExpanded(true)}
+          >
             <Text style={styles.mapPreviewText}>Tap to expand map</Text>
-          </View>
+          </TouchableOpacity>
 
           {/* Floating action buttons on top of the preview map */}
-          <TouchableOpacity style={styles.addReport}>
+          <TouchableOpacity
+            style={styles.addReport}
+            onPress={() => router.replace("/addReport")}
+          >
             <Icon name="add-circle" size={24} color="#276389" />
           </TouchableOpacity>
 
@@ -335,7 +426,7 @@ export default function Index() {
           <TouchableOpacity style={styles.relaxMode}>
             <Icon name="bedtime" size={24} color="#276389" />
           </TouchableOpacity>
-        </TouchableOpacity>
+        </View>
 
         {/*
         FULL-SCREEN MAP MODAL
@@ -357,7 +448,10 @@ export default function Index() {
             </TouchableOpacity>
 
             {/* Floating buttons for the full-screen map */}
-            <TouchableOpacity style={styles.fullScreenAddReport}>
+            <TouchableOpacity
+              style={styles.fullScreenAddReport}
+              onPress={() => router.replace("/addReport")}
+            >
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
 
