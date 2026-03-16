@@ -176,12 +176,18 @@ inputLabel: {
     flex: 1,
   },
 
+  // scrollableContent: {
+  //   flexGrow: 1,
+  //   justifyContent: "center",
+  //   paddingHorizontal: 24,
+  //   paddingTop: 70,
+  //   paddingBottom: 24,
+  // },
   scrollableContent: {
     flexGrow: 1,
-    justifyContent: "center",
     paddingHorizontal: 24,
-    paddingTop: 70,
-    paddingBottom: 24,
+    paddingTop: 80,
+    paddingBottom: 40,
   },
 
   footerRow: {
@@ -264,5 +270,39 @@ successText: {
     color: "#6D86A0",
     textDecorationLine: "underline",
   },
+
+  roleRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 18,
+  },
+
+  roleButton: {
+    flex: 1,
+    backgroundColor: "#EEF3FB",
+    borderWidth: 1,
+    borderColor: "#D7E3F1",
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+
+  roleButtonActive: {
+    backgroundColor: "#1F365C",
+    borderColor: "#1F365C",
+  },
+
+  roleButtonText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: "#6D86A0",
+  },
+
+  roleButtonTextActive: {
+    color: "#FFFFFF",
+  },
+
+
+
 
 });
