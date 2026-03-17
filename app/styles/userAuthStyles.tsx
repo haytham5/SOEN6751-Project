@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
   },
 
   title: {
-    fontFamily: "Pacifico_400Regular",
+    fontFamily: "Lexend_400Regular",
     fontSize: 36,
     color: "#1A2E4A",
     marginBottom: 8,
@@ -113,7 +113,7 @@ inputLabel: {
   },
 
   cardTitle: {
-    fontFamily: "Pacifico_400Regular",
+    fontFamily: "Lexend_400Regular",
     fontSize: 22,
     color: "#1A2E4A",
     marginBottom: 4,
@@ -150,7 +150,7 @@ inputLabel: {
   },
 
    appTitle: {
-    fontFamily: "Pacifico_400Regular",
+    fontFamily: "Lexend_400Regular",
     fontSize: 36,
     color: "#1A2E4A",
     marginBottom: 6,
@@ -176,11 +176,18 @@ inputLabel: {
     flex: 1,
   },
 
+  // scrollableContent: {
+  //   flexGrow: 1,
+  //   justifyContent: "center",
+  //   paddingHorizontal: 24,
+  //   paddingTop: 70,
+  //   paddingBottom: 24,
+  // },
   scrollableContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
+    paddingTop: 80,
     paddingBottom: 40,
-    justifyContent: "center",
   },
 
   footerRow: {
@@ -217,6 +224,85 @@ successText: {
   fontSize: 13,
   color: "#276749",
 },
+  topRow: {
+    width: "100%",
+    marginBottom: 8,
+  },
+
+  backLink: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 15,
+    color: "#4D6A85",
+  },
+
+  // topBackButton: {
+  //   position: "absolute",
+  //   top: 0,
+  //   left: 0,
+  //   zIndex: 20,
+  //   paddingTop: 8,
+  //   paddingLeft: 12,
+  //   paddingRight: 12,
+  //   paddingBottom: 8,
+  // },
+  topBackButton: {
+    position: "absolute",
+    left: 12,
+    zIndex: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
+
+  topBackText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 16,
+    color: "#4D6A85",
+  },
+
+  guestLinkWrapper: {
+    marginTop: 14,
+    alignItems: "center",
+  },
+
+  guestLink: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: "#6D86A0",
+    textDecorationLine: "underline",
+  },
+
+  roleRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 18,
+  },
+
+  roleButton: {
+    flex: 1,
+    backgroundColor: "#EEF3FB",
+    borderWidth: 1,
+    borderColor: "#D7E3F1",
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+
+  roleButtonActive: {
+    backgroundColor: "#1F365C",
+    borderColor: "#1F365C",
+  },
+
+  roleButtonText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: "#6D86A0",
+  },
+
+  roleButtonTextActive: {
+    color: "#FFFFFF",
+  },
+
+
 
 
 });
