@@ -15,6 +15,7 @@ import {
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";
+import OfflineBanner from "./components/offlineBanner";
 import { getReports, Report } from "./data/reportSH";
 import { styles } from "./styles/eventsStyles";
 
@@ -198,6 +199,7 @@ export default function Events() {
 
   return (
     <SafeAreaView style={styles.background}>
+    <OfflineBanner />
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
       <FlatList

@@ -27,6 +27,8 @@ import BottomNav from "./components/bottomNav";
 
 import { styles } from "./styles/notificationsStyles";
 
+import OfflineBanner from "./components/offlineBanner";
+
 // //definition of what a notification obj contains/looks like
 // type NotificationItem = {
 //   id: string;
@@ -142,6 +144,7 @@ export default function Notifications() {
 
   return (
     <SafeAreaView style={styles.background}>
+      <OfflineBanner />
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
       <ScrollView contentContainerStyle={styles.scrollableContent}>

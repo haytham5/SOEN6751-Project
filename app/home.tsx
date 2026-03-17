@@ -23,11 +23,12 @@ import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
+import ViewShot, { captureRef } from "react-native-view-shot";
 import BottomNav from "./components/bottomNav";
+import MapInfo from "./components/mapInfo";
+import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/indexStyles";
-import ViewShot, { captureRef } from "react-native-view-shot";
-import MapInfo from "./components/mapInfo";
 
 export default function Home() {
   const [isMapExpanded, setIsMapExpanded] = useState(false);
@@ -212,6 +213,7 @@ export default function Home() {
 
   return (
       <SafeAreaView style={styles.background}>
+        <OfflineBanner />
         <ScrollView
             contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
             showsVerticalScrollIndicator={false}
