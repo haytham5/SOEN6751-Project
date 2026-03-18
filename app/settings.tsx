@@ -2,6 +2,7 @@ import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { router, useFocusEffect } from "expo-router";
+import { Pencil } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ScrollView,
@@ -13,9 +14,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Pencil } from "lucide-react-native";
 
 import BottomNav from "./components/bottomNav";
+import OfflineBanner from "./components/offlineBanner";
 import { deleteAllReports } from "./data/reportSH";
 import { styles } from "./styles/settingsStyles";
 import ReportFormModal from "./components/ReportFormModal";
@@ -121,6 +122,7 @@ export default function Settings() {
 
   return (
       <SafeAreaView style={styles.background}>
+        <OfflineBanner />
         <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
         <View style={styles.header}>

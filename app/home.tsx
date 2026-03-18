@@ -1,6 +1,9 @@
 import { useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
+import { useEffect, useRef, useState } from "react";
+import NearBuildingBanner from "./components/NearBuildingBanner";
+import { simulateNearBuilding } from "./utils/simulateGeofence";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
@@ -26,16 +29,18 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { Platform } from "react-native";
 
 
+import ViewShot, { captureRef } from "react-native-view-shot";
 import BottomNav from "./components/bottomNav";
+import MapInfo from "./components/mapInfo";
+import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/indexStyles";
-import ViewShot, { captureRef } from "react-native-view-shot";
-import MapInfo from "./components/mapInfo";
 
 
 export default function Home() {
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("#F7F9FF");
@@ -232,6 +237,8 @@ export default function Home() {
 
   return (
       <SafeAreaView style={styles.background}>
+        <OfflineBanner />
+        <NearBuildingBanner onBannerPress={handleMarkerPress} />
         <ScrollView
             contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
             showsVerticalScrollIndicator={false}
@@ -251,7 +258,9 @@ export default function Home() {
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
           <View style={styles.header}>
-            <Text style={styles.title}>Home</Text>
+            <TouchableOpacity onLongPress={() => setDemoMode(prev => !prev)} style={{ flexShrink: 0 }}>
+              <Text style={styles.title} numberOfLines={1}>Home</Text>
+            </TouchableOpacity>
 
           </View>
 
@@ -429,7 +438,22 @@ export default function Home() {
             onClose={() => setIsReportModalVisible(false)}
             onSubmitSuccess={handleReportSubmitSuccess}
         />
-
+          {demoMode && (
+            <View style={styles.demoContainer}>
+              <Text style={styles.demoLabel}>Demo Mode — Simulate Location</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {["EV", "LB", "H", "JMSB"].map((b) => (
+                  <TouchableOpacity
+                    key={b}
+                    style={styles.demoButton}
+                    onPress={() => simulateNearBuilding(b)}
+                  >
+                    <Text style={styles.demoButtonText}>Near {b}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
         <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
       </SafeAreaView>
   );

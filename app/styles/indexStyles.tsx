@@ -22,7 +22,6 @@ export const styles = StyleSheet.create({
 
   title: {
     fontSize: 25,
-    width: "70%",
     fontFamily: "Lexend_400Regular",
     color: "#1F1F1F",
   },
@@ -581,6 +580,31 @@ export const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 24,
     color: "#276389",
+    fontFamily: "Lexend_400Regular",
+  },
+
+  demoContainer: {
+  backgroundColor: "#1e1e1e",
+  padding: 10,
+  borderTopWidth: 1,
+  borderTopColor: "#444",
+  },
+  demoLabel: {
+    color: "#aaa",
+    fontSize: 11,
+    marginBottom: 6,
+    fontFamily: "Lexend_400Regular",
+  },
+  demoButton: {
+    backgroundColor: "#276389",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  demoButtonText: {
+    color: "white",
+    fontSize: 13,
     fontFamily: "Lexend_400Regular",
   },
 });

@@ -17,6 +17,7 @@ import {
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";
+import OfflineBanner from "./components/offlineBanner";
 import { getReports, Report } from "./data/reportSH";
 import { styles } from "./styles/eventsStyles";
 import ReportFormModal from "./components/ReportFormModal";
@@ -220,6 +221,38 @@ export default function Events() {
   }
 
   return (
+    <SafeAreaView style={styles.background}>
+    <OfflineBanner />
+      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+
+      <FlatList
+        data={selectedEvents}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.scrollableContent}
+        ListHeaderComponent={
+          <>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.title}>Your Events</Text>
+            </View>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.eventLegends}
+            >
+              {Object.keys(colorMap).map((building) => (
+                <TouchableOpacity
+                  key={building}
+                  activeOpacity={0.9}
+                  onPress={() =>
+                    setSelectedBuildings(
+                      (prev) =>
+                        prev.includes(building)
+                          ? prev.filter((b) => b !== building) // deselect if already selected
+                          : [...prev, building], // add if not selected
+                    )
+                  }
       <SafeAreaView style={styles.background}>
         <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
