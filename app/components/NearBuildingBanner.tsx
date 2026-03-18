@@ -2,8 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function NearBuildingBanner() {
+type Props = {
+  onBannerPress?: (buildingId: string) => void;
+};
+
+export default function NearBuildingBanner({ onBannerPress }: Props) {
   const [nearBuilding, setNearBuilding] = useState<{
+    buildingId: string;
     buildingName: string;
     time: string;
   } | null>(null);
@@ -29,9 +34,14 @@ export default function NearBuildingBanner() {
 
   return (
     <View style={styles.banner}>
-      <Text style={styles.text}>
-        You are near {nearBuilding.buildingName} which has active alerts
-      </Text>
+      <TouchableOpacity
+        style={styles.textContainer}
+        onPress={() => onBannerPress?.(nearBuilding.buildingId)}
+      >
+        <Text style={styles.text}>
+          You are near {nearBuilding.buildingName} which has active alerts
+        </Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={async () => {
         await AsyncStorage.removeItem("nearBuilding");
         setNearBuilding(null);
@@ -52,11 +62,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
+  textContainer: {
+    flex: 1,
+  },
   text: {
     color: "white",
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    flex: 1,
   },
   dismiss: {
     color: "white",

@@ -217,7 +217,7 @@ export default function Home() {
   return (
       <SafeAreaView style={styles.background}>
         <OfflineBanner />
-        <NearBuildingBanner />
+        <NearBuildingBanner onBannerPress={handleMarkerPress} />
         <ScrollView
             contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
             showsVerticalScrollIndicator={false}
