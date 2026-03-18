@@ -39,13 +39,46 @@ export const styles = StyleSheet.create({
     marginBottom: 30,
   },
 
+  // subCard: {
+  //   width: 95,
+  //   height: 95,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   marginRight: 10,
+  //
+  //   borderRadius: 8,
+  //   ...Platform.select({
+  //     ios: {
+  //       shadowColor: "#000",
+  //       shadowOffset: { width: 0, height: 1 },
+  //       shadowOpacity: 0.8,
+  //       shadowRadius: 1,
+  //     },
+  //     android: {
+  //       elevation: 1,
+  //       shadowColor: "#000",
+  //     },
+  //   }),
+  // },
+  //
+  // subCardActive: {
+  //   borderWidth: 2,
+  //   borderColor: "#276389",
+  //   transform: [{ scale: 1.02 }],
+  //   margin: 2,
+  // },
+  //
+  // subCardInactive: {
+  //   opacity: 0.7,
+  //   marginTop: 2,
+  // },
+
   subCard: {
-    width: 95,
-    height: 95,
+    width: 65,
+    height: 65,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
-
     borderRadius: 8,
     ...Platform.select({
       ios: {
@@ -65,24 +98,22 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#276389",
     transform: [{ scale: 1.02 }],
-    margin: 2,
   },
 
   subCardInactive: {
     opacity: 0.7,
-    marginTop: 2,
   },
 
   subBody: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
     fontFamily: "Lexend_400Regular",
     color: "white",
   },
 
   subLabel: {
-    marginTop: 4,
-    fontSize: 12,
+    marginTop: 2,
+    fontSize: 10,
     fontFamily: "Lexend_400Regular",
     color: "rgba(255, 255, 255, 0.9)",
   },

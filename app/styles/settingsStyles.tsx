@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 28,
+    fontSize: 25,
     fontFamily: "Lexend_400Regular",
   },
 

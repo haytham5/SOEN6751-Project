@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
 
   title: {
     fontFamily: "Lexend_400Regular",
-    fontSize: 36,
+    fontSize: 25,
     color: "#1A2E4A",
     marginBottom: 8,
   },
