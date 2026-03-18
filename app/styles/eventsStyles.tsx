@@ -24,8 +24,8 @@ export const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 28,
-    fontFamily: "Pacifico_400Regular",
+    fontSize: 25,
+    fontFamily: "Lexend_400Regular",
   },
 
   body: {
@@ -148,7 +148,7 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontFamily: "Pacifico_400Regular",
+    fontFamily: "Lexend_400Regular",
     color: "#276389",
     flex: 1,
   },
@@ -178,5 +178,208 @@ export const styles = StyleSheet.create({
     fontSize: 28,
     color: "#276389",
     lineHeight: 28,
+  },
+
+  // notificationCard: {
+  //   borderRadius: 18,
+  //   padding: 16,
+  //   marginTop: 12,
+  // },
+  notificationCard: {
+    padding: 18,
+    marginBottom: 15,
+    borderRadius: 16,
+
+    backgroundColor: "#FFFFFF", // ← make it a true card
+
+    borderWidth: 1.5,
+    borderColor: "#E5EAF0", // neutral border
+
+    // SHADOW (iOS)
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+
+    // SHADOW (Android)
+    elevation: 3,
+  },
+
+  notificationCardRed: {
+    backgroundColor: "#FBE4E4",
+  },
+
+  notificationCardGreen: {
+    backgroundColor: "#E6F6EA",
+  },
+
+  notificationTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  notificationTitle: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#1B1B1B",
+    marginRight: 10,
+  },
+
+  notificationBuilding: {
+    marginTop: 8,
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#3A3A3A",
+  },
+
+  notificationMeta: {
+    marginTop: 4,
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#6B7280",
+  },
+
+  badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
+
+  badgeRed: {
+    backgroundColor: "#F4B5B5",
+  },
+
+  badgeGreen: {
+    backgroundColor: "#BFE7C8",
+  },
+
+  badgeText: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#1B1B1B",
+  },
+
+  // notificationCard: {
+  //   padding: 18,
+  //   marginBottom: 15,
+  //   borderRadius: 20,
+  //   borderWidth: 1.5,
+  //   backgroundColor: "#F5F8F4",
+  // },
+
+  notificationRed: {
+    borderColor: "#E98A8A",
+  },
+
+  notificationGreen: {
+    borderColor: "#9FD8AE",
+  },
+
+  // notificationTopRow: {
+  //   flexDirection: "row",
+  //   justifyContent: "space-between",
+  //   alignItems: "center",
+  //   marginBottom: 10,
+  //   gap: 12,
+  // },
+  //
+  // notificationTitle: {
+  //   flex: 1,
+  //   fontSize: 20,
+  //   fontFamily: "Lexend_400Regular",
+  //   color: "#1F1F1F",
+  // },
+
+  notificationMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    marginTop: 10,
+    flexWrap: "wrap",
+  },
+  modalSectionTitle: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#1F1F1F",
+    marginBottom: 8,
+  },
+  modalBadgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 18,
+  },
+
+  subscriptions: {
+    flexDirection: "row",
+    gap: 0,
+    marginBottom: 30,
+  },
+
+  subCardActive: {
+    borderWidth: 2,
+    borderColor: "#276389",
+    transform: [{ scale: 1.02 }],
+    margin: 2,
+  },
+
+  subCardInactive: {
+    opacity: 0.7,
+    marginTop: 2,
+  },
+
+  subLabel: {
+    marginTop: 4,
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "rgba(255, 255, 255, 0.9)",
+  },
+
+  emptyState: {
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+
+  emptyStateTitle: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    fontWeight: "600",
+    color: "#276389",
+    marginBottom: 4,
+  },
+
+  emptyStateBody: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#5A6B80",
+    textAlign: "center",
+  },
+
+  calendarCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 10,
+    marginTop: 8,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#E5EAF0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+
+  calendar: {
+    borderRadius: 16,
+  },
+  sectionDescription: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: "#5A6B80",
+    marginBottom: 10,
   },
 });
