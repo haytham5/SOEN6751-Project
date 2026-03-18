@@ -1,12 +1,9 @@
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { useEffect, useState } from "react";
 import { useFocusEffect } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   initialSubscriptions,
@@ -27,25 +24,9 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";
-
-import { styles } from "./styles/notificationsStyles";
-
 import OfflineBanner from "./components/offlineBanner";
-
-// //definition of what a notification obj contains/looks like
-// type NotificationItem = {
-//   id: string;
-//   buildingId: string;
-//   buildingName: string;
-//   eventName: string;
-//   description: string;
-//   timeLabel: string;
-//   timeAgo: string;
-//   minutesSinceMidnight: number; // FOR TIME SORTING
-//   tone: "red" | "green"; //COLORS HERE FOR THE URGENCY UI DETERMINES COLOR
-// };
-import { styles } from "./styles/notificationsStyles"
-import ReportFormModal from "./components/ReportFormModal";;
+import ReportFormModal from "./components/ReportFormModal";
+import { styles } from "./styles/notificationsStyles";
 
 const buildingNameMap: Record<string, string> = {
   EV: "Engineering and Visual Arts",
@@ -57,7 +38,6 @@ const buildingNameMap: Record<string, string> = {
 
 const toMinutesSinceMidnight = (time: string): number => {
   const match = time.match(/(\d{1,2}):(\d{2})\s?(AM|PM|am|pm)?/);
-
 
   if (!match) return 0;
 
@@ -97,73 +77,32 @@ export default function Notifications() {
   const [selectedNotification, setSelectedNotification] =
       useState<NotificationItem | null>(null);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
-
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
   const [reportNotifications, setReportNotifications] = useState<
       NotificationItem[]
   >([]);
 
   useEffect(() => {
-  const loadSubscriptions = async () => {
-    try {
-      const raw = await AsyncStorage.getItem("subscriptions");
-      if (raw) {
-        setSubscriptions(JSON.parse(raw));
-      } else {
-        // First time — save the defaults to AsyncStorage
-        await AsyncStorage.setItem("subscriptions", JSON.stringify(initialSubscriptions));
+    const loadSubscriptions = async () => {
+      try {
+        const raw = await AsyncStorage.getItem("subscriptions");
+
+        if (raw) {
+          setSubscriptions(JSON.parse(raw));
+        } else {
+          await AsyncStorage.setItem(
+              "subscriptions",
+              JSON.stringify(initialSubscriptions)
+          );
+        }
+      } catch (e) {
+        console.log("Error loading subscriptions:", e);
       }
-    } catch (e) {
-      console.log("Error loading subscriptions:", e);
-    }
-  };
+    };
 
     loadSubscriptions();
   }, []);
 
-  // // mocked data for notifications
-  // const notifications: NotificationItem[] = [
-  //   {
-  //     id: "ev1",
-  //     buildingId: "EV",
-  //     buildingName: "Engineering and Visual Arts",
-  //     eventName: "Protest spotted",
-  //     description:
-  //         "A protest has been reported near the main entrance. Expect delays and heavier pedestrian traffic.",
-  //     timeLabel: "11:00am",
-  //     timeAgo: "about 1 hour ago",
-  //     minutesSinceMidnight: 11 * 60,
-  //     tone: "red",
-  //   },
-  //   {
-  //     id: "lb1",
-  //     buildingId: "LB",
-  //     buildingName: "Main Library",
-  //     eventName: "Elevators out of order",
-  //     description:
-  //         "The elevators are currently unavailable. Please use the stairs or an alternate accessible route.",
-  //     timeLabel: "12:00pm",
-  //     timeAgo: "about 20 minutes ago",
-  //     minutesSinceMidnight: 12 * 60,
-  //     tone: "green",
-  //   },
-  //
-  //   {
-  //     id: "h1",
-  //     buildingId: "H",
-  //     buildingName: "Hall Building",
-  //     eventName: "Student Bake Sale",
-  //     description:
-  //         "Multiple clubs will be hosting a bake sale. Expect delays and heavier pedestrian traffic.",
-  //     timeLabel: "11:00am",
-  //     timeAgo: "about 1 hour ago",
-  //     minutesSinceMidnight: 11 * 60,
-  //     tone: "red",
-  //   },
-  //
-  //
-  // ];
-  // Hardware navigation bar
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("#F7F9FF");
     NavigationBar.setButtonStyleAsync("dark");
@@ -183,23 +122,18 @@ export default function Notifications() {
   useFocusEffect(
       useCallback(() => {
         loadReports();
-      }, [loadReports]),
+      }, [loadReports])
   );
 
   const handleToggleSubscription = (id: string) => {
     setSubscriptions((current) => {
       const updated = current.map((sub) =>
-        sub.id === id ? { ...sub, isSubscribed: !sub.isSubscribed } : sub
+          sub.id === id ? { ...sub, isSubscribed: !sub.isSubscribed } : sub
       );
-      // Save to AsyncStorage so background location task can read it
+
       AsyncStorage.setItem("subscriptions", JSON.stringify(updated));
       return updated;
     });
-    setSubscriptions((current) =>
-        current.map((sub) =>
-            sub.id === id ? { ...sub, isSubscribed: !sub.isSubscribed } : sub,
-        ),
-    );
   };
 
   const activeBuildingIds = subscriptions
@@ -208,11 +142,11 @@ export default function Notifications() {
 
   const allNotifications = useMemo(
       () => [...notifications, ...reportNotifications],
-      [reportNotifications],
+      [reportNotifications]
   );
 
   let visibleNotifications = allNotifications.filter((notification) =>
-      activeBuildingIds.includes(notification.buildingId),
+      activeBuildingIds.includes(notification.buildingId)
   );
 
   visibleNotifications = [...visibleNotifications].sort((a, b) => {
@@ -228,28 +162,8 @@ export default function Notifications() {
   }
 
   return (
-    <SafeAreaView style={styles.background}>
-      <OfflineBanner />
-      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-
-      <ScrollView contentContainerStyle={styles.scrollableContent}>
-        {/*SUBSCRIPTION SECTION UI */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Your Subscriptions</Text>
-        </View>
-
-        <Text style={styles.sectionDescription}>
-          Tap a building to turn notifications on or off.
-        </Text>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.subscriptions}
-        >
-          {subscriptions.map((sub) => {
-            const isActive = sub.isSubscribed;
       <SafeAreaView style={styles.background}>
+        <OfflineBanner />
         <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
         <ScrollView contentContainerStyle={styles.scrollableContent}>
@@ -450,6 +364,7 @@ export default function Notifications() {
             </Pressable>
           </Pressable>
         </Modal>
+
         <ReportFormModal
             visible={isReportModalVisible}
             onClose={() => setIsReportModalVisible(false)}
@@ -457,8 +372,6 @@ export default function Notifications() {
         />
 
         <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
-
-        {/*<BottomNav />*/}
       </SafeAreaView>
   );
 }

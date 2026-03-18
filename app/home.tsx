@@ -1,7 +1,7 @@
 import { useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
-import { useEffect, useRef, useState } from "react";
+// import { useEffect, useRef, useState } from "react";
 import NearBuildingBanner from "./components/NearBuildingBanner";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 import { useFocusEffect } from "expo-router";

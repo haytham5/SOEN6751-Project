@@ -115,7 +115,7 @@ export default function Events() {
   });
 
   const [selectedDate, setSelectedDate] = useState(
-      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0]
   );
 
   const [fontsLoaded] = useFonts({
@@ -147,7 +147,7 @@ export default function Events() {
   useFocusEffect(
       useCallback(() => {
         loadReports();
-      }, [loadReports]),
+      }, [loadReports])
   );
 
   const reportEventsByDate = useMemo(() => {
@@ -211,49 +211,18 @@ export default function Events() {
   const selectedEvents = (allEvents[selectedDate] || []).filter((event) =>
       selectedBuildings.length > 0
           ? selectedBuildings.includes(event.location)
-          : true,
+          : true
   );
 
-  const buildingFilters = ["EV", "LB", "H", "JM", "FB"];
+  const buildingFilters = ["EV", "LB", "H", "JMSB", "FB"];
 
   if (!fontsLoaded || loadingReports) {
     return null;
   }
 
   return (
-    <SafeAreaView style={styles.background}>
-    <OfflineBanner />
-      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-
-      <FlatList
-        data={selectedEvents}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.scrollableContent}
-        ListHeaderComponent={
-          <>
-            {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.title}>Your Events</Text>
-            </View>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.eventLegends}
-            >
-              {Object.keys(colorMap).map((building) => (
-                <TouchableOpacity
-                  key={building}
-                  activeOpacity={0.9}
-                  onPress={() =>
-                    setSelectedBuildings(
-                      (prev) =>
-                        prev.includes(building)
-                          ? prev.filter((b) => b !== building) // deselect if already selected
-                          : [...prev, building], // add if not selected
-                    )
-                  }
       <SafeAreaView style={styles.background}>
+        <OfflineBanner />
         <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
         <FlatList
@@ -265,8 +234,9 @@ export default function Events() {
                 <View style={styles.header}>
                   <Text style={styles.title}>Your Events</Text>
                 </View>
+
                 <Text style={styles.sectionDescription}>
-                  Tap a building to turn notifications on or off.
+                  Tap a building to filter events.
                 </Text>
 
                 <ScrollView
@@ -285,7 +255,7 @@ export default function Events() {
                                 setSelectedBuildings((prev) =>
                                     prev.includes(building)
                                         ? prev.filter((b) => b !== building)
-                                        : [...prev, building],
+                                        : [...prev, building]
                                 )
                             }
                         >
@@ -293,23 +263,21 @@ export default function Events() {
                               style={[
                                 styles.subCard,
                                 isActive ? styles.green : styles.unsubbed,
-                                isActive ? styles.subCardActive : styles.subCardInactive,
+                                isActive
+                                    ? styles.subCardActive
+                                    : styles.subCardInactive,
                               ]}
                           >
                             <Text style={styles.subBody}>{building}</Text>
-                            <Text style={styles.subLabel}>{isActive ? "On" : "Off"}</Text>
+                            <Text style={styles.subLabel}>
+                              {isActive ? "On" : "Off"}
+                            </Text>
                           </View>
                         </TouchableOpacity>
                     );
                   })}
                 </ScrollView>
 
-
-                {/*<Calendar*/}
-                {/*    markingType="multi-dot"*/}
-                {/*    markedDates={markedDates}*/}
-                {/*    onDayPress={(day) => setSelectedDate(day.dateString)}*/}
-                {/*/>*/}
                 <Calendar
                     markingType="multi-dot"
                     markedDates={markedDates}
@@ -357,8 +325,7 @@ export default function Events() {
                     >
                       <View style={styles.notificationTopRow}>
                         <Text style={styles.notificationTitle}>
-                          {item.title} -{" "}
-                          {buildingNameMap[item.location] ?? item.location}
+                          {item.title} - {buildingNameMap[item.location] ?? item.location}
                         </Text>
 
                         <View
