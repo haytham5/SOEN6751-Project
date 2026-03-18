@@ -1,12 +1,12 @@
 import { useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
-// import { useEffect, useRef, useState } from "react";
-import NearBuildingBanner from "./components/NearBuildingBanner";
-import { simulateNearBuilding } from "./utils/simulateGeofence";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
+import NearBuildingBanner from "./components/NearBuildingBanner";
+import { simulateNearBuilding } from "./utils/simulateGeofence";
+import AuthRequiredModal from "./components/authRequiredModel";
 import {
   initialSubscriptions,
   NotificationItem,
@@ -16,6 +16,7 @@ import { getReports, Report } from "./data/reportSH";
 
 import {
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StatusBar,
@@ -26,8 +27,6 @@ import {
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { Platform } from "react-native";
-
 
 import ViewShot, { captureRef } from "react-native-view-shot";
 import BottomNav from "./components/bottomNav";
@@ -35,12 +34,13 @@ import MapInfo from "./components/mapInfo";
 import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/indexStyles";
-
+import { getCurrentUser } from "./utils/authStorage";
 
 export default function Home() {
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
+  const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("#F7F9FF");
@@ -105,17 +105,35 @@ export default function Home() {
     await loadReports();
   };
 
+  const handleOpenReportFlow = async () => {
+    const currentUser = await getCurrentUser();
+    const isLoggedIn = currentUser && !currentUser.isGuest;
+
+    if (!isLoggedIn) {
+      setShowAuthRequiredModal(true);
+      return;
+    }
+
+    setIsReportModalVisible(true);
+  };
+
+  const handleOpenReportFlowFromExpandedMap = async () => {
+    const currentUser = await getCurrentUser();
+    const isLoggedIn = currentUser && !currentUser.isGuest;
+
+    if (!isLoggedIn) {
+      setIsMapExpanded(false);
+      setTimeout(() => setShowAuthRequiredModal(true), 150);
+      return;
+    }
+
+    setIsMapExpanded(false);
+    setTimeout(() => setIsReportModalVisible(true), 150);
+  };
+
   const previewMapRef = useRef<MapView | null>(null);
   const expandedMapRef = useRef<MapView | null>(null);
 
-  // const onMapReady = (mapInstance: MapView | null) => {
-  //   if (!mapInstance) return;
-  //
-  //   mapInstance.setMapBoundaries(
-  //       { latitude: 45.5000284224813, longitude: -73.5759524037535 },
-  //       { latitude: 45.49070461581633, longitude: -73.58196697011486 },
-  //   );
-  // };
   const onMapReady = (mapInstance: MapView | null) => {
     if (!mapInstance) return;
 
@@ -239,6 +257,7 @@ export default function Home() {
       <SafeAreaView style={styles.background}>
         <OfflineBanner />
         <NearBuildingBanner onBannerPress={handleMarkerPress} />
+
         <ScrollView
             contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
             showsVerticalScrollIndicator={false}
@@ -258,10 +277,14 @@ export default function Home() {
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
           <View style={styles.header}>
-            <TouchableOpacity onLongPress={() => setDemoMode(prev => !prev)} style={{ flexShrink: 0 }}>
-              <Text style={styles.title} numberOfLines={1}>Home</Text>
+            <TouchableOpacity
+                onLongPress={() => setDemoMode((prev) => !prev)}
+                style={{ flexShrink: 0 }}
+            >
+              <Text style={styles.title} numberOfLines={1}>
+                Home
+              </Text>
             </TouchableOpacity>
-
           </View>
 
           <View style={styles.mapPreviewWrapper}>
@@ -277,7 +300,7 @@ export default function Home() {
 
             <TouchableOpacity
                 style={styles.addReport}
-                onPress={() => setIsReportModalVisible(true)}
+                onPress={handleOpenReportFlow}
             >
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
@@ -304,10 +327,7 @@ export default function Home() {
 
               <TouchableOpacity
                   style={styles.fullScreenAddReport}
-                  onPress={() => {
-                    setIsMapExpanded(false);
-                    setTimeout(() => setIsReportModalVisible(true), 150);
-                  }}
+                  onPress={handleOpenReportFlowFromExpandedMap}
               >
                 <Icon name="add-circle" size={24} color="#276389" />
               </TouchableOpacity>
@@ -433,28 +453,35 @@ export default function Home() {
           </Pressable>
         </Modal>
 
+        <AuthRequiredModal
+            visible={showAuthRequiredModal}
+            onClose={() => setShowAuthRequiredModal(false)}
+        />
+
         <ReportFormModal
             visible={isReportModalVisible}
             onClose={() => setIsReportModalVisible(false)}
             onSubmitSuccess={handleReportSubmitSuccess}
         />
-          {demoMode && (
+
+        {demoMode && (
             <View style={styles.demoContainer}>
               <Text style={styles.demoLabel}>Demo Mode — Simulate Location</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {["EV", "LB", "H", "JMSB"].map((b) => (
-                  <TouchableOpacity
-                    key={b}
-                    style={styles.demoButton}
-                    onPress={() => simulateNearBuilding(b)}
-                  >
-                    <Text style={styles.demoButtonText}>Near {b}</Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                        key={b}
+                        style={styles.demoButton}
+                        onPress={() => simulateNearBuilding(b)}
+                    >
+                      <Text style={styles.demoButtonText}>Near {b}</Text>
+                    </TouchableOpacity>
                 ))}
               </ScrollView>
             </View>
-          )}
-        <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
+        )}
+
+        <BottomNav onPressAdd={handleOpenReportFlow} />
       </SafeAreaView>
   );
 }

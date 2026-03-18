@@ -214,7 +214,7 @@ export default function Events() {
           : true
   );
 
-  const buildingFilters = ["EV", "LB", "H", "JMSB", "FB"];
+  const buildingFilters = ["EV", "LB", "H", "JM", "FB"];
 
   if (!fontsLoaded || loadingReports) {
     return null;
