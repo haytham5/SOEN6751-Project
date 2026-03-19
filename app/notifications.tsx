@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
-import * as NavigationBar from "expo-navigation-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { getReports, Report } from "./data/reportSH";
 
 import {
   initialSubscriptions,
   NotificationItem,
-  notifications,
+  testReports,
 } from "./data/notificationData";
-import { getReports, Report } from "./data/reportSH";
 
 import {
   Modal,
@@ -112,7 +112,9 @@ export default function Notifications() {
   const loadReports = useCallback(async () => {
     try {
       const reports = await getReports();
-      const mapped = reports.map(reportToNotification);
+      const combined = [...testReports, ...reports]
+        .filter((r) => !r.isScheduledEvent);  // exclude scheduled events
+      const mapped = combined.map(reportToNotification);
       setReportNotifications(mapped);
     } catch (error) {
       console.log("error loading report notifications", error);
@@ -141,7 +143,7 @@ export default function Notifications() {
       .map((sub) => sub.id);
 
   const allNotifications = useMemo(
-      () => [...notifications, ...reportNotifications],
+      () => [...reportNotifications],
       [reportNotifications]
   );
 

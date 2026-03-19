@@ -1,18 +1,17 @@
 import { useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
-import { router, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import NearBuildingBanner from "./components/NearBuildingBanner";
-import { simulateNearBuilding } from "./utils/simulateGeofence";
 import AuthRequiredModal from "./components/authRequiredModel";
+import NearBuildingBanner from "./components/NearBuildingBanner";
 import {
   initialSubscriptions,
-  NotificationItem,
-  notifications,
+  testReports,
 } from "./data/notificationData";
-import { getReports, Report } from "./data/reportSH";
+import { simulateNearBuilding } from "./utils/simulateGeofence";
+
 
 import {
   Modal,
@@ -36,11 +35,54 @@ import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/indexStyles";
 import { getCurrentUser } from "./utils/authStorage";
 
+import { CheckCircle, ThumbsUp } from "lucide-react-native";
+import { getReports, markReportResolved, Report, upvoteReport, verifyReport } from "./data/reportSH";
+
+  const buildingColorMap: Record<string, string> = {
+    EV: "#FF9898",
+    H: "#4CAF50",
+    JMSB: "#2196F3",
+    LB: "#FFC107",
+  };
+
 export default function Home() {
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
+
+  const buildingColorMap: Record<string, string> = {
+    EV: "#FF9898",
+    H: "#4CAF50",
+    JMSB: "#2196F3",
+    LB: "#FFC107",
+  };
+
   const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
+
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [isGuest, setIsGuest] = useState(true);
+
+    useEffect(() => {
+      getCurrentUser().then((user) => {
+        if (user && !user.isGuest) {
+          setCurrentUserId(user.email);
+          setCurrentUserRole(user.role);
+          setIsGuest(false);
+        } else {
+          setIsGuest(true);
+          setCurrentUserId(null);
+          setCurrentUserRole(null);
+        }
+      });
+    }, []);
+
+    // add handler function:
+    const handleVerify = async (reportId: string) => {
+      if (currentUserRole !== "security") return;
+      await verifyReport(reportId);
+      await loadReports();
+    };
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("#F7F9FF");
@@ -53,13 +95,6 @@ export default function Home() {
   const activeBuildingIds = subscriptions
       .filter((sub) => sub.isSubscribed)
       .map((sub) => sub.id);
-
-  const visibleNotifications: NotificationItem[] = [...notifications]
-      .filter((notification) =>
-          activeBuildingIds.includes(notification.buildingId),
-      )
-      .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
-      .slice(0, 3);
 
   const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null);
   const [buildingReports, setBuildingReports] = useState<Report[]>([]);
@@ -76,14 +111,13 @@ export default function Home() {
   const loadReports = useCallback(async () => {
     try {
       const data = await getReports();
-      setReports(data);
+      const combined = [...testReports, ...data]; 
+      setReports(combined);
 
       if (selectedBuilding) {
-        const filtered = data.filter((r) => r.building === selectedBuilding);
+        const filtered = combined.filter((r) => r.building === selectedBuilding);
         setBuildingReports(filtered);
       }
-
-      console.log("Reports loaded:", data);
     } catch (e) {
       console.log("report load error", e);
     } finally {
@@ -102,6 +136,18 @@ export default function Home() {
   );
 
   const handleReportSubmitSuccess = async () => {
+    await loadReports();
+  };
+
+  const handleUpvote = async (reportId: string) => {
+    if (!currentUserId || isGuest) return;
+    await upvoteReport(reportId, currentUserId);
+    await loadReports();
+  };
+
+  const handleResolve = async (reportId: string) => {
+    if (!currentUserId || isGuest) return;
+    await markReportResolved(reportId, currentUserId);
     await loadReports();
   };
 
@@ -350,53 +396,139 @@ export default function Home() {
               </Text>
             </View>
 
-            {visibleNotifications.length > 0 ? (
-                visibleNotifications.map((notification) => (
-                    <TouchableOpacity
-                        key={notification.id}
-                        activeOpacity={0.9}
-                        style={[
-                          styles.updateCard,
-                          notification.tone === "red"
-                              ? styles.updateCardRed
-                              : styles.updateCardGreen,
-                        ]}
-                    >
-                      <View style={styles.updateTopRow}>
-                        <Text style={styles.updateEventTitle}>
-                          {notification.eventName}
-                        </Text>
+            {reports.filter((r) => activeBuildingIds.includes(r.building) && !r.isScheduledEvent)
+              .slice(0, 5)
+              .length > 0 ? (
+              reports
+                .filter((r) => activeBuildingIds.includes(r.building) && !r.isScheduledEvent)
+                .slice(0, 5)
+                .map((report) => {
+                  const hasUpvoted = currentUserId
+                    ? report.upvotedBy?.includes(currentUserId)
+                    : false;
+                  const isResolved = report.isResolved;
+                  const isDisabled = isGuest || !currentUserId;
 
-                        <View
-                            style={[
-                              styles.updateBadge,
-                              notification.tone === "red"
-                                  ? styles.updateBadgeRed
-                                  : styles.updateBadgeGreen,
-                            ]}
-                        >
-                          <Text style={styles.updateBadgeText}>
-                            {notification.tone === "red" ? "High" : "Low"}
+                  const typeIcon = report.type === "accessibility"
+                    ? "accessible"
+                    : "campaign";
+
+                  const typeLabel = report.accessibilitySubtype
+                    ? report.accessibilitySubtype.replace("_", " ")
+                    : report.type;
+
+                  const submitterLabel = report.submittedBy === "security"
+                    ? "security"
+                    : "a concordian";
+
+                  return (
+                    <View
+                      key={report.id}
+                      style={[
+                        styles.updateCard,
+                        { borderLeftColor: buildingColorMap[report.building] ?? "#DDE3EA" }
+                      ]}
+                    >
+                      {/* Left content + Right buttons */}
+                      <View style={styles.updateCardInner}>
+
+                        {/* LEFT SIDE */}
+                        <View style={styles.updateCardLeft}>
+
+                          {/* Title */}
+                          <Text style={styles.updateEventTitle}>
+                            {report.name || report.type}
                           </Text>
+
+                          {/* Time */}
+                          <Text style={styles.updateMeta}>
+                            {report.time} · {report.date}
+                          </Text>
+
+                          {/* Type icon + label */}
+                          <View style={styles.updateTypeRow}>
+                            <Icon
+                              name={typeIcon}
+                              size={16}
+                              color="#276389"
+                            />
+                            <Text style={styles.updateTypeLabel}>
+                              {typeLabel}
+                            </Text>
+                          </View>
+
+                          {/* Reported by + verified */}
+                          <View style={styles.updateReporterRow}>
+                            <Text style={styles.updateMeta}>
+                              Reported by {submitterLabel}
+                            </Text>
+                            {report.isVerifiedBySecurity && (
+                              <View style={styles.verifiedBadge}>
+                                <Icon name="check-circle" size={13} color="#1FA64A" />
+                                <Text style={styles.verifiedText}>Verified</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                        {/* RIGHT SIDE — upvote + resolve buttons */}
+                        <View style={styles.updateCardActions}>
+
+                          {/* Upvote button */}
+                          <TouchableOpacity
+                            style={[
+                              styles.actionButton,
+                              (hasUpvoted || isDisabled) && styles.actionButtonDisabled,
+                            ]}
+                            onPress={() => handleUpvote(report.id)}
+                            disabled={hasUpvoted || isDisabled}
+                          >
+                            <ThumbsUp
+                              size={18}
+                              color={hasUpvoted || isDisabled ? "#aaa" : "#276389"}
+                            />
+                            <Text style={[
+                              styles.actionCount,
+                              (hasUpvoted || isDisabled) && styles.actionCountDisabled,
+                            ]}>
+                              {report.upvotedBy?.length ?? 0}
+                            </Text>
+                          </TouchableOpacity>
+
+                          {/* Resolve button */}
+                          <TouchableOpacity
+                            style={[
+                              styles.actionButton,
+                              (isResolved || isDisabled) && styles.actionButtonDisabled,
+                            ]}
+                            onPress={() => handleResolve(report.id)}
+                            disabled={isResolved || isDisabled}
+                          >
+                            <CheckCircle
+                              size={18}
+                              color={isResolved || isDisabled ? "#aaa" : "#276389"}
+                            />
+                            <Text style={[
+                              styles.actionCount,
+                              (isResolved || isDisabled) && styles.actionCountDisabled,
+                            ]}>
+                              {isResolved ? "✓" : "0"}
+                            </Text>
+                          </TouchableOpacity>
+
                         </View>
                       </View>
-
-                      <Text style={styles.updateBuilding}>
-                        {notification.buildingName}
-                      </Text>
-
-                      <Text style={styles.updateMeta}>{notification.timeAgo}</Text>
-                    </TouchableOpacity>
-                ))
+                    </View>
+                  );
+                })
             ) : (
-                <View style={styles.emptyUpdatesState}>
-                  <Text style={styles.emptyUpdatesTitle}>
-                    No subscribed updates
-                  </Text>
-                  <Text style={styles.emptyUpdatesBody}>
-                    Turn on notifications for buildings to see alerts here.
-                  </Text>
-                </View>
+              <View style={styles.emptyUpdatesState}>
+                <Text style={styles.emptyUpdatesTitle}>
+                  No subscribed updates
+                </Text>
+                <Text style={styles.emptyUpdatesBody}>
+                  Turn on notifications for buildings to see alerts here.
+                </Text>
+              </View>
             )}
           </View>
         </ScrollView>

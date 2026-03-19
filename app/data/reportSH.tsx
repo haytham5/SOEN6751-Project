@@ -32,8 +32,9 @@ export type Report = {
   // Admin-only scheduled future events
   isScheduledEvent: boolean;
 
-  // Security-only severity flag
+  // Security-only
   isSevere: boolean;
+  isVerifiedBySecurity: boolean;
 
   // Upvotes — stores IDs of users who upvoted
   upvotedBy: string[];

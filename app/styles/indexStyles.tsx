@@ -294,16 +294,10 @@ export const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderRadius: 20,
-    borderWidth: 1.5,
+    borderWidth: 1,
+    borderColor: "#DDE3EA",    // grey all around
+    borderLeftWidth: 5,         // thicker left edge
     backgroundColor: "#F5F8F4",
-  },
-
-  updateCardRed: {
-    borderColor: "#E98A8A",
-  },
-
-  updateCardGreen: {
-    borderColor: "#9FD8AE",
   },
 
   updateTopRow: {
@@ -606,5 +600,71 @@ export const styles = StyleSheet.create({
     color: "white",
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
+  },
+
+  updateCardInner: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  },
+  updateCardLeft: {
+    flex: 1,
+    paddingRight: 10,
+  },
+  updateCardActions: {
+    alignItems: "center",
+    justifyContent: "space-around",
+    gap: 12,
+  },
+  updateTypeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  updateTypeLabel: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: "#276389",
+    textTransform: "capitalize",
+  },
+  updateReporterRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flexWrap: "wrap",
+  },
+  verifiedBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+  },
+  verifiedText: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#1FA64A",
+  },
+  actionButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#276389",
+    minWidth: 44,
+  },
+  actionButtonDisabled: {
+    borderColor: "#DDE3EA",
+    backgroundColor: "#F8FAFD",
+  },
+  actionCount: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#276389",
+    marginTop: 2,
+  },
+  actionCountDisabled: {
+    color: "#aaa",
   },
 });

@@ -20,6 +20,7 @@ import AdminEventModal from "./components/AdminEventModal";
 import BottomNav from "./components/bottomNav";
 import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
+import { testReports } from "./data/notificationData";
 import { getReports, Report } from "./data/reportSH";
 import { styles } from "./styles/eventsStyles";
 import { getCurrentUser } from "./utils/authStorage";
@@ -101,7 +102,8 @@ export default function Events() {
   const loadReports = useCallback(async () => {
     try {
       const data = await getReports();
-      setReports(data);
+      const combined = [...testReports, ...data];  // ← merge test + real
+      setReports(combined);
     } catch (error) {
       console.log("error loading reports", error);
     } finally {
