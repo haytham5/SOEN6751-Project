@@ -8,7 +8,6 @@ import AuthRequiredModal from "./components/authRequiredModel";
 import NearBuildingBanner from "./components/NearBuildingBanner";
 import {
   initialSubscriptions,
-  testReports,
 } from "./data/notificationData";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
@@ -28,6 +27,7 @@ import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import BottomNav from "./components/bottomNav";
 import MapInfo from "./components/mapInfo";
@@ -116,14 +116,27 @@ export default function Home() {
     setSelectedBuilding(buildingId);
   };
 
+
   const loadReports = useCallback(async () => {
     try {
+      // Wait for seeding to complete
+      let seeded = false;
+      let attempts = 0;
+      while (!seeded && attempts < 20) {
+        const flag = await AsyncStorage.getItem("seeded");
+        if (flag === "true") {
+          seeded = true;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+      }
+
       const data = await getReports();
-      const combined = [...testReports, ...data]; 
-      setReports(combined);
+      setReports(data);
 
       if (selectedBuilding) {
-        const filtered = combined.filter((r) => r.building === selectedBuilding);
+        const filtered = data.filter((r) => r.building === selectedBuilding);
         setBuildingReports(filtered);
       }
     } catch (e) {
@@ -133,9 +146,9 @@ export default function Home() {
     }
   }, [selectedBuilding]);
 
-  useEffect(() => {
-    loadReports();
-  }, [loadReports]);
+    useEffect(() => {     
+      loadReports();
+    }, [loadReports]);
 
   useFocusEffect(
       useCallback(() => {
@@ -211,7 +224,6 @@ export default function Home() {
     { protests: number; accessibility: number }
   > = {};
 
-  reports
     reports
   .filter((r) => r.date === today && !r.isScheduledEvent)
     .forEach((r) => {

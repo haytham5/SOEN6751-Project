@@ -9,7 +9,6 @@ import { getReports, Report } from "./data/reportSH";
 import {
   initialSubscriptions,
   NotificationItem,
-  testReports,
 } from "./data/notificationData";
 
 import {
@@ -112,9 +111,9 @@ export default function Notifications() {
   const loadReports = useCallback(async () => {
     try {
       const reports = await getReports();
-      const combined = [...testReports, ...reports]
-        .filter((r) => !r.isScheduledEvent);  // exclude scheduled events
-      const mapped = combined.map(reportToNotification);
+      const mapped = reports
+        .filter((r) => !r.isScheduledEvent)
+        .map(reportToNotification);
       setReportNotifications(mapped);
     } catch (error) {
       console.log("error loading report notifications", error);
