@@ -1,9 +1,12 @@
 import { Platform, StyleSheet } from "react-native";
+import { Themes } from "./Themes";
+
+const theme = Themes.light;
 
 export const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.background,
   },
 
   scrollableContent: {
@@ -69,7 +72,7 @@ export const styles = StyleSheet.create({
   },
 
   eventText: {
-    color: "white",
+    color: theme.textOnPrimary,
     fontWeight: "700",
   },
 
@@ -77,7 +80,7 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     fontFamily: "Lexend_400Regular",
-    color: "white",
+    color: theme.textOnPrimary,
   },
 
   eventLegend: {
@@ -93,7 +96,7 @@ export const styles = StyleSheet.create({
   },
 
   notificationBody: {
-    color: "white",
+    color: theme.textOnPrimary,
     fontSize: 18,
     fontFamily: "Lexend_400Regular",
   },
@@ -103,21 +106,21 @@ export const styles = StyleSheet.create({
   },
 
   red: {
-    backgroundColor: "#E98A8A",
+    backgroundColor: theme.evBuilding,
   },
 
   green: {
-    backgroundColor: "#84D9A1",
+    backgroundColor: theme.fbBuilding,
   },
 
   unsubbed: {
-    backgroundColor: "#9c9c9c",
+    backgroundColor: theme.unsubbed,
     opacity: 0.7,
   },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: theme.overlay,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -149,26 +152,26 @@ export const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontFamily: "Pacifico_400Regular",
-    color: "#276389",
+    color: theme.primary,
     flex: 1,
   },
   modalBuilding: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#444",
+    color: theme.textSecondary,
     marginBottom: 6,
   },
   modalTime: {
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#888",
+    color: theme.textMuted,
     fontStyle: "italic",
     marginBottom: 12,
   },
   modalDescription: {
     fontSize: 15,
     fontFamily: "Lexend_400Regular",
-    color: "#333",
+    color: theme.textTertiary,
   },
   closeButton: {
     paddingHorizontal: 8,
@@ -176,7 +179,7 @@ export const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 28,
-    color: "#276389",
+    color: theme.primary,
     lineHeight: 28,
   },
 });

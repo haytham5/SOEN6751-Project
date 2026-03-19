@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
+import { Themes } from "./Themes";
 
+const theme = Themes.light;
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -16,7 +18,7 @@ export const styles = StyleSheet.create({
   title: {
     fontFamily: "Lexend_400Regular",
     fontSize: 36,
-    color: "#1A2E4A",
+    color: theme.textPrimaryColor,
     marginBottom: 8,
   },
 
@@ -31,7 +33,7 @@ export const styles = StyleSheet.create({
   },
 
   primaryButton: {
-    backgroundColor: "#1A2E4A",
+    backgroundColor: theme.textPrimaryColor,
     borderRadius: 14,
     paddingVertical: 15,
     alignItems: "center",
@@ -40,23 +42,23 @@ export const styles = StyleSheet.create({
   primaryButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 15,
-    color: "#FFFFFF",
+    color: theme.textOnPrimary,
     letterSpacing: 0.4,
   },
 
   secondaryButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.textOnPrimary,
     borderRadius: 14,
     paddingVertical: 15,
     alignItems: "center",
     borderWidth: 1.5,
-    borderColor: "#1A2E4A",
+    borderColor: theme.textPrimaryColor,
   },
 
   secondaryButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 15,
-    color: "#1A2E4A",
+    color: theme.textPrimaryColor,
     letterSpacing: 0.4,
   },
 
@@ -73,38 +75,37 @@ export const styles = StyleSheet.create({
   },
 
   background: {
-  flex: 1,
-  backgroundColor: "#F7F9FF",
-},
+    flex: 1,
+    backgroundColor: theme.surfaceSoft,
+  },
 
-inputLabel: {
+  inputLabel: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#1A2E4A",
+    color: theme.textPrimaryColor,
     marginBottom: 6,
     marginTop: 4,
   },
 
   input: {
-    backgroundColor: "#F0F4FF",
+    backgroundColor: theme.surfaceHighlight,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 13,
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#1A2E4A",
+    color: theme.textPrimaryColor,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: "#DDE6F5",
+    borderColor: theme.border,
   },
 
-
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.textOnPrimary,
     borderRadius: 20,
     paddingHorizontal: 24,
     paddingVertical: 28,
-    shadowColor: "#1A2E4A",
+    shadowColor: theme.textPrimaryColor,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -115,7 +116,7 @@ inputLabel: {
   cardTitle: {
     fontFamily: "Lexend_400Regular",
     fontSize: 22,
-    color: "#1A2E4A",
+    color: theme.textPrimaryColor,
     marginBottom: 4,
   },
 
@@ -149,10 +150,10 @@ inputLabel: {
     color: "#4A7FC1",
   },
 
-   appTitle: {
+  appTitle: {
     fontFamily: "Lexend_400Regular",
     fontSize: 36,
-    color: "#1A2E4A",
+    color: theme.textPrimaryColor,
     marginBottom: 6,
   },
 
@@ -210,20 +211,20 @@ inputLabel: {
   },
 
   successBox: {
-  backgroundColor: "#F0FFF4",
-  borderRadius: 10,
-  paddingHorizontal: 14,
-  paddingVertical: 10,
-  marginTop: 12,
-  borderWidth: 1,
-  borderColor: "#C3E6CB",
-},
+    backgroundColor: "#F0FFF4",
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: "#C3E6CB",
+  },
 
-successText: {
-  fontFamily: "Lexend_400Regular",
-  fontSize: 13,
-  color: "#276749",
-},
+  successText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: "#276749",
+  },
   topRow: {
     width: "100%",
     marginBottom: 8,
@@ -299,10 +300,6 @@ successText: {
   },
 
   roleButtonTextActive: {
-    color: "#FFFFFF",
+    color: theme.textOnPrimary,
   },
-
-
-
-
 });

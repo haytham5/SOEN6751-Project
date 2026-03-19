@@ -1,9 +1,12 @@
 import { StyleSheet } from "react-native";
+import { Themes } from "./Themes";
+
+const theme = Themes.light;
 
 export const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.background,
     justifyContent: "space-between",
   },
 
@@ -46,12 +49,12 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     fontFamily: "Lexend_400Regular",
-    color: "#f16c6c",
+    color: theme.logout,
   },
 
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: "#EEF3FB",
+    backgroundColor: theme.surface,
     marginHorizontal: 20,
     marginTop: 10,
     marginBottom: 10,
@@ -67,7 +70,7 @@ export const styles = StyleSheet.create({
   },
 
   activeTabButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.background,
   },
 
   tabButtonText: {
@@ -81,7 +84,7 @@ export const styles = StyleSheet.create({
   },
 
   profileCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.background,
     borderRadius: 24,
     padding: 20,
     marginHorizontal: 2,
@@ -98,7 +101,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#EEF3FB",
+    borderBottomColor: theme.surface,
   },
 
   profileLabel: {
@@ -111,7 +114,7 @@ export const styles = StyleSheet.create({
   profileValue: {
     fontFamily: "Lexend_400Regular",
     fontSize: 16,
-    color: "#223A5E",
+    color: theme.primary,
   },
   floatingEditButton: {
     position: "absolute",
@@ -120,7 +123,7 @@ export const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#223A5E",
+    backgroundColor: theme.primary,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -130,7 +133,7 @@ export const styles = StyleSheet.create({
     elevation: 6,
   },
   profileInput: {
-    backgroundColor: "#F7F9FF",
+    backgroundColor: theme.surface,
     borderWidth: 1,
     borderColor: "#D7E3F1",
     borderRadius: 14,
@@ -145,10 +148,10 @@ export const styles = StyleSheet.create({
   floatingEditButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#FFFFFF",
+    color: theme.textOnPrimary,
   },
   profileReadOnlyBox: {
-    backgroundColor: "#EEF3FB",
+    backgroundColor: theme.surface,
     borderWidth: 1,
     borderColor: "#D7E3F1",
     borderRadius: 14,

@@ -2,6 +2,7 @@ import { useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { useEffect, useRef, useState } from "react";
+import darkMapStyle from "./styles/darkMapStyle.json";
 
 import {
   initialSubscriptions,
@@ -23,18 +24,19 @@ import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
+import ViewShot, { captureRef } from "react-native-view-shot";
 import BottomNav from "./components/bottomNav";
+import MapInfo from "./components/mapInfo";
 import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/indexStyles";
-import ViewShot, { captureRef } from "react-native-view-shot";
-import MapInfo from "./components/mapInfo";
+import { Themes } from "./styles/Themes";
 
 export default function Home() {
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync("#F7F9FF");
+    NavigationBar.setBackgroundColorAsync(Themes.dark.surface);
     NavigationBar.setButtonStyleAsync("dark");
     NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
@@ -42,15 +44,15 @@ export default function Home() {
   const [subscriptions] = useState(initialSubscriptions);
 
   const activeBuildingIds = subscriptions
-      .filter((sub) => sub.isSubscribed)
-      .map((sub) => sub.id);
+    .filter((sub) => sub.isSubscribed)
+    .map((sub) => sub.id);
 
   const visibleNotifications: NotificationItem[] = [...notifications]
-      .filter((notification) =>
-          activeBuildingIds.includes(notification.buildingId),
-      )
-      .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
-      .slice(0, 3);
+    .filter((notification) =>
+      activeBuildingIds.includes(notification.buildingId),
+    )
+    .sort((a, b) => b.minutesSinceMidnight - a.minutesSinceMidnight)
+    .slice(0, 3);
 
   const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null);
   const [buildingReports, setBuildingReports] = useState<Report[]>([]);
@@ -85,7 +87,9 @@ export default function Home() {
 
     if (selectedBuilding) {
       const allReports = await getReports();
-      const filtered = allReports.filter((r) => r.building === selectedBuilding);
+      const filtered = allReports.filter(
+        (r) => r.building === selectedBuilding,
+      );
       setBuildingReports(filtered);
     }
   };
@@ -97,8 +101,8 @@ export default function Home() {
     if (!mapInstance) return;
 
     mapInstance.setMapBoundaries(
-        { latitude: 45.5000284224813, longitude: -73.5759524037535 },
-        { latitude: 45.49070461581633, longitude: -73.58196697011486 },
+      { latitude: 45.5000284224813, longitude: -73.5759524037535 },
+      { latitude: 45.49070461581633, longitude: -73.58196697011486 },
     );
   };
 
@@ -110,8 +114,8 @@ export default function Home() {
   };
 
   const buildingCounts: Record<
-      string,
-      { protests: number; accessibility: number }
+    string,
+    { protests: number; accessibility: number }
   > = {};
 
   reports.forEach((r) => {
@@ -179,241 +183,242 @@ export default function Home() {
 
   const renderMap = (mapRef: { current: MapView | null }) => {
     return (
-        <MapView
-            style={styles.map}
-            initialRegion={mapRegion}
-            showsUserLocation
-            showsMyLocationButton
-            moveOnMarkerPress={false}
-            showsBuildings={false}
-            minZoomLevel={16}
-            maxZoomLevel={18}
-            ref={mapRef}
-            onMapReady={() => onMapReady(mapRef.current)}
-        >
-          {Object.keys(buildings).map((b) => {
-            const coord = buildings[b];
+      <MapView
+        style={styles.map}
+        initialRegion={mapRegion}
+        showsUserLocation
+        showsMyLocationButton
+        moveOnMarkerPress={false}
+        showsBuildings={false}
+        minZoomLevel={16}
+        maxZoomLevel={18}
+        ref={mapRef}
+        onMapReady={() => onMapReady(mapRef.current)}
+        customMapStyle={darkMapStyle}
+      >
+        {Object.keys(buildings).map((b) => {
+          const coord = buildings[b];
 
-            if (!markerImages[b]) return null;
+          if (!markerImages[b]) return null;
 
-            return (
-                <Marker
-                    key={b}
-                    coordinate={coord}
-                    image={{ uri: markerImages[b] }}
-                    anchor={{ x: 0.5, y: 1 }}
-                    onPress={() => handleMarkerPress(b)}
-                />
-            );
-          })}
-        </MapView>
+          return (
+            <Marker
+              key={b}
+              coordinate={coord}
+              image={{ uri: markerImages[b] }}
+              anchor={{ x: 0.5, y: 1 }}
+              onPress={() => handleMarkerPress(b)}
+            />
+          );
+        })}
+      </MapView>
     );
   };
 
   return (
-      <SafeAreaView style={styles.background}>
-        <ScrollView
-            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
-            showsVerticalScrollIndicator={false}
-        >
-          <View style={{ position: "absolute", top: -9999, left: -9999 }}>
-            {Object.keys(buildings).map((b) => (
-                <ViewShot key={b} ref={bubbleRefs[b]}>
-                  <MapInfo
-                      title={b}
-                      protests={buildingCounts[b]?.protests || 0}
-                      accessibility={buildingCounts[b]?.accessibility || 0}
-                  />
-                </ViewShot>
-            ))}
+    <SafeAreaView style={styles.background}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ position: "absolute", top: -9999, left: -9999 }}>
+          {Object.keys(buildings).map((b) => (
+            <ViewShot key={b} ref={bubbleRefs[b]}>
+              <MapInfo
+                title={b}
+                protests={buildingCounts[b]?.protests || 0}
+                accessibility={buildingCounts[b]?.accessibility || 0}
+              />
+            </ViewShot>
+          ))}
+        </View>
+
+        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+
+        <View style={styles.header}>
+          <Text style={styles.title}>Home</Text>
+
+          <View style={styles.userCircle}>
+            <Icon name="person" size={20} color="white" />
           </View>
+        </View>
 
-          <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+        <View style={styles.mapPreviewWrapper}>
+          {renderMap(previewMapRef)}
 
-          <View style={styles.header}>
-            <Text style={styles.title}>Home</Text>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={styles.mapPreviewOverlay}
+            onPress={() => setIsMapExpanded(true)}
+          >
+            <Text style={styles.mapPreviewText}>Tap to expand map</Text>
+          </TouchableOpacity>
 
-            <View style={styles.userCircle}>
-              <Icon name="person" size={20} color="white" />
-            </View>
-          </View>
+          <TouchableOpacity
+            style={styles.addReport}
+            onPress={() => setIsReportModalVisible(true)}
+          >
+            <Icon name="add-circle" size={24} color="#276389" />
+          </TouchableOpacity>
 
-          <View style={styles.mapPreviewWrapper}>
-            {renderMap(previewMapRef)}
+          <TouchableOpacity style={styles.reportFilters}>
+            <Icon name="filter-alt" size={24} color="#276389" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.relaxMode}>
+            <Icon name="bedtime" size={24} color="#276389" />
+          </TouchableOpacity>
+        </View>
+
+        <Modal visible={isMapExpanded} animationType="slide">
+          <View style={styles.fullScreenContainer}>
+            {renderMap(expandedMapRef)}
 
             <TouchableOpacity
-                activeOpacity={0.9}
-                style={styles.mapPreviewOverlay}
-                onPress={() => setIsMapExpanded(true)}
+              style={styles.closeButton}
+              onPress={() => setIsMapExpanded(false)}
             >
-              <Text style={styles.mapPreviewText}>Tap to expand map</Text>
+              <Icon name="close" size={28} color="#276389" />
             </TouchableOpacity>
 
             <TouchableOpacity
-                style={styles.addReport}
-                onPress={() => setIsReportModalVisible(true)}
+              style={styles.fullScreenAddReport}
+              onPress={() => {
+                setIsMapExpanded(false);
+                setTimeout(() => setIsReportModalVisible(true), 150);
+              }}
             >
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.reportFilters}>
+            <TouchableOpacity style={styles.fullScreenReportFilters}>
               <Icon name="filter-alt" size={24} color="#276389" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.relaxMode}>
+            <TouchableOpacity style={styles.fullScreenRelaxMode}>
               <Icon name="bedtime" size={24} color="#276389" />
             </TouchableOpacity>
           </View>
-
-          <Modal visible={isMapExpanded} animationType="slide">
-            <View style={styles.fullScreenContainer}>
-              {renderMap(expandedMapRef)}
-
-              <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setIsMapExpanded(false)}
-              >
-                <Icon name="close" size={28} color="#276389" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                  style={styles.fullScreenAddReport}
-                  onPress={() => {
-                    setIsMapExpanded(false);
-                    setTimeout(() => setIsReportModalVisible(true), 150);
-                  }}
-              >
-                <Icon name="add-circle" size={24} color="#276389" />
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.fullScreenReportFilters}>
-                <Icon name="filter-alt" size={24} color="#276389" />
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.fullScreenRelaxMode}>
-                <Icon name="bedtime" size={24} color="#276389" />
-              </TouchableOpacity>
-            </View>
-          </Modal>
-
-          <View style={styles.updatesSection}>
-            <View style={styles.updatesHeader}>
-              <Text style={styles.updatesTitle}>Your Updates</Text>
-              <Text style={styles.updatesSubtitle}>
-                Subscribed reports and alerts
-              </Text>
-            </View>
-
-            {visibleNotifications.length > 0 ? (
-                visibleNotifications.map((notification) => (
-                    <TouchableOpacity
-                        key={notification.id}
-                        activeOpacity={0.9}
-                        style={[
-                          styles.updateCard,
-                          notification.tone === "red"
-                              ? styles.updateCardRed
-                              : styles.updateCardGreen,
-                        ]}
-                    >
-                      <View style={styles.updateTopRow}>
-                        <Text style={styles.updateEventTitle}>
-                          {notification.eventName}
-                        </Text>
-
-                        <View
-                            style={[
-                              styles.updateBadge,
-                              notification.tone === "red"
-                                  ? styles.updateBadgeRed
-                                  : styles.updateBadgeGreen,
-                            ]}
-                        >
-                          <Text style={styles.updateBadgeText}>
-                            {notification.tone === "red" ? "High" : "Low"}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <Text style={styles.updateBuilding}>
-                        {notification.buildingName}
-                      </Text>
-
-                      <Text style={styles.updateMeta}>{notification.timeAgo}</Text>
-                    </TouchableOpacity>
-                ))
-            ) : (
-                <View style={styles.emptyUpdatesState}>
-                  <Text style={styles.emptyUpdatesTitle}>
-                    No subscribed updates
-                  </Text>
-                  <Text style={styles.emptyUpdatesBody}>
-                    Turn on notifications for buildings to see alerts here.
-                  </Text>
-                </View>
-            )}
-          </View>
-        </ScrollView>
-
-        <Modal
-            visible={selectedBuilding !== null}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setSelectedBuilding(null)}
-        >
-          <Pressable
-              style={styles.modalOverlay}
-              onPress={() => setSelectedBuilding(null)}
-          >
-            <Pressable
-                style={styles.modalCard}
-                onPress={(e) => e.stopPropagation()}
-            >
-              {selectedBuilding && (
-                  <>
-                    <View style={styles.modalHeader}>
-                      <Text style={styles.modalTitle}>{selectedBuilding}</Text>
-                      <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
-                        <Icon name="close" size={24} color="#276389" />
-                      </TouchableOpacity>
-                    </View>
-
-                    {buildingReports.length === 0 ? (
-                        <Text style={styles.modalEmptyText}>
-                          No reports submitted for this building yet.
-                        </Text>
-                    ) : (
-                        buildingReports.map((report) => (
-                            <View key={report.id} style={styles.modalRow}>
-                              <Text style={styles.modalRowText}>{report.name}</Text>
-                              <Text style={styles.modalRowMeta}>
-                                {report.type} · Floor {report.floor} · {report.time}
-                              </Text>
-                              {report.description ? (
-                                  <Text style={styles.modalRowMeta}>
-                                    {report.description}
-                                  </Text>
-                              ) : null}
-                            </View>
-                        ))
-                    )}
-
-                    <Text style={styles.modalSecurityCount}>
-                      Total reports: {buildingReports.length}
-                    </Text>
-                  </>
-              )}
-            </Pressable>
-          </Pressable>
         </Modal>
 
-        <ReportFormModal
-            visible={isReportModalVisible}
-            onClose={() => setIsReportModalVisible(false)}
-            onSubmitSuccess={handleReportSubmitSuccess}
-        />
+        <View style={styles.updatesSection}>
+          <View style={styles.updatesHeader}>
+            <Text style={styles.updatesTitle}>Your Updates</Text>
+            <Text style={styles.updatesSubtitle}>
+              Subscribed reports and alerts
+            </Text>
+          </View>
 
-        <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
-      </SafeAreaView>
+          {visibleNotifications.length > 0 ? (
+            visibleNotifications.map((notification) => (
+              <TouchableOpacity
+                key={notification.id}
+                activeOpacity={0.9}
+                style={[
+                  styles.updateCard,
+                  notification.tone === "red"
+                    ? styles.updateCardRed
+                    : styles.updateCardGreen,
+                ]}
+              >
+                <View style={styles.updateTopRow}>
+                  <Text style={styles.updateEventTitle}>
+                    {notification.eventName}
+                  </Text>
+
+                  <View
+                    style={[
+                      styles.updateBadge,
+                      notification.tone === "red"
+                        ? styles.updateBadgeRed
+                        : styles.updateBadgeGreen,
+                    ]}
+                  >
+                    <Text style={styles.updateBadgeText}>
+                      {notification.tone === "red" ? "High" : "Low"}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={styles.updateBuilding}>
+                  {notification.buildingName}
+                </Text>
+
+                <Text style={styles.updateMeta}>{notification.timeAgo}</Text>
+              </TouchableOpacity>
+            ))
+          ) : (
+            <View style={styles.emptyUpdatesState}>
+              <Text style={styles.emptyUpdatesTitle}>
+                No subscribed updates
+              </Text>
+              <Text style={styles.emptyUpdatesBody}>
+                Turn on notifications for buildings to see alerts here.
+              </Text>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+
+      <Modal
+        visible={selectedBuilding !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedBuilding(null)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setSelectedBuilding(null)}
+        >
+          <Pressable
+            style={styles.modalCard}
+            onPress={(e) => e.stopPropagation()}
+          >
+            {selectedBuilding && (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>{selectedBuilding}</Text>
+                  <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
+                    <Icon name="close" size={24} color="#276389" />
+                  </TouchableOpacity>
+                </View>
+
+                {buildingReports.length === 0 ? (
+                  <Text style={styles.modalEmptyText}>
+                    No reports submitted for this building yet.
+                  </Text>
+                ) : (
+                  buildingReports.map((report) => (
+                    <View key={report.id} style={styles.modalRow}>
+                      <Text style={styles.modalRowText}>{report.name}</Text>
+                      <Text style={styles.modalRowMeta}>
+                        {report.type} · Floor {report.floor} · {report.time}
+                      </Text>
+                      {report.description ? (
+                        <Text style={styles.modalRowMeta}>
+                          {report.description}
+                        </Text>
+                      ) : null}
+                    </View>
+                  ))
+                )}
+
+                <Text style={styles.modalSecurityCount}>
+                  Total reports: {buildingReports.length}
+                </Text>
+              </>
+            )}
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <ReportFormModal
+        visible={isReportModalVisible}
+        onClose={() => setIsReportModalVisible(false)}
+        onSubmitSuccess={handleReportSubmitSuccess}
+      />
+
+      <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
+    </SafeAreaView>
   );
 }

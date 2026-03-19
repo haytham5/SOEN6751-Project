@@ -1,9 +1,12 @@
 import { Platform, StyleSheet } from "react-native";
+import { Themes } from "./Themes";
+
+const theme = Themes.light;
 
 export const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.background,
   },
 
   scrollableContent: {
@@ -63,7 +66,7 @@ export const styles = StyleSheet.create({
 
   subCardActive: {
     borderWidth: 2,
-    borderColor: "#276389",
+    borderColor: theme.primary,
     transform: [{ scale: 1.02 }],
     margin: 2,
   },
@@ -84,13 +87,14 @@ export const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "rgba(255, 255, 255, 0.9)",
+    color: theme.background,
+    opacity: 0.9,
   },
 
   sectionDescription: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: theme.textSecondary,
     marginBottom: 10,
   },
 
@@ -112,7 +116,7 @@ export const styles = StyleSheet.create({
 
   toggleGroup: {
     flexDirection: "row",
-    backgroundColor: "#EEF3F9",
+    backgroundColor: theme.surfaceSoft,
     borderRadius: 20,
     padding: 2,
     gap: 4,
@@ -125,29 +129,29 @@ export const styles = StyleSheet.create({
   },
 
   toggleOptionActive: {
-    backgroundColor: "#276389",
+    backgroundColor: theme.primary,
   },
 
   toggleLabel: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
+    color: theme.primary,
   },
 
   toggleLabelActive: {
-    color: "#FFFFFF",
+    color: theme.textOnPrimary,
   },
 
   red: {
-    backgroundColor: "#E98A8A",
+    backgroundColor: theme.lowPriority,
   },
 
   green: {
-    backgroundColor: "#84D9A1",
+    backgroundColor: theme.fbBuilding,
   },
 
   unsubbed: {
-    backgroundColor: "#9c9c9c",
+    backgroundColor: theme.unsubbed,
   },
 
   emptyState: {
@@ -160,14 +164,14 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
     fontWeight: "600",
-    color: "#276389",
+    color: theme.primary,
     marginBottom: 4,
   },
 
   emptyStateBody: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: theme.textSecondary,
     textAlign: "center",
   },
 
@@ -176,15 +180,15 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 20,
     borderWidth: 1.5,
-    backgroundColor: "#F5F8F4",
+    backgroundColor: theme.surface,
   },
 
   notificationRed: {
-    borderColor: "#E98A8A",
+    borderColor: theme.lowPriority,
   },
 
   notificationGreen: {
-    borderColor: "#9FD8AE",
+    borderColor: theme.fbBuilding,
   },
 
   notificationTopRow: {
@@ -199,13 +203,13 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 20,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: theme.textPrimary,
   },
 
   notificationDescription: {
     fontSize: 15,
     fontFamily: "Lexend_400Regular",
-    color: "#3E4B57",
+    color: theme.textTertiary,
     marginBottom: 14,
     lineHeight: 22,
   },
@@ -220,11 +224,11 @@ export const styles = StyleSheet.create({
   notificationMeta: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#2F2F2F",
+    color: theme.textPrimaryMeta,
   },
 
   badge: {
-    backgroundColor: "#16A34A",
+    backgroundColor: theme.lowPriorityBadge,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 999,
@@ -233,20 +237,20 @@ export const styles = StyleSheet.create({
   badgeText: {
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#FFFFFF",
+    color: theme.textOnPrimary,
   },
 
   badgeRed: {
-    backgroundColor: "#D9534F",
+    backgroundColor: theme.highPriority,
   },
 
   badgeGreen: {
-    backgroundColor: "#1FA64A",
+    backgroundColor: theme.lowPriorityBadge,
   },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    backgroundColor: theme.overlay,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -254,7 +258,7 @@ export const styles = StyleSheet.create({
 
   modalCard: {
     width: "100%",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.background,
     borderRadius: 20,
     padding: 20,
   },
@@ -270,7 +274,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 22,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: theme.textPrimary,
     marginRight: 10,
   },
 
@@ -280,20 +284,20 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#EEF3F9",
+    backgroundColor: theme.surface,
   },
 
   closeButtonText: {
     fontSize: 22,
     lineHeight: 24,
-    color: "#276389",
+    color: theme.primary,
     fontFamily: "Lexend_400Regular",
   },
 
   modalBuilding: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
+    color: theme.primary,
     marginBottom: 12,
   },
 
@@ -307,13 +311,13 @@ export const styles = StyleSheet.create({
   modalTime: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: theme.textSecondary,
   },
 
   modalSectionTitle: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: theme.textPrimary,
     marginBottom: 8,
   },
 
@@ -321,6 +325,6 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     fontFamily: "Lexend_400Regular",
-    color: "#3E4B57",
+    color: theme.textTertiary,
   },
 });

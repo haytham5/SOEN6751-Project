@@ -1,217 +1,219 @@
-
 import { StyleSheet } from "react-native";
+import { Themes } from "./Themes";
+
+const theme = Themes.light;
 
 export const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 16,
-        backgroundColor: "rgba(0,0,0,0.35)",
-    },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    backgroundColor: theme.overlay,
+  },
 
-    backdrop: {
-        position: "absolute",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-    },
+  backdrop: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  },
 
-    modalCard: {
-        width: "100%",
-        maxWidth: 420,
-        maxHeight: "88%",
-        backgroundColor: "#FFFFFF",
-        borderRadius: 24,
-        paddingTop: 18,
-        paddingBottom: 14,
-        shadowColor: "#000",
-        shadowOpacity: 0.2,
-        shadowRadius: 12,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 10,
-    },
+  modalCard: {
+    width: "100%",
+    maxWidth: 420,
+    maxHeight: "88%",
+    backgroundColor: theme.background,
+    borderRadius: 24,
+    paddingTop: 18,
+    paddingBottom: 14,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 10,
+  },
 
-    header: {
-        flexDirection: "row",
-        alignItems: "flex-start",
-        justifyContent: "space-between",
-        paddingHorizontal: 20,
-        paddingBottom: 12,
-        gap: 12,
-    },
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    gap: 12,
+  },
 
-    headerTextBlock: {
-        flex: 1,
-    },
+  headerTextBlock: {
+    flex: 1,
+  },
 
-    title: {
-        fontSize: 26,
-        fontFamily: "Lexend_400Regular",
-        color: "#111111",
-    },
+  title: {
+    fontSize: 26,
+    fontFamily: "Lexend_400Regular",
+    color: theme.textPrimary,
+  },
 
-    stepTitle: {
-        marginTop: 4,
-        fontSize: 13,
-        fontFamily: "Lexend_400Regular",
-        color: "#6B7280",
-    },
+  stepTitle: {
+    marginTop: 4,
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: theme.textSecondary,
+  },
 
-    closeButton: {
-        width: 38,
-        height: 38,
-        borderRadius: 19,
-        backgroundColor: "#F3F4F6",
-        justifyContent: "center",
-        alignItems: "center",
-    },
+  closeButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: theme.surface,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
-    progressTrack: {
-        height: 8,
-        backgroundColor: "#E5E7EB",
-        borderRadius: 999,
-        marginHorizontal: 20,
-        overflow: "hidden",
-        marginBottom: 8,
-    },
+  progressTrack: {
+    height: 8,
+    backgroundColor: theme.progress,
+    borderRadius: 999,
+    marginHorizontal: 20,
+    overflow: "hidden",
+    marginBottom: 8,
+  },
 
-    progressFill: {
-        height: "100%",
-        backgroundColor: "#276389",
-        borderRadius: 999,
-    },
+  progressFill: {
+    height: "100%",
+    backgroundColor: theme.primary,
+    borderRadius: 999,
+  },
 
-    form: {
-        paddingHorizontal: 20,
-        paddingTop: 12,
-        paddingBottom: 12,
-    },
+  form: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 12,
+  },
 
-    stepContent: {
-        gap: 14,
-    },
+  stepContent: {
+    gap: 14,
+  },
 
-    stepLabel: {
-        fontSize: 16,
-        fontFamily: "Lexend_400Regular",
-        color: "#111111",
-    },
+  stepLabel: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: theme.textPrimary,
+  },
 
-    helperBox: {
-        backgroundColor: "#F8FAFC",
-        padding: 12,
-        borderRadius: 12,
-    },
+  helperBox: {
+    backgroundColor: theme.surfaceSoft,
+    padding: 12,
+    borderRadius: 12,
+  },
 
-    helperText: {
-        fontSize: 13,
-        fontFamily: "Lexend_400Regular",
-        color: "#667085",
-    },
+  helperText: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: theme.textSecondary,
+  },
 
-    imageBox: {
-        height: 180,
-        borderRadius: 16,
-        backgroundColor: "#E9EEF5",
-        justifyContent: "center",
-        alignItems: "center",
-        overflow: "hidden",
-    },
+  imageBox: {
+    height: 180,
+    borderRadius: 16,
+    backgroundColor: theme.surface,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
 
-    imageText: {
-        color: "#888",
-        fontFamily: "Lexend_400Regular",
-    },
+  imageText: {
+    color: theme.textMuted,
+    fontFamily: "Lexend_400Regular",
+  },
 
-    image: {
-        width: "100%",
-        height: "100%",
-        borderRadius: 16,
-    },
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 16,
+  },
 
-    input: {
-        backgroundColor: "#F4F6FA",
-        padding: 14,
-        borderRadius: 12,
-        fontFamily: "Lexend_400Regular",
-        color: "#111111",
-    },
+  input: {
+    backgroundColor: theme.surface,
+    padding: 14,
+    borderRadius: 12,
+    fontFamily: "Lexend_400Regular",
+    color: theme.textPrimary,
+  },
 
-    description: {
-        backgroundColor: "#F4F6FA",
-        padding: 14,
-        borderRadius: 12,
-        minHeight: 120,
-        textAlignVertical: "top",
-        fontFamily: "Lexend_400Regular",
-        color: "#111111",
-    },
+  description: {
+    backgroundColor: theme.surface,
+    padding: 14,
+    borderRadius: 12,
+    minHeight: 120,
+    textAlignVertical: "top",
+    fontFamily: "Lexend_400Regular",
+    color: theme.textPrimary,
+  },
 
-    dropdown: {
-        backgroundColor: "#F4F6FA",
-        borderRadius: 12,
-        overflow: "hidden",
-    },
+  dropdown: {
+    backgroundColor: theme.surface,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
 
-    reviewCard: {
-        backgroundColor: "#F8FAFC",
-        borderRadius: 14,
-        padding: 14,
-        gap: 6,
-    },
+  reviewCard: {
+    backgroundColor: theme.surfaceSoft,
+    borderRadius: 14,
+    padding: 14,
+    gap: 6,
+  },
 
-    reviewTitle: {
-        fontSize: 15,
-        fontFamily: "Lexend_400Regular",
-        color: "#111111",
-    },
+  reviewTitle: {
+    fontSize: 15,
+    fontFamily: "Lexend_400Regular",
+    color: theme.textPrimary,
+  },
 
-    reviewText: {
-        fontSize: 13,
-        fontFamily: "Lexend_400Regular",
-        color: "#4B5563",
-    },
+  reviewText: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: theme.textSecondary,
+  },
 
-    footer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: 12,
-        paddingHorizontal: 20,
-        paddingTop: 8,
-    },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
 
-    footerSpacer: {
-        flex: 1,
-    },
+  footerSpacer: {
+    flex: 1,
+  },
 
-    secondaryButton: {
-        flex: 1,
-        backgroundColor: "#EEF2F7",
-        paddingVertical: 15,
-        borderRadius: 14,
-        alignItems: "center",
-    },
+  secondaryButton: {
+    flex: 1,
+    backgroundColor: theme.surface,
+    paddingVertical: 15,
+    borderRadius: 14,
+    alignItems: "center",
+  },
 
-    secondaryButtonText: {
-        color: "#1F2937",
-        fontSize: 15,
-        fontFamily: "Lexend_400Regular",
-    },
+  secondaryButtonText: {
+    color: theme.textPrimary,
+    fontSize: 15,
+    fontFamily: "Lexend_400Regular",
+  },
 
-    submitButton: {
-        flex: 1,
-        backgroundColor: "#276389",
-        paddingVertical: 15,
-        borderRadius: 14,
-        alignItems: "center",
-    },
+  submitButton: {
+    flex: 1,
+    backgroundColor: theme.primary,
+    paddingVertical: 15,
+    borderRadius: 14,
+    alignItems: "center",
+  },
 
-    submitText: {
-        color: "#FFFFFF",
-        fontSize: 15,
-        fontFamily: "Lexend_400Regular",
-    },
+  submitText: {
+    color: theme.textOnPrimary,
+    fontSize: 15,
+    fontFamily: "Lexend_400Regular",
+  },
 });
