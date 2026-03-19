@@ -702,7 +702,6 @@ export default function Home() {
                   {/* Description */}
                   {selectedReport.description ? (
                     <>
-                      <Text style={styles.modalSectionTitle}>Description</Text>
                       <Text style={styles.modalDescription}>
                         {selectedReport.description}
                       </Text>
@@ -722,7 +721,7 @@ export default function Home() {
                   ) : null}
 
                   {/* Timeline */}
-                  <Text style={styles.modalSectionTitle}>Timeline</Text>
+                  <Text style={styles.modalSectionTitle}></Text>
                   {(selectedReport.timeline ?? []).map((event, index) => (
                     <View key={index} style={styles.timelineRow}>
                       <View style={styles.timelineDot} />

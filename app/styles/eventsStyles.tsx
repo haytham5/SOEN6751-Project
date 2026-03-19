@@ -180,29 +180,14 @@ export const styles = StyleSheet.create({
     lineHeight: 28,
   },
 
-  // notificationCard: {
-  //   borderRadius: 18,
-  //   padding: 16,
-  //   marginTop: 12,
-  // },
   notificationCard: {
-    padding: 18,
-    marginBottom: 15,
-    borderRadius: 16,
-
-    backgroundColor: "#FFFFFF", // ← make it a true card
-
-    borderWidth: 1.5,
-    borderColor: "#E5EAF0", // neutral border
-
-    // SHADOW (iOS)
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-
-    // SHADOW (Android)
-    elevation: 3,
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#DDE3EA",
+    borderLeftWidth: 5,
+    backgroundColor: "#F5F8F4",
   },
 
   notificationCardRed: {
@@ -394,4 +379,12 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
   },
+
+  updateCardInner: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  updateCardLeft: { flex: 1, paddingRight: 10 },
+  updateEventTitle: { fontSize: 17, fontFamily: "Lexend_400Regular", color: "#1F1F1F", marginBottom: 2 },
+  updateMeta: { fontSize: 13, fontFamily: "Lexend_400Regular", color: "#5A6B80" },
+  updateTypeRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 4, marginBottom: 4 },
+  updateTypeLabel: { fontSize: 13, fontFamily: "Lexend_400Regular", color: "#276389", textTransform: "capitalize" },
+  chevronButton: { alignItems: "center", paddingTop: 4, paddingBottom: 0 },
 });

@@ -165,28 +165,8 @@ export const styles = StyleSheet.create({
   },
 
   closeButton: {
-    position: "absolute",
-    top: 58,
-    right: 20,
-    width: 42,
-    height: 42,
-    borderRadius: 999,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#DDE3EA",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
 
   fullScreenAddReport: {
@@ -477,21 +457,32 @@ export const styles = StyleSheet.create({
   modalCard: {
     width: "100%",
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    borderRadius: 12,
     padding: 20,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 5,
+        shadowColor: "#000",
+      },
+    }),
   },
 
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-
-    alignItems: "flex-start",
-    marginBottom: 8,
+    alignItems: "center",
+    marginBottom: 10,
   },
 
   modalTitle: {
-    fontSize: 18,
-    fontFamily: "Pacifico_400Regular",
+    fontSize: 20,
+    fontFamily: "Lexend_400Regular",
     color: "#276389",
     flex: 1,
   },
@@ -529,19 +520,11 @@ export const styles = StyleSheet.create({
     fontStyle: "italic",
   },
 
-  // modalTitle: {
-  //   flex: 1,
-  //   fontSize: 22,
-  //   fontFamily: "Lexend_400Regular",
-  //   color: "#1F1F1F",
-  //   marginRight: 10,
-  // },
-
   modalBuilding: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
-    marginBottom: 12,
+    color: "#444",
+    marginBottom: 6,
   },
 
   modalBadgeRow: {
@@ -552,9 +535,11 @@ export const styles = StyleSheet.create({
   },
 
   modalTime: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: "#888",
+    fontStyle: "italic",
+    marginBottom: 12,
   },
 
   modalSectionTitle: {
@@ -566,16 +551,14 @@ export const styles = StyleSheet.create({
 
   modalDescription: {
     fontSize: 15,
-    lineHeight: 22,
     fontFamily: "Lexend_400Regular",
-    color: "#3E4B57",
+    color: "#333",
   },
 
   closeButtonText: {
-    fontSize: 22,
-    lineHeight: 24,
+    fontSize: 28,
     color: "#276389",
-    fontFamily: "Lexend_400Regular",
+    lineHeight: 28,
   },
 
   demoContainer: {

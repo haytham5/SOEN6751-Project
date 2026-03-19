@@ -16,6 +16,7 @@ import {
 
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import AdminEventModal from "./components/AdminEventModal";
 import BottomNav from "./components/bottomNav";
 import OfflineBanner from "./components/offlineBanner";
@@ -63,6 +64,13 @@ const typeDotColorMap: Record<string, string> = {
   event: "#1FA64A",
   accessibility: "#1FA64A",
   maintenance: "#1FA64A",
+};
+
+const buildingColorMap: Record<string, string> = {
+  EV: "#FF9898",
+  H: "#4CAF50",
+  JMSB: "#2196F3",
+  LB: "#FFC107",
 };
 
 export default function Events() {
@@ -278,53 +286,38 @@ const reportEventsByDate = useMemo(() => {
                 />
               </>
             }
-            renderItem={({ item }) => {
-              const tone = typeToneMap[item.type] || "green";
-
-              return (
-                  <TouchableOpacity
-                      activeOpacity={0.9}
-                      onPress={() => setSelectedEvent(item)}
-                  >
-                    <View
-                        style={[
-                          styles.notificationCard,
-                          tone === "red"
-                              ? styles.notificationRed
-                              : styles.notificationGreen,
-                        ]}
-                    >
-                      <View style={styles.notificationTopRow}>
-                        <Text style={styles.notificationTitle}>
-                          {item.title} - {buildingNameMap[item.location] ?? item.location}
-                        </Text>
-
-                        <View
-                            style={[
-                              styles.badge,
-                              tone === "red" ? styles.badgeRed : styles.badgeGreen,
-                            ]}
-                        >
-                          <Text style={styles.badgeText}>
-                            {typeLabelMap[item.type] || "Low"}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View style={styles.notificationMetaRow}>
-                        <Text style={styles.notificationMeta}>
-                          {buildingNameMap[item.location] ?? item.location}
-                          {item.floor ? ` · Floor ${item.floor}` : ""}
-                        </Text>
-
-                        <Text style={styles.notificationMeta}>
-                          {item.date} · {item.time}
-                        </Text>
-                      </View>
+            renderItem={({ item }) => (
+              <View
+                style={[
+                  styles.notificationCard,
+                  { borderLeftColor: buildingColorMap[item.location] ?? "#DDE3EA" }
+                ]}
+              >
+                <View style={styles.updateCardInner}>
+                  <View style={styles.updateCardLeft}>
+                    <Text style={styles.updateEventTitle}>
+                      {item.title}
+                    </Text>
+                    <Text style={styles.updateMeta}>{item.time}</Text>
+                    <View style={styles.updateTypeRow}>
+                      <Icon name="event" size={16} color="#276389" />
+                      <Text style={styles.updateTypeLabel}>{item.type}</Text>
                     </View>
-                  </TouchableOpacity>
-              );
-            }}
+                    <Text style={styles.updateMeta}>
+                      {buildingNameMap[item.location] ?? item.location}
+                      {item.floor ? ` · Floor ${item.floor}` : ""}
+                    </Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.chevronButton}
+                  onPress={() => setSelectedEvent(item)}
+                >
+                  <Icon name="expand-more" size={24} color="#276389" />
+                </TouchableOpacity>
+              </View>
+            )}
             ListEmptyComponent={
               <View style={styles.emptyState}>
                 <Text style={styles.emptyStateTitle}>No events for this date</Text>
@@ -367,27 +360,9 @@ const reportEventsByDate = useMemo(() => {
                           selectedEvent.location}
                       {selectedEvent.floor ? ` — Floor ${selectedEvent.floor}` : ""}
                     </Text>
-
-                    <View style={styles.modalBadgeRow}>
-                      <View
-                          style={[
-                            styles.badge,
-                            typeToneMap[selectedEvent.type] === "red"
-                                ? styles.badgeRed
-                                : styles.badgeGreen,
-                          ]}
-                      >
-                        <Text style={styles.badgeText}>
-                          {typeLabelMap[selectedEvent.type] || "Low"}
-                        </Text>
-                      </View>
-
-                      <Text style={styles.modalTime}>
-                        {selectedEvent.date} · {selectedEvent.time}
-                      </Text>
-                    </View>
-
-                    <Text style={styles.modalSectionTitle}>Summary</Text>
+                    <Text style={styles.modalTime}>
+                      {selectedEvent.date} · {selectedEvent.time}
+                    </Text>
                     <Text style={styles.modalDescription}>
                       {selectedEvent.description || "No description provided."}
                     </Text>

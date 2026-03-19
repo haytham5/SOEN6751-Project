@@ -203,10 +203,11 @@ export const styles = StyleSheet.create({
   },
 
   notificationCard: {
-    padding: 18,
+    padding: 16, 
     marginBottom: 15,
     borderRadius: 20,
     borderWidth: 1.5,
+    borderLeftWidth: 5,
     backgroundColor: "#F5F8F4",
   },
 
@@ -286,46 +287,52 @@ export const styles = StyleSheet.create({
   modalCard: {
     width: "100%",
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    borderRadius: 12,
     padding: 20,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 5,
+        shadowColor: "#000",
+      },
+    }),
   },
 
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 8,
+    alignItems: "center",
+    marginBottom: 10,
   },
 
   modalTitle: {
-    flex: 1,
-    fontSize: 22,
+    fontSize: 20,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
-    marginRight: 10,
+    color: "#276389",
+    flex: 1,
   },
 
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#EEF3F9",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
 
   closeButtonText: {
-    fontSize: 22,
-    lineHeight: 24,
+    fontSize: 28,
     color: "#276389",
-    fontFamily: "Lexend_400Regular",
+    lineHeight: 28,
   },
 
   modalBuilding: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
-    marginBottom: 12,
+    color: "#444",
+    marginBottom: 6,
   },
 
   modalBadgeRow: {
@@ -336,9 +343,11 @@ export const styles = StyleSheet.create({
   },
 
   modalTime: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: "#888",
+    fontStyle: "italic",
+    marginBottom: 12,
   },
 
   modalSectionTitle: {
@@ -350,8 +359,30 @@ export const styles = StyleSheet.create({
 
   modalDescription: {
     fontSize: 15,
-    lineHeight: 22,
     fontFamily: "Lexend_400Regular",
-    color: "#3E4B57",
+    color: "#333",
   },
+
+  //Card styles
+  updateCardInner: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  updateCardLeft: { flex: 1, paddingRight: 10 },
+  updateCardActions: { alignItems: "center", justifyContent: "space-around", gap: 12 },
+  updateEventTitle: { flex: 1, fontSize: 17, fontFamily: "Lexend_400Regular", color: "#1F1F1F" },
+  updateMeta: { fontSize: 13, fontFamily: "Lexend_400Regular", color: "#5A6B80" },
+  updateTypeRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 4, marginBottom: 4 },
+  updateTypeLabel: { fontSize: 13, fontFamily: "Lexend_400Regular", color: "#276389", textTransform: "capitalize" },
+  updateReporterRow: { flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" },
+  verifiedBadge: { flexDirection: "row", alignItems: "center", gap: 3 },
+  verifiedText: { fontSize: 12, fontFamily: "Lexend_400Regular", color: "#1FA64A" },
+  actionButton: { alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, borderWidth: 1, borderColor: "#276389", minWidth: 44 },
+  actionButtonDisabled: { borderColor: "#DDE3EA", backgroundColor: "#F8FAFD" },
+  actionCount: { fontSize: 12, fontFamily: "Lexend_400Regular", color: "#276389", marginTop: 2 },
+  actionCountDisabled: { color: "#aaa" },
+  resolvedMeta: { fontSize: 12, fontFamily: "Lexend_400Regular", color: "#1FA64A", fontStyle: "italic", marginBottom: 2 },
+  chevronButton: { alignItems: "center", paddingTop: 4, paddingBottom: 0 },
+  modalImage: { width: "100%", height: 180, borderRadius: 10, marginBottom: 12 },
+  timelineRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, marginBottom: 8 },
+  timelineDot: { width: 8, height: 8, borderRadius: 999, backgroundColor: "#276389", marginTop: 5 },
+  timelineText: { flex: 1, fontSize: 13, fontFamily: "Lexend_400Regular", color: "#3E4B57" },
+  timelineTime: { color: "#5A6B80", fontStyle: "italic" },
 });
