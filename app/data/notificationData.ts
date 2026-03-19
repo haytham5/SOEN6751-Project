@@ -22,9 +22,9 @@ export type SubscriptionItem = {
 export const initialSubscriptions: SubscriptionItem[] = [
     { id: "EV", label: "EV", tone: "red", isSubscribed: true },
     { id: "LB", label: "LB", tone: "green", isSubscribed: true },
-    { id: "H", label: "H", tone: "red", isSubscribed: false },
-    { id: "JM", label: "JM", tone: "green", isSubscribed: false },
-    { id: "FB", label: "FB", tone: "red", isSubscribed: false },
+    { id: "H", label: "H", tone: "red", isSubscribed: true },
+    { id: "JM", label: "JM", tone: "green", isSubscribed: true },
+    { id: "FB", label: "FB", tone: "red", isSubscribed: true },
 ];
 
 export const notifications: NotificationItem[] = [
