@@ -36,7 +36,7 @@ import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/indexStyles";
 import { getCurrentUser } from "./utils/authStorage";
 
-import { CheckCircle, ThumbsUp } from "lucide-react-native";
+import { CheckCircle, ThumbsUp, TriangleAlert } from "lucide-react-native";
 import { getReports, markReportResolved, Report, upvoteReport, verifyReport } from "./data/reportSH";
 
   const buildingColorMap: Record<string, string> = {
@@ -434,12 +434,30 @@ export default function Home() {
               const resolvedReports = todayReports.filter((r) => r.isResolved);
 
               const sections = [
-                { key: "access", label: "Access", reports: accessReports, icon: "accessible" },
-                { key: "disruptions", label: "Disruptions", reports: disruptionReports, icon: "campaign" },
-                { key: "resolved", label: "Resolved", reports: resolvedReports, icon: "check-circle" },
+                { 
+                  key: "access", 
+                  label: "Access", 
+                  reports: accessReports, 
+                  icon: "accessible",
+                  severeCount: accessReports.filter(r => r.isSevere).length,
+                },
+                { 
+                  key: "disruptions", 
+                  label: "Disruptions", 
+                  reports: disruptionReports, 
+                  icon: "campaign",
+                  severeCount: disruptionReports.filter(r => r.isSevere).length,
+                },
+                { 
+                  key: "resolved", 
+                  label: "Resolved", 
+                  reports: resolvedReports, 
+                  icon: "check-circle",
+                  severeCount: 0,  // resolved reports don't need severe indicator
+                },
               ];
 
-              return sections.map(({ key, label, reports: sectionReports, icon }) => (
+              return sections.map(({ key, label, reports: sectionReports, icon, severeCount }) => (
                 <View key={key} style={styles.accordionSection}>
                   <TouchableOpacity
                     style={styles.accordionHeader}
@@ -449,11 +467,21 @@ export default function Home() {
                     <View style={styles.accordionHeaderLeft}>
                       <Icon name={icon} size={22} color="#276389" />
                       <Text style={styles.accordionLabel}>{label}</Text>
+
+                      {/* Regular count badge */}
                       <View style={styles.accordionBadge}>
                         <Text style={styles.accordionBadgeText}>
                           {sectionReports.length}
                         </Text>
                       </View>
+
+                      {/* Severe count badge — only shows if > 0 */}
+                      {severeCount > 0 && (
+                        <View style={styles.severeBadge}>
+                          <TriangleAlert size={14} color="#F59E0B" />
+                          <Text style={styles.severeBadgeText}>{severeCount}</Text>
+                        </View>
+                      )}
                     </View>
                     <Icon
                       name={openSections[key] ? "expand-less" : "expand-more"}
@@ -502,6 +530,15 @@ export default function Home() {
                                   <Text style={styles.updateEventTitle}>
                                     {report.name || report.type}
                                   </Text>
+
+                                  {/* Severe indicator */}
+                                  {report.isSevere && (
+                                    <View style={styles.severeIndicator}>
+                                      <TriangleAlert size={13} color="#F59E0B" />
+                                      <Text style={styles.severeIndicatorText}>Marked Severe by Security</Text>
+                                    </View>
+                                  )}
+
                                     {/* Resolved time — only shows if resolved */}
                                     {report.isResolved && report.timeline && (
                                       <Text style={styles.resolvedMeta}>
@@ -698,6 +735,14 @@ export default function Home() {
                   <Text style={styles.modalBuilding}>
                     {selectedReport.building} · Floor {selectedReport.floor}
                   </Text>
+
+                  {/* Severe indicator */}
+                  {selectedReport.isSevere && (
+                    <View style={styles.severeIndicator}>
+                      <TriangleAlert size={13} color="#F59E0B" />
+                      <Text style={styles.severeIndicatorText}>Marked Severe by Security</Text>
+                    </View>
+                  )}
 
                   {/* Description */}
                   {selectedReport.description ? (

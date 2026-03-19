@@ -744,4 +744,31 @@ export const styles = StyleSheet.create({
   fontStyle: "italic",
   marginBottom: 2,
   },
+
+
+  severeBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+  },
+  severeBadgeText: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#F59E0B",
+    fontWeight: "bold",
+  },
+
+  severeIndicator: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 4,
+  marginTop: 2,
+  marginBottom: 4,
+  },
+  severeIndicatorText: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#F59E0B",
+    fontWeight: "bold",
+  },
 });

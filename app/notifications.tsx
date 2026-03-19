@@ -3,7 +3,7 @@ import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
-import { CheckCircle, ThumbsUp } from "lucide-react-native";
+import { CheckCircle, ThumbsUp, TriangleAlert } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { initialSubscriptions } from "./data/notificationData";
 import { getReports, markReportResolved, Report, upvoteReport } from "./data/reportSH";
@@ -262,6 +262,15 @@ export default function Notifications() {
                     <Text style={styles.updateEventTitle}>
                       {report.name || report.type}
                     </Text>
+
+                    {/* Severe indicator */}
+                      {report.isSevere && (
+                        <View style={styles.severeIndicator}>
+                          <TriangleAlert size={13} color="#F59E0B" />
+                          <Text style={styles.severeIndicatorText}>Marked Severe by Security</Text>
+                        </View>
+                      )}
+
                     {report.isResolved && report.timeline && (
                       <Text style={styles.resolvedMeta}>
                         Resolved at {report.timeline.find((e) => e.action === "resolved")?.time ?? "unknown"}
@@ -369,6 +378,14 @@ export default function Notifications() {
                 <Text style={styles.modalBuilding}>
                   {selectedReport.building} · Floor {selectedReport.floor}
                 </Text>
+
+                {/* Severe indicator */}
+                {selectedReport.isSevere && (
+                  <View style={styles.severeIndicator}>
+                    <TriangleAlert size={13} color="#F59E0B" />
+                    <Text style={styles.severeIndicatorText}>Marked Severe by Security</Text>
+                  </View>
+                )}
 
                 {selectedReport.description ? (
                   <>

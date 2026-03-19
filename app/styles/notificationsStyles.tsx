@@ -363,6 +363,20 @@ export const styles = StyleSheet.create({
     color: "#333",
   },
 
+  severeIndicator: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 4,
+  marginTop: 2,
+  marginBottom: 4,
+  },
+  severeIndicatorText: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#F59E0B",
+    fontWeight: "bold",
+  },
+
   //Card styles
   updateCardInner: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
   updateCardLeft: { flex: 1, paddingRight: 10 },
