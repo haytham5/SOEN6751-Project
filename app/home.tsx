@@ -4,7 +4,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
 import { CheckCircle, ThumbsUp, TriangleAlert } from "lucide-react-native";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Image,
   Modal,
@@ -14,6 +20,7 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
@@ -35,7 +42,8 @@ import {
   upvoteReport,
   verifyReport,
 } from "./data/reportSH";
-import { styles } from "./styles/indexStyles";
+import { styles as importStyles } from "./styles/indexStyles";
+import { Themes } from "./styles/Themes";
 import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
@@ -98,40 +106,44 @@ function extractPreferredBuildings(user: any): string[] {
 
   if (Array.isArray(user.buildingPreferences)) {
     return user.buildingPreferences
-        .filter((b: any) => b?.subscribed === true)
-        .map((b: any) => normalizeBuildingId(b?.buildingId))
-        .filter(Boolean);
+      .filter((b: any) => b?.subscribed === true)
+      .map((b: any) => normalizeBuildingId(b?.buildingId))
+      .filter(Boolean);
   }
 
   if (Array.isArray(user.preferredBuildings)) {
     return user.preferredBuildings
-        .filter(Boolean)
-        .map((b: string) => normalizeBuildingId(b));
+      .filter(Boolean)
+      .map((b: string) => normalizeBuildingId(b));
   }
 
   if (Array.isArray(user.preferences?.buildings)) {
     return user.preferences.buildings
-        .filter(Boolean)
-        .map((b: string) => normalizeBuildingId(b));
+      .filter(Boolean)
+      .map((b: string) => normalizeBuildingId(b));
   }
 
   if (Array.isArray(user.subscriptions)) {
     return user.subscriptions
-        .filter((b: any) => b?.isSubscribed === true)
-        .map((b: any) => normalizeBuildingId(b?.id))
-        .filter(Boolean);
+      .filter((b: any) => b?.isSubscribed === true)
+      .map((b: any) => normalizeBuildingId(b?.id))
+      .filter(Boolean);
   }
 
   return [];
 }
 
 export default function Home() {
+  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const styles = importStyles(scheme);
+
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isGuest, setIsGuest] = useState(true);
 
   const [preferredBuildings, setPreferredBuildings] = useState<string[]>([]);
-  const [reportViewMode, setReportViewMode] = useState<ReportViewMode>("preferences");
+  const [reportViewMode, setReportViewMode] =
+    useState<ReportViewMode>("preferences");
 
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
@@ -189,7 +201,7 @@ export default function Home() {
   }, [loadCurrentUserState]);
 
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync("#F7F9FF");
+    NavigationBar.setBackgroundColorAsync(scheme.surface);
     NavigationBar.setButtonStyleAsync("dark");
     NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
@@ -220,7 +232,7 @@ export default function Home() {
 
       if (selectedBuilding) {
         const filtered = data.filter(
-            (r) => normalizeBuildingId(r.building) === selectedBuilding
+          (r) => normalizeBuildingId(r.building) === selectedBuilding,
         );
         setBuildingReports(filtered);
       }
@@ -236,16 +248,16 @@ export default function Home() {
   }, [loadReports]);
 
   useFocusEffect(
-      useCallback(() => {
-        loadCurrentUserState();
-        loadReports();
-      }, [loadCurrentUserState, loadReports]),
+    useCallback(() => {
+      loadCurrentUserState();
+      loadReports();
+    }, [loadCurrentUserState, loadReports]),
   );
 
   const handleMarkerPress = async (buildingId: string) => {
     const allReports = await getReports();
     const filtered = allReports.filter(
-        (r) => normalizeBuildingId(r.building) === buildingId
+      (r) => normalizeBuildingId(r.building) === buildingId,
     );
     setBuildingReports(filtered);
     setSelectedBuilding(buildingId);
@@ -310,8 +322,8 @@ export default function Home() {
 
     if (Platform.OS === "android") {
       mapInstance.setMapBoundaries(
-          { latitude: 45.5000284224813, longitude: -73.5759524037535 },
-          { latitude: 45.49070461581633, longitude: -73.58196697011486 },
+        { latitude: 45.5000284224813, longitude: -73.5759524037535 },
+        { latitude: 45.49070461581633, longitude: -73.58196697011486 },
       );
     }
   };
@@ -323,7 +335,7 @@ export default function Home() {
   const filteredTodayReports = useMemo(() => {
     if (reportViewMode === "preferences" && activeBuildingIds.length > 0) {
       return allTodayReports.filter((r) =>
-          activeBuildingIds.includes(normalizeBuildingId(r.building))
+        activeBuildingIds.includes(normalizeBuildingId(r.building)),
       );
     }
 
@@ -334,7 +346,10 @@ export default function Home() {
     return allTodayReports;
   }, [allTodayReports, reportViewMode, activeBuildingIds]);
 
-  const buildingCounts: Record<string, { protests: number; accessibility: number }> = {};
+  const buildingCounts: Record<
+    string,
+    { protests: number; accessibility: number }
+  > = {};
 
   allTodayReports.forEach((r) => {
     const buildingId = normalizeBuildingId(r.building);
@@ -394,561 +409,640 @@ export default function Home() {
 
   const renderMap = (mapRef: { current: MapView | null }) => {
     return (
-        <MapView
-            style={styles.map}
-            initialRegion={mapRegion}
-            showsUserLocation
-            showsMyLocationButton
-            moveOnMarkerPress={false}
-            showsBuildings={false}
-            minZoomLevel={16}
-            maxZoomLevel={18}
-            ref={mapRef}
-            onMapReady={() => onMapReady(mapRef.current)}
-        >
-          {Object.keys(buildings).map((b) => {
-            const coord = buildings[b];
+      <MapView
+        style={styles.map}
+        initialRegion={mapRegion}
+        showsUserLocation
+        showsMyLocationButton
+        moveOnMarkerPress={false}
+        showsBuildings={false}
+        minZoomLevel={16}
+        maxZoomLevel={18}
+        ref={mapRef}
+        onMapReady={() => onMapReady(mapRef.current)}
+      >
+        {Object.keys(buildings).map((b) => {
+          const coord = buildings[b];
 
-            if (!markerImages[b]) return null;
+          if (!markerImages[b]) return null;
 
-            return (
-                <Marker
-                    key={b}
-                    coordinate={coord}
-                    image={{ uri: markerImages[b] }}
-                    anchor={{ x: 0.5, y: 1 }}
-                    onPress={() => handleMarkerPress(b)}
-                />
-            );
-          })}
-        </MapView>
+          return (
+            <Marker
+              key={b}
+              coordinate={coord}
+              image={{ uri: markerImages[b] }}
+              anchor={{ x: 0.5, y: 1 }}
+              onPress={() => handleMarkerPress(b)}
+            />
+          );
+        })}
+      </MapView>
     );
   };
 
   return (
-      <SafeAreaView style={styles.background}>
-        <OfflineBanner />
-        <NearBuildingBanner onBannerPress={handleMarkerPress} />
+    <SafeAreaView style={styles.background}>
+      <OfflineBanner />
+      <NearBuildingBanner onBannerPress={handleMarkerPress} />
 
-        <ScrollView
-            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
-            showsVerticalScrollIndicator={false}
-        >
-          <View style={{ position: "absolute", top: -9999, left: -9999 }}>
-            {Object.keys(buildings).map((b) => (
-                <ViewShot key={b} ref={bubbleRefs[b]}>
-                  <MapInfo
-                      title={b}
-                      protests={buildingCounts[b]?.protests || 0}
-                      accessibility={buildingCounts[b]?.accessibility || 0}
-                  />
-                </ViewShot>
-            ))}
-          </View>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ position: "absolute", top: -9999, left: -9999 }}>
+          {Object.keys(buildings).map((b) => (
+            <ViewShot key={b} ref={bubbleRefs[b]}>
+              <MapInfo
+                title={b}
+                protests={buildingCounts[b]?.protests || 0}
+                accessibility={buildingCounts[b]?.accessibility || 0}
+              />
+            </ViewShot>
+          ))}
+        </View>
 
-          <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
-          <View style={styles.header}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onLongPress={() => setDemoMode((prev) => !prev)}
+            style={{ flexShrink: 0 }}
+          >
+            <Text style={styles.title} numberOfLines={1}>
+              Home
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.mapPreviewWrapper}>
+          {renderMap(previewMapRef)}
+
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={styles.mapPreviewOverlay}
+            onPress={() => setIsMapExpanded(true)}
+          >
+            <Text style={styles.mapPreviewText}>Tap to expand map</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.addReport}
+            onPress={handleOpenReportFlow}
+          >
+            <Icon name="add-circle" size={24} color="#276389" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.reportFilters}>
+            <Icon name="filter-alt" size={24} color="#276389" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.relaxMode}>
+            <Icon name="bedtime" size={24} color="#276389" />
+          </TouchableOpacity>
+        </View>
+
+        <Modal visible={isMapExpanded} animationType="slide">
+          <View style={styles.fullScreenContainer}>
+            {renderMap(expandedMapRef)}
+
             <TouchableOpacity
-                onLongPress={() => setDemoMode((prev) => !prev)}
-                style={{ flexShrink: 0 }}
+              style={styles.closeButton}
+              onPress={() => setIsMapExpanded(false)}
             >
-              <Text style={styles.title} numberOfLines={1}>
-                Home
-              </Text>
+              <Icon name="close" size={28} color="#276389" />
             </TouchableOpacity>
-          </View>
-
-          <View style={styles.mapPreviewWrapper}>
-            {renderMap(previewMapRef)}
 
             <TouchableOpacity
-                activeOpacity={0.9}
-                style={styles.mapPreviewOverlay}
-                onPress={() => setIsMapExpanded(true)}
+              style={styles.fullScreenAddReport}
+              onPress={handleOpenReportFlowFromExpandedMap}
             >
-              <Text style={styles.mapPreviewText}>Tap to expand map</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.addReport} onPress={handleOpenReportFlow}>
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.reportFilters}>
+            <TouchableOpacity style={styles.fullScreenReportFilters}>
               <Icon name="filter-alt" size={24} color="#276389" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.relaxMode}>
+            <TouchableOpacity style={styles.fullScreenRelaxMode}>
               <Icon name="bedtime" size={24} color="#276389" />
             </TouchableOpacity>
           </View>
+        </Modal>
 
-          <Modal visible={isMapExpanded} animationType="slide">
-            <View style={styles.fullScreenContainer}>
-              {renderMap(expandedMapRef)}
+        <View style={styles.updatesSection}>
+          <View style={styles.updatesHeader}>
+            <Text style={styles.updatesTitle}>Your Updates</Text>
+            <Text style={styles.updatesSubtitle}>
+              {reportViewMode === "preferences"
+                ? "Showing reports matching your preferences"
+                : "Showing all reports from today"}
+            </Text>
+
+            <View style={styles.reportModeToggle}>
+              <TouchableOpacity
+                style={[
+                  styles.reportModeButton,
+                  reportViewMode === "preferences" &&
+                    styles.reportModeButtonActive,
+                  isGuest && styles.reportModeButtonDisabled,
+                ]}
+                onPress={() => {
+                  if (!isGuest) setReportViewMode("preferences");
+                }}
+                activeOpacity={0.8}
+              >
+                <Text
+                  style={[
+                    styles.reportModeButtonText,
+                    reportViewMode === "preferences" &&
+                      styles.reportModeButtonTextActive,
+                    isGuest && styles.reportModeButtonTextDisabled,
+                  ]}
+                >
+                  My Preferences
+                </Text>
+              </TouchableOpacity>
 
               <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setIsMapExpanded(false)}
+                style={[
+                  styles.reportModeButton,
+                  reportViewMode === "all" && styles.reportModeButtonActive,
+                ]}
+                onPress={() => setReportViewMode("all")}
+                activeOpacity={0.8}
               >
-                <Icon name="close" size={28} color="#276389" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                  style={styles.fullScreenAddReport}
-                  onPress={handleOpenReportFlowFromExpandedMap}
-              >
-                <Icon name="add-circle" size={24} color="#276389" />
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.fullScreenReportFilters}>
-                <Icon name="filter-alt" size={24} color="#276389" />
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.fullScreenRelaxMode}>
-                <Icon name="bedtime" size={24} color="#276389" />
+                <Text
+                  style={[
+                    styles.reportModeButtonText,
+                    reportViewMode === "all" &&
+                      styles.reportModeButtonTextActive,
+                  ]}
+                >
+                  All Today
+                </Text>
               </TouchableOpacity>
             </View>
-          </Modal>
+          </View>
 
-          <View style={styles.updatesSection}>
-            <View style={styles.updatesHeader}>
-              <Text style={styles.updatesTitle}>Your Updates</Text>
-              <Text style={styles.updatesSubtitle}>
-                {reportViewMode === "preferences"
-                    ? "Showing reports matching your preferences"
-                    : "Showing all reports from today"}
-              </Text>
+          {(() => {
+            const reportsToDisplay = filteredTodayReports;
 
-              <View style={styles.reportModeToggle}>
-                <TouchableOpacity
-                    style={[
-                      styles.reportModeButton,
-                      reportViewMode === "preferences" && styles.reportModeButtonActive,
-                      isGuest && styles.reportModeButtonDisabled,
-                    ]}
-                    onPress={() => {
-                      if (!isGuest) setReportViewMode("preferences");
-                    }}
+            const accessReports = reportsToDisplay.filter(
+              (r) => r.type === "accessibility" && !r.isResolved,
+            );
+            const disruptionReports = reportsToDisplay.filter(
+              (r) =>
+                (r.type === "protest" || r.type === "event") && !r.isResolved,
+            );
+            const resolvedReports = reportsToDisplay.filter(
+              (r) => r.isResolved,
+            );
+
+            const sections = [
+              {
+                key: "access",
+                label: "Access",
+                reports: accessReports,
+                icon: "accessible",
+                severeCount: accessReports.filter((r) => r.isSevere).length,
+              },
+              {
+                key: "disruptions",
+                label: "Disruptions",
+                reports: disruptionReports,
+                icon: "campaign",
+                severeCount: disruptionReports.filter((r) => r.isSevere).length,
+              },
+              {
+                key: "resolved",
+                label: "Resolved",
+                reports: resolvedReports,
+                icon: "check-circle",
+                severeCount: 0,
+              },
+            ];
+
+            return sections.map(
+              ({ key, label, reports: sectionReports, icon, severeCount }) => (
+                <View key={key} style={styles.accordionSection}>
+                  <TouchableOpacity
+                    style={styles.accordionHeader}
+                    onPress={() => toggleSection(key)}
                     activeOpacity={0.8}
-                >
-                  <Text
-                      style={[
-                        styles.reportModeButtonText,
-                        reportViewMode === "preferences" && styles.reportModeButtonTextActive,
-                        isGuest && styles.reportModeButtonTextDisabled,
-                      ]}
                   >
-                    My Preferences
-                  </Text>
-                </TouchableOpacity>
+                    <View style={styles.accordionHeaderLeft}>
+                      <Icon name={icon} size={22} color="#276389" />
+                      <Text style={styles.accordionLabel}>{label}</Text>
 
-                <TouchableOpacity
-                    style={[
-                      styles.reportModeButton,
-                      reportViewMode === "all" && styles.reportModeButtonActive,
-                    ]}
-                    onPress={() => setReportViewMode("all")}
-                    activeOpacity={0.8}
-                >
-                  <Text
-                      style={[
-                        styles.reportModeButtonText,
-                        reportViewMode === "all" && styles.reportModeButtonTextActive,
-                      ]}
-                  >
-                    All Today
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {(() => {
-              const reportsToDisplay = filteredTodayReports;
-
-              const accessReports = reportsToDisplay.filter(
-                  (r) => r.type === "accessibility" && !r.isResolved,
-              );
-              const disruptionReports = reportsToDisplay.filter(
-                  (r) => (r.type === "protest" || r.type === "event") && !r.isResolved,
-              );
-              const resolvedReports = reportsToDisplay.filter((r) => r.isResolved);
-
-              const sections = [
-                {
-                  key: "access",
-                  label: "Access",
-                  reports: accessReports,
-                  icon: "accessible",
-                  severeCount: accessReports.filter((r) => r.isSevere).length,
-                },
-                {
-                  key: "disruptions",
-                  label: "Disruptions",
-                  reports: disruptionReports,
-                  icon: "campaign",
-                  severeCount: disruptionReports.filter((r) => r.isSevere).length,
-                },
-                {
-                  key: "resolved",
-                  label: "Resolved",
-                  reports: resolvedReports,
-                  icon: "check-circle",
-                  severeCount: 0,
-                },
-              ];
-
-              return sections.map(({ key, label, reports: sectionReports, icon, severeCount }) => (
-                  <View key={key} style={styles.accordionSection}>
-                    <TouchableOpacity
-                        style={styles.accordionHeader}
-                        onPress={() => toggleSection(key)}
-                        activeOpacity={0.8}
-                    >
-                      <View style={styles.accordionHeaderLeft}>
-                        <Icon name={icon} size={22} color="#276389" />
-                        <Text style={styles.accordionLabel}>{label}</Text>
-
-                        <View style={styles.accordionBadge}>
-                          <Text style={styles.accordionBadgeText}>{sectionReports.length}</Text>
-                        </View>
-
-                        {severeCount > 0 && (
-                            <View style={styles.severeBadge}>
-                              <TriangleAlert size={14} color="#F59E0B" />
-                              <Text style={styles.severeBadgeText}>{severeCount}</Text>
-                            </View>
-                        )}
+                      <View style={styles.accordionBadge}>
+                        <Text style={styles.accordionBadgeText}>
+                          {sectionReports.length}
+                        </Text>
                       </View>
 
-                      <Icon
-                          name={openSections[key] ? "expand-less" : "expand-more"}
-                          size={24}
-                          color="#276389"
-                      />
-                    </TouchableOpacity>
-
-                    {openSections[key] && (
-                        <View style={styles.accordionContent}>
-                          {sectionReports.length === 0 ? (
-                              <Text style={styles.accordionEmptyText}>
-                                {reportViewMode === "preferences" && key !== "resolved"
-                                    ? `No ${label.toLowerCase()} reports matching your preferences today.`
-                                    : `No ${label.toLowerCase()} reports today.`}
-                              </Text>
-                          ) : (
-                              sectionReports.map((report) => {
-                                const hasUpvoted = currentUserId
-                                    ? report.upvotedBy?.includes(currentUserId)
-                                    : false;
-                                const isResolved = report.isResolved;
-                                const isDisabled = isGuest || !currentUserId;
-
-                                const typeIcon =
-                                    report.type === "accessibility" ? "accessible" : "campaign";
-
-                                const typeLabel = report.accessibilitySubtype
-                                    ? report.accessibilitySubtype.replace("_", " ")
-                                    : report.type;
-
-                                const submitterLabel =
-                                    report.submittedBy === "security" ? "security" : "a concordian";
-
-                                return (
-                                    <View
-                                        key={report.id}
-                                        style={[
-                                          styles.updateCard,
-                                          {
-                                            borderLeftColor:
-                                                buildingColorMap[normalizeBuildingId(report.building)] ?? "#DDE3EA",
-                                          },
-                                        ]}
-                                    >
-                                      <View style={styles.updateCardInner}>
-                                        <View style={styles.updateCardLeft}>
-                                          <Text style={styles.updateEventTitle}>
-                                            {report.name || report.type}
-                                          </Text>
-
-                                          {report.isSevere && (
-                                              <View style={styles.severeIndicator}>
-                                                <TriangleAlert size={13} color="#F59E0B" />
-                                                <Text style={styles.severeIndicatorText}>
-                                                  Marked Severe by Security
-                                                </Text>
-                                              </View>
-                                          )}
-
-                                          {report.isResolved && report.timeline && (
-                                              <Text style={styles.resolvedMeta}>
-                                                Resolved at{" "}
-                                                {report.timeline.find((e) => e.action === "resolved")?.time ??
-                                                    "unknown"}
-                                              </Text>
-                                          )}
-
-                                          <Text style={styles.updateMeta}>
-                                            {normalizeBuildingId(report.building)} · {report.time}
-                                          </Text>
-
-                                          <View style={styles.updateTypeRow}>
-                                            <Icon name={typeIcon} size={16} color="#276389" />
-                                            <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
-                                          </View>
-
-                                          <View style={styles.updateReporterRow}>
-                                            <Text style={styles.updateMeta}>
-                                              Reported by {submitterLabel}
-                                            </Text>
-
-                                            {report.isVerifiedBySecurity && (
-                                                <View style={styles.verifiedBadge}>
-                                                  <Icon
-                                                      name="check-circle"
-                                                      size={13}
-                                                      color="#1FA64A"
-                                                  />
-                                                  <Text style={styles.verifiedText}>Verified</Text>
-                                                </View>
-                                            )}
-                                          </View>
-
-                                          {currentUserRole === "security" &&
-                                              !report.isVerifiedBySecurity &&
-                                              !report.isResolved && (
-                                                  <TouchableOpacity
-                                                      onPress={() => handleVerify(report.id)}
-                                                      style={styles.markSevereButton}
-                                                  >
-                                                    <CheckCircle size={13} color="#1FA64A" />
-                                                    <Text style={styles.markSevereText}>Verify</Text>
-                                                  </TouchableOpacity>
-                                              )}
-
-                                          {currentUserRole === "security" && !report.isSevere && (
-                                              <TouchableOpacity
-                                                  onPress={() => handleMarkSevere(report.id)}
-                                                  style={styles.markSevereButton}
-                                              >
-                                                <TriangleAlert size={13} color="#F59E0B" />
-                                                <Text style={styles.markSevereText}>Mark Severe</Text>
-                                              </TouchableOpacity>
-                                          )}
-                                        </View>
-
-                                        <View style={styles.updateCardActions}>
-                                          <TouchableOpacity
-                                              style={[
-                                                styles.actionButton,
-                                                (hasUpvoted || isDisabled) &&
-                                                styles.actionButtonDisabled,
-                                              ]}
-                                              onPress={() => handleUpvote(report.id)}
-                                              disabled={hasUpvoted || isDisabled}
-                                          >
-                                            <ThumbsUp
-                                                size={18}
-                                                color={hasUpvoted || isDisabled ? "#aaa" : "#276389"}
-                                            />
-                                            <Text
-                                                style={[
-                                                  styles.actionCount,
-                                                  (hasUpvoted || isDisabled) &&
-                                                  styles.actionCountDisabled,
-                                                ]}
-                                            >
-                                              {report.upvotedBy?.length ?? 0}
-                                            </Text>
-                                          </TouchableOpacity>
-
-                                          <TouchableOpacity
-                                              style={[
-                                                styles.actionButton,
-                                                (isResolved || isDisabled) &&
-                                                styles.actionButtonDisabled,
-                                              ]}
-                                              onPress={() => handleResolve(report.id)}
-                                              disabled={isResolved || isDisabled}
-                                          >
-                                            <CheckCircle
-                                                size={18}
-                                                color={isResolved || isDisabled ? "#aaa" : "#276389"}
-                                            />
-                                            <Text
-                                                style={[
-                                                  styles.actionCount,
-                                                  (isResolved || isDisabled) &&
-                                                  styles.actionCountDisabled,
-                                                ]}
-                                            >
-                                              {isResolved ? "✓" : "0"}
-                                            </Text>
-                                          </TouchableOpacity>
-                                        </View>
-                                      </View>
-
-                                      <TouchableOpacity
-                                          style={styles.chevronButton}
-                                          onPress={() => setSelectedReport(report)}
-                                      >
-                                        <Icon name="expand-more" size={24} color="#276389" />
-                                      </TouchableOpacity>
-                                    </View>
-                                );
-                              })
-                          )}
-                        </View>
-                    )}
-                  </View>
-              ));
-            })()}
-          </View>
-        </ScrollView>
-
-        <Modal
-            visible={selectedBuilding !== null}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setSelectedBuilding(null)}
-        >
-          <Pressable style={styles.modalOverlay} onPress={() => setSelectedBuilding(null)}>
-            <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
-              {selectedBuilding && (
-                  <>
-                    <View style={styles.modalHeader}>
-                      <Text style={styles.modalTitle}>{selectedBuilding}</Text>
-                      <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
-                        <Icon name="close" size={24} color="#276389" />
-                      </TouchableOpacity>
-                    </View>
-
-                    {buildingReports.length === 0 ? (
-                        <Text style={styles.modalEmptyText}>
-                          No reports submitted for this building yet.
-                        </Text>
-                    ) : (
-                        buildingReports.map((report) => (
-                            <View key={report.id} style={styles.modalRow}>
-                              <Text style={styles.modalRowText}>{report.name}</Text>
-                              <Text style={styles.modalRowMeta}>
-                                {report.type} · Floor {report.floor} · {report.time}
-                              </Text>
-                              {report.description ? (
-                                  <Text style={styles.modalRowMeta}>{report.description}</Text>
-                              ) : null}
-                            </View>
-                        ))
-                    )}
-
-                    <Text style={styles.modalSecurityCount}>
-                      Total reports: {buildingReports.length}
-                    </Text>
-                  </>
-              )}
-            </Pressable>
-          </Pressable>
-        </Modal>
-
-        <AuthRequiredModal
-            visible={showAuthRequiredModal}
-            onClose={() => setShowAuthRequiredModal(false)}
-        />
-
-        <ReportFormModal
-            visible={isReportModalVisible}
-            onClose={() => setIsReportModalVisible(false)}
-            onSubmitSuccess={handleReportSubmitSuccess}
-        />
-
-        {demoMode && (
-            <View style={styles.demoContainer}>
-              <Text style={styles.demoLabel}>Demo Mode — Simulate Location</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {["EV", "LB", "H", "FB", "JMSB"].map((b) => (
-                    <TouchableOpacity
-                        key={b}
-                        style={styles.demoButton}
-                        onPress={() => simulateNearBuilding(b)}
-                    >
-                      <Text style={styles.demoButtonText}>Near {b}</Text>
-                    </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-        )}
-
-        <Modal
-            visible={selectedReport !== null}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setSelectedReport(null)}
-        >
-          <Pressable style={styles.modalOverlay} onPress={() => setSelectedReport(null)}>
-            <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
-              {selectedReport && (
-                  <>
-                    <View style={styles.modalHeader}>
-                      <Text style={styles.modalTitle}>
-                        {selectedReport.name || selectedReport.type}
-                      </Text>
-                      <TouchableOpacity onPress={() => setSelectedReport(null)}>
-                        <Icon name="close" size={24} color="#276389" />
-                      </TouchableOpacity>
-                    </View>
-
-                    <Text style={styles.modalBuilding}>
-                      {normalizeBuildingId(selectedReport.building)} · Floor {selectedReport.floor}
-                    </Text>
-
-                    {selectedReport.isSevere && (
-                        <View style={styles.severeIndicator}>
-                          <TriangleAlert size={13} color="#F59E0B" />
-                          <Text style={styles.severeIndicatorText}>Marked Severe by Security</Text>
-                        </View>
-                    )}
-
-                    {selectedReport.description ? (
-                        <Text style={styles.modalDescription}>
-                          {selectedReport.description}
-                        </Text>
-                    ) : null}
-
-                    {selectedReport.image ? (
-                        <>
-                          <Text style={styles.modalSectionTitle}>Photo</Text>
-                          <Image
-                              source={{ uri: selectedReport.image }}
-                              style={styles.modalImage}
-                              resizeMode="cover"
-                          />
-                        </>
-                    ) : null}
-
-                    <Text style={styles.modalSectionTitle}></Text>
-                    {(selectedReport.timeline ?? []).map((event, index) => (
-                        <View key={index} style={styles.timelineRow}>
-                          <View style={styles.timelineDot} />
-                          <Text style={styles.timelineText}>
-                            {event.action === "reported" && `First reported by ${event.by}`}
-                            {event.action === "upvoted" && `Confirmed by a concordian`}
-                            {event.action === "verified" && `Verified by security`}
-                            {event.action === "resolved" &&
-                                `Marked resolved by ${
-                                    event.by === "security" ? "security" : "a concordian"
-                                }`}
-                            {event.action === "severe" && `Marked severe by security`}
-                            <Text style={styles.timelineTime}> · {event.time}</Text>
+                      {severeCount > 0 && (
+                        <View style={styles.severeBadge}>
+                          <TriangleAlert size={14} color="#F59E0B" />
+                          <Text style={styles.severeBadgeText}>
+                            {severeCount}
                           </Text>
                         </View>
-                    ))}
-                  </>
-              )}
-            </Pressable>
-          </Pressable>
-        </Modal>
+                      )}
+                    </View>
 
-        <BottomNav onPressAdd={handleOpenReportFlow} />
-      </SafeAreaView>
+                    <Icon
+                      name={openSections[key] ? "expand-less" : "expand-more"}
+                      size={24}
+                      color="#276389"
+                    />
+                  </TouchableOpacity>
+
+                  {openSections[key] && (
+                    <View style={styles.accordionContent}>
+                      {sectionReports.length === 0 ? (
+                        <Text style={styles.accordionEmptyText}>
+                          {reportViewMode === "preferences" &&
+                          key !== "resolved"
+                            ? `No ${label.toLowerCase()} reports matching your preferences today.`
+                            : `No ${label.toLowerCase()} reports today.`}
+                        </Text>
+                      ) : (
+                        sectionReports.map((report) => {
+                          const hasUpvoted = currentUserId
+                            ? report.upvotedBy?.includes(currentUserId)
+                            : false;
+                          const isResolved = report.isResolved;
+                          const isDisabled = isGuest || !currentUserId;
+
+                          const typeIcon =
+                            report.type === "accessibility"
+                              ? "accessible"
+                              : "campaign";
+
+                          const typeLabel = report.accessibilitySubtype
+                            ? report.accessibilitySubtype.replace("_", " ")
+                            : report.type;
+
+                          const submitterLabel =
+                            report.submittedBy === "security"
+                              ? "security"
+                              : "a concordian";
+
+                          return (
+                            <View
+                              key={report.id}
+                              style={[
+                                styles.updateCard,
+                                {
+                                  borderLeftColor:
+                                    buildingColorMap[
+                                      normalizeBuildingId(report.building)
+                                    ] ?? "#DDE3EA",
+                                },
+                              ]}
+                            >
+                              <View style={styles.updateCardInner}>
+                                <View style={styles.updateCardLeft}>
+                                  <Text style={styles.updateEventTitle}>
+                                    {report.name || report.type}
+                                  </Text>
+
+                                  {report.isSevere && (
+                                    <View style={styles.severeIndicator}>
+                                      <TriangleAlert
+                                        size={13}
+                                        color="#F59E0B"
+                                      />
+                                      <Text style={styles.severeIndicatorText}>
+                                        Marked Severe by Security
+                                      </Text>
+                                    </View>
+                                  )}
+
+                                  {report.isResolved && report.timeline && (
+                                    <Text style={styles.resolvedMeta}>
+                                      Resolved at{" "}
+                                      {report.timeline.find(
+                                        (e) => e.action === "resolved",
+                                      )?.time ?? "unknown"}
+                                    </Text>
+                                  )}
+
+                                  <Text style={styles.updateMeta}>
+                                    {normalizeBuildingId(report.building)} ·{" "}
+                                    {report.time}
+                                  </Text>
+
+                                  <View style={styles.updateTypeRow}>
+                                    <Icon
+                                      name={typeIcon}
+                                      size={16}
+                                      color="#276389"
+                                    />
+                                    <Text style={styles.updateTypeLabel}>
+                                      {typeLabel}
+                                    </Text>
+                                  </View>
+
+                                  <View style={styles.updateReporterRow}>
+                                    <Text style={styles.updateMeta}>
+                                      Reported by {submitterLabel}
+                                    </Text>
+
+                                    {report.isVerifiedBySecurity && (
+                                      <View style={styles.verifiedBadge}>
+                                        <Icon
+                                          name="check-circle"
+                                          size={13}
+                                          color="#1FA64A"
+                                        />
+                                        <Text style={styles.verifiedText}>
+                                          Verified
+                                        </Text>
+                                      </View>
+                                    )}
+                                  </View>
+
+                                  {currentUserRole === "security" &&
+                                    !report.isVerifiedBySecurity &&
+                                    !report.isResolved && (
+                                      <TouchableOpacity
+                                        onPress={() => handleVerify(report.id)}
+                                        style={styles.markSevereButton}
+                                      >
+                                        <CheckCircle
+                                          size={13}
+                                          color="#1FA64A"
+                                        />
+                                        <Text style={styles.markSevereText}>
+                                          Verify
+                                        </Text>
+                                      </TouchableOpacity>
+                                    )}
+
+                                  {currentUserRole === "security" &&
+                                    !report.isSevere && (
+                                      <TouchableOpacity
+                                        onPress={() =>
+                                          handleMarkSevere(report.id)
+                                        }
+                                        style={styles.markSevereButton}
+                                      >
+                                        <TriangleAlert
+                                          size={13}
+                                          color="#F59E0B"
+                                        />
+                                        <Text style={styles.markSevereText}>
+                                          Mark Severe
+                                        </Text>
+                                      </TouchableOpacity>
+                                    )}
+                                </View>
+
+                                <View style={styles.updateCardActions}>
+                                  <TouchableOpacity
+                                    style={[
+                                      styles.actionButton,
+                                      (hasUpvoted || isDisabled) &&
+                                        styles.actionButtonDisabled,
+                                    ]}
+                                    onPress={() => handleUpvote(report.id)}
+                                    disabled={hasUpvoted || isDisabled}
+                                  >
+                                    <ThumbsUp
+                                      size={18}
+                                      color={
+                                        hasUpvoted || isDisabled
+                                          ? "#aaa"
+                                          : "#276389"
+                                      }
+                                    />
+                                    <Text
+                                      style={[
+                                        styles.actionCount,
+                                        (hasUpvoted || isDisabled) &&
+                                          styles.actionCountDisabled,
+                                      ]}
+                                    >
+                                      {report.upvotedBy?.length ?? 0}
+                                    </Text>
+                                  </TouchableOpacity>
+
+                                  <TouchableOpacity
+                                    style={[
+                                      styles.actionButton,
+                                      (isResolved || isDisabled) &&
+                                        styles.actionButtonDisabled,
+                                    ]}
+                                    onPress={() => handleResolve(report.id)}
+                                    disabled={isResolved || isDisabled}
+                                  >
+                                    <CheckCircle
+                                      size={18}
+                                      color={
+                                        isResolved || isDisabled
+                                          ? "#aaa"
+                                          : "#276389"
+                                      }
+                                    />
+                                    <Text
+                                      style={[
+                                        styles.actionCount,
+                                        (isResolved || isDisabled) &&
+                                          styles.actionCountDisabled,
+                                      ]}
+                                    >
+                                      {isResolved ? "✓" : "0"}
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
+
+                              <TouchableOpacity
+                                style={styles.chevronButton}
+                                onPress={() => setSelectedReport(report)}
+                              >
+                                <Icon
+                                  name="expand-more"
+                                  size={24}
+                                  color="#276389"
+                                />
+                              </TouchableOpacity>
+                            </View>
+                          );
+                        })
+                      )}
+                    </View>
+                  )}
+                </View>
+              ),
+            );
+          })()}
+        </View>
+      </ScrollView>
+
+      <Modal
+        visible={selectedBuilding !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedBuilding(null)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setSelectedBuilding(null)}
+        >
+          <Pressable
+            style={styles.modalCard}
+            onPress={(e) => e.stopPropagation()}
+          >
+            {selectedBuilding && (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>{selectedBuilding}</Text>
+                  <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
+                    <Icon name="close" size={24} color="#276389" />
+                  </TouchableOpacity>
+                </View>
+
+                {buildingReports.length === 0 ? (
+                  <Text style={styles.modalEmptyText}>
+                    No reports submitted for this building yet.
+                  </Text>
+                ) : (
+                  buildingReports.map((report) => (
+                    <View key={report.id} style={styles.modalRow}>
+                      <Text style={styles.modalRowText}>{report.name}</Text>
+                      <Text style={styles.modalRowMeta}>
+                        {report.type} · Floor {report.floor} · {report.time}
+                      </Text>
+                      {report.description ? (
+                        <Text style={styles.modalRowMeta}>
+                          {report.description}
+                        </Text>
+                      ) : null}
+                    </View>
+                  ))
+                )}
+
+                <Text style={styles.modalSecurityCount}>
+                  Total reports: {buildingReports.length}
+                </Text>
+              </>
+            )}
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <AuthRequiredModal
+        visible={showAuthRequiredModal}
+        onClose={() => setShowAuthRequiredModal(false)}
+      />
+
+      <ReportFormModal
+        visible={isReportModalVisible}
+        onClose={() => setIsReportModalVisible(false)}
+        onSubmitSuccess={handleReportSubmitSuccess}
+      />
+
+      {demoMode && (
+        <View style={styles.demoContainer}>
+          <Text style={styles.demoLabel}>Demo Mode — Simulate Location</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {["EV", "LB", "H", "FB", "JMSB"].map((b) => (
+              <TouchableOpacity
+                key={b}
+                style={styles.demoButton}
+                onPress={() => simulateNearBuilding(b)}
+              >
+                <Text style={styles.demoButtonText}>Near {b}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      <Modal
+        visible={selectedReport !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedReport(null)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setSelectedReport(null)}
+        >
+          <Pressable
+            style={styles.modalCard}
+            onPress={(e) => e.stopPropagation()}
+          >
+            {selectedReport && (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>
+                    {selectedReport.name || selectedReport.type}
+                  </Text>
+                  <TouchableOpacity onPress={() => setSelectedReport(null)}>
+                    <Icon name="close" size={24} color="#276389" />
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={styles.modalBuilding}>
+                  {normalizeBuildingId(selectedReport.building)} · Floor{" "}
+                  {selectedReport.floor}
+                </Text>
+
+                {selectedReport.isSevere && (
+                  <View style={styles.severeIndicator}>
+                    <TriangleAlert size={13} color="#F59E0B" />
+                    <Text style={styles.severeIndicatorText}>
+                      Marked Severe by Security
+                    </Text>
+                  </View>
+                )}
+
+                {selectedReport.description ? (
+                  <Text style={styles.modalDescription}>
+                    {selectedReport.description}
+                  </Text>
+                ) : null}
+
+                {selectedReport.image ? (
+                  <>
+                    <Text style={styles.modalSectionTitle}>Photo</Text>
+                    <Image
+                      source={{ uri: selectedReport.image }}
+                      style={styles.modalImage}
+                      resizeMode="cover"
+                    />
+                  </>
+                ) : null}
+
+                <Text style={styles.modalSectionTitle}></Text>
+                {(selectedReport.timeline ?? []).map((event, index) => (
+                  <View key={index} style={styles.timelineRow}>
+                    <View style={styles.timelineDot} />
+                    <Text style={styles.timelineText}>
+                      {event.action === "reported" &&
+                        `First reported by ${event.by}`}
+                      {event.action === "upvoted" &&
+                        `Confirmed by a concordian`}
+                      {event.action === "verified" && `Verified by security`}
+                      {event.action === "resolved" &&
+                        `Marked resolved by ${
+                          event.by === "security" ? "security" : "a concordian"
+                        }`}
+                      {event.action === "severe" && `Marked severe by security`}
+                      <Text style={styles.timelineTime}> · {event.time}</Text>
+                    </Text>
+                  </View>
+                ))}
+              </>
+            )}
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <BottomNav onPressAdd={handleOpenReportFlow} />
+    </SafeAreaView>
   );
 }

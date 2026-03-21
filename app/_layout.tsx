@@ -26,7 +26,9 @@ export default function RootLayout() {
 
     const seedSecurityUser = async () => {
       const users = await getUsers();
-      const securityExists = users.some((u) => u.email === "security@concordia.ca");
+      const securityExists = users.some(
+        (u) => u.email === "security@concordia.ca",
+      );
       if (!securityExists) {
         await addUser({
           firstName: "Security",
@@ -51,23 +53,24 @@ export default function RootLayout() {
         await saveNewReport(report);
       }
 
-        const after = await getReports();
-        console.log("reports after seeding:", after.length);
-        console.log("dates:", after.map(r => r.date));
+      const after = await getReports();
+      console.log("reports after seeding:", after.length);
+      console.log(
+        "dates:",
+        after.map((r) => r.date),
+      );
     };
 
     const setup = async () => {
       await seedAdminUser();
-      await seedSecurityUser(); 
+      await seedSecurityUser();
       await seedTestReports();
-      await AsyncStorage.setItem("seeded", "true"); 
+      await AsyncStorage.setItem("seeded", "true");
     };
 
     setup();
     startLocationTracking();
   }, []);
 
-  return (
-    <Stack screenOptions={{ headerShown: false, animation: "fade" }} />;
-  );
+  return <Stack screenOptions={{ headerShown: false, animation: "fade" }} />;
 }

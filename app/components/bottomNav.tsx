@@ -1,8 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { usePathname, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { TouchableOpacity, View } from "react-native";
-import { bottomNavStyles as styles } from "../styles/bottomNavStyles";
+import { TouchableOpacity, View, useColorScheme } from "react-native";
+import { bottomNavStyles as importStyles } from "../styles/bottomNavStyles";
+import { Themes } from "../styles/Themes";
 import { getCurrentUser } from "../utils/authStorage";
 import AuthRequiredModal from "./authRequiredModel";
 
@@ -39,11 +40,14 @@ export default function BottomNav({ onPressAdd }: BottomNavProps) {
     }
   };
 
+  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const styles = importStyles(scheme);
+
   return (
     <>
       <View style={styles.wrapper}>
         <LinearGradient
-          colors={["#F7F9FF", "#FFFFFF", "#FFFFFF"]}
+          colors={[scheme.surface, scheme.background, scheme.background]}
           style={styles.bottomNav}
         >
           {navItems.map((item) => {

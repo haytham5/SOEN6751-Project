@@ -8,7 +8,7 @@ export const styles = (theme: ThemeType) =>
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 16,
-      backgroundColor: theme.overlay,
+      backgroundColor: "rgb(0, 0, 0, 0.35)",
     },
 
     backdrop: {
@@ -50,14 +50,14 @@ export const styles = (theme: ThemeType) =>
     title: {
       fontSize: 26,
       fontFamily: "Lexend_400Regular",
-      color: theme.on_background,
+      color: theme.onBackground,
     },
 
     stepTitle: {
       marginTop: 4,
       fontSize: 13,
       fontFamily: "Lexend_400Regular",
-      color: theme.on_surface_medium,
+      color: theme.onSurface50,
     },
 
     closeButton: {
@@ -71,7 +71,7 @@ export const styles = (theme: ThemeType) =>
 
     progressTrack: {
       height: 8,
-      backgroundColor: theme.surface_container_high,
+      backgroundColor: theme.surfaceContainerHigh,
       borderRadius: 999,
       marginHorizontal: 20,
       overflow: "hidden",
@@ -97,11 +97,11 @@ export const styles = (theme: ThemeType) =>
     stepLabel: {
       fontSize: 16,
       fontFamily: "Lexend_400Regular",
-      color: theme.on_background,
+      color: theme.onBackground,
     },
 
     helperBox: {
-      backgroundColor: theme.surface_container,
+      backgroundColor: theme.surfaceContainer,
       padding: 12,
       borderRadius: 12,
     },
@@ -109,7 +109,7 @@ export const styles = (theme: ThemeType) =>
     helperText: {
       fontSize: 13,
       fontFamily: "Lexend_400Regular",
-      color: theme.on_surface,
+      color: theme.onSurface,
     },
 
     imageBox: {
@@ -122,7 +122,7 @@ export const styles = (theme: ThemeType) =>
     },
 
     imageText: {
-      color: theme.on_surface_medium,
+      color: theme.onSurface50,
       fontFamily: "Lexend_400Regular",
     },
 
@@ -133,31 +133,31 @@ export const styles = (theme: ThemeType) =>
     },
 
     input: {
-      backgroundColor: theme.surface_container,
+      backgroundColor: theme.surfaceContainer,
       padding: 14,
       borderRadius: 12,
       fontFamily: "Lexend_400Regular",
-      color: theme.on_background,
+      color: theme.onBackground,
     },
 
     description: {
-      backgroundColor: theme.surface_container,
+      backgroundColor: theme.surfaceContainer,
       padding: 14,
       borderRadius: 12,
       minHeight: 120,
       textAlignVertical: "top",
       fontFamily: "Lexend_400Regular",
-      color: theme.on_background,
+      color: theme.onBackground,
     },
 
     dropdown: {
-      backgroundColor: theme.surface_container,
+      backgroundColor: theme.surfaceContainer,
       borderRadius: 12,
       overflow: "hidden",
     },
 
     reviewCard: {
-      backgroundColor: theme.surface_container,
+      backgroundColor: theme.surfaceContainer,
       borderRadius: 14,
       padding: 14,
       gap: 6,
@@ -166,13 +166,13 @@ export const styles = (theme: ThemeType) =>
     reviewTitle: {
       fontSize: 15,
       fontFamily: "Lexend_400Regular",
-      color: theme.on_background,
+      color: theme.onBackground,
     },
 
     reviewText: {
       fontSize: 13,
       fontFamily: "Lexend_400Regular",
-      color: theme.on_surface_medium,
+      color: theme.onSurface50,
     },
 
     footer: {
@@ -197,7 +197,7 @@ export const styles = (theme: ThemeType) =>
     },
 
     secondaryButtonText: {
-      color: theme.on_background,
+      color: theme.onBackground,
       fontSize: 15,
       fontFamily: "Lexend_400Regular",
     },
@@ -211,7 +211,7 @@ export const styles = (theme: ThemeType) =>
     },
 
     submitText: {
-      color: theme.on_primary,
+      color: theme.onPrimary,
       fontSize: 15,
       fontFamily: "Lexend_400Regular",
     },

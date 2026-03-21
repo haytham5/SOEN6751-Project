@@ -4,29 +4,28 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StatusBar,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    useColorScheme,
-    View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  useColorScheme,
+  View,
 } from "react-native";
 import {
-    SafeAreaView,
-    useSafeAreaInsets,
+  SafeAreaView,
+  useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Themes } from "./styles/Themes";
 import { styles as importStyles } from "./styles/userAuthStyles";
 import { findUserByCredentials, setCurrentUser } from "./utils/authStorage";
 
 export default function Signin() {
-  const styles = importStyles(
-    useColorScheme() === "dark" ? Themes.dark : Themes.light,
-  );
+  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const styles = importStyles(scheme);
 
   const [fontsLoaded] = useFonts({
     Pacifico_400Regular,
@@ -130,7 +129,7 @@ export default function Signin() {
             <TextInput
               style={styles.input}
               placeholder="you@university.ca"
-              placeholderTextColor="#AABCD4"
+              placeholderTextColor={scheme.onSurface50}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -147,7 +146,7 @@ export default function Signin() {
               <TextInput
                 style={[styles.input, styles.passwordInput]}
                 placeholder="Enter password"
-                placeholderTextColor="#AABCD4"
+                placeholderTextColor={scheme.onSurface50}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
                 value={password}
