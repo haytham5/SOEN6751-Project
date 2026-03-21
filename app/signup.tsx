@@ -4,342 +4,426 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  useColorScheme,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Themes } from "./styles/Themes";
-import { styles as importStyles } from "./styles/userAuthStyles";
-import { addUser, setCurrentUser, UserRole } from "./utils/authStorage";
+import {
+    Asterisk,
+    ChevronLeft,
+    CircleAlert,
+    Eye,
+    EyeOff,
+} from "lucide-react-native";
+
+import BuildingPreferencesWizard from "./components/buildingPreferences";
+import { styles } from "./styles/userAuthStyles";
+import {
+    addUser,
+    setCurrentUser,
+    type BuildingPreference,
+    type UserRole,
+} from "./utils/authStorage";
+
+type SignUpStep = "account" | "preferences";
 
 export default function SignUp() {
-  const styles = importStyles(
-    useColorScheme() === "dark" ? Themes.dark : Themes.light,
-  );
-
-  const [fontsLoaded] = useFonts({
-    Pacifico_400Regular,
-    Lexend_400Regular,
-  });
-
-  const insets = useSafeAreaInsets();
-
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState<UserRole>("concordian");
-  const [idNumber, setIdNumber] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      NavigationBar.setBackgroundColorAsync("#F7F9FF");
-      NavigationBar.setButtonStyleAsync("dark");
-      NavigationBar.setBehaviorAsync("overlay-swipe");
-    }
-  }, []);
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
-  const clearError = () => setError(null);
-
-  const handleContinueAsGuest = async () => {
-    setError(null);
-
-    await setCurrentUser({
-      firstName: "Guest",
-      lastName: "",
-      role: "concordian",
-      idNumber: "",
-      phone: "",
-      email: "",
-      isGuest: true,
+    const [fontsLoaded] = useFonts({
+        Pacifico_400Regular,
+        Lexend_400Regular,
     });
 
-    router.push("/home");
-  };
+    const insets = useSafeAreaInsets();
 
-  const validateForm = () => {
-    if (
-      !firstName.trim() ||
-      !lastName.trim() ||
-      !idNumber.trim() ||
-      !phone.trim() ||
-      !email.trim() ||
-      !password.trim()
-    ) {
-      setError("Please fill in all fields.");
-      return false;
-    }
+    const [step, setStep] = useState<SignUpStep>("account");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [role, setRole] = useState<UserRole>("concordian");
+    const [idNumber, setIdNumber] = useState("");
+    const [phone, setPhone] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return false;
-    }
+    useEffect(() => {
+        if (Platform.OS === "android") {
+            NavigationBar.setBackgroundColorAsync("#F7F9FF");
+            NavigationBar.setButtonStyleAsync("dark");
+            NavigationBar.setBehaviorAsync("overlay-swipe");
+        }
+    }, []);
 
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email.trim())) {
-      setError("Please enter a valid email.");
-      return false;
-    }
+    if (!fontsLoaded) return null;
 
-    return true;
-  };
+    const clearError = () => setError(null);
 
-  const handleSignUp = async () => {
-    if (!validateForm()) return;
+    const handleContinueAsGuest = async () => {
+        setError(null);
 
-    const newUser = {
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      role,
-      idNumber: idNumber.trim(),
-      phone: phone.trim(),
-      email: email.trim().toLowerCase(),
-      password,
+        await setCurrentUser({
+            firstName: "Guest",
+            lastName: "",
+            role: "concordian",
+            idNumber: "",
+            phone: "",
+            email: "",
+            isGuest: true,
+            buildingPreferences: [],
+        });
+
+        router.push("/home");
     };
 
-    const result = await addUser(newUser);
+    const validateAccountForm = () => {
+        if (!firstName.trim() || !idNumber.trim() || !email.trim() || !password.trim()) {
+            setError("Please fill in all required fields.");
+            return false;
+        }
 
-    if (!result.ok) {
-      setError(result.message || "Unable to create account.");
-      return;
-    }
+        if (password.length < 8) {
+            setError("Password must be at least 8 characters.");
+            return false;
+        }
 
-    await setCurrentUser({
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      role: newUser.role,
-      idNumber: newUser.idNumber,
-      phone: newUser.phone,
-      email: newUser.email,
-      isGuest: false,
-    });
+        const emailRegex = /\S+@\S+\.\S+/;
+        if (!emailRegex.test(email.trim())) {
+            setError("Please enter a valid email.");
+            return false;
+        }
 
-    setError(null);
-    router.push("/home");
-  };
+        return true;
+    };
 
-  return (
-    <SafeAreaView style={styles.background}>
-      <StatusBar backgroundColor="#F7F9FF" barStyle="dark-content" />
+    const handleNextStep = () => {
+        if (!validateAccountForm()) return;
+        setError(null);
+        setStep("preferences");
+    };
 
-      <TouchableOpacity
-        style={[styles.topBackButton, { top: insets.top + 6 }]}
-        onPress={() => router.back()}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.topBackText}>← Back</Text>
-      </TouchableOpacity>
+    const createAccount = async (prefs: BuildingPreference[]) => {
+        const newUser = {
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            role,
+            idNumber: idNumber.trim(),
+            phone: phone.trim(),
+            email: email.trim().toLowerCase(),
+            password,
+            buildingPreferences: prefs,
+        };
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollableContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.logoArea}>
-            <Text style={styles.appTitle}>App Name</Text>
-          </View>
+        const result = await addUser(newUser);
 
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Create an account</Text>
+        if (!result.ok) {
+            setError(result.message || "Unable to create account.");
+            setStep("account");
+            return;
+        }
 
-            <Text style={styles.inputLabel}>First name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="First name"
-              placeholderTextColor="#AABCD4"
-              value={firstName}
-              onChangeText={(text) => {
-                setFirstName(text);
-                clearError();
-              }}
-            />
+        await setCurrentUser({
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            role: newUser.role,
+            idNumber: newUser.idNumber,
+            phone: newUser.phone,
+            email: newUser.email,
+            isGuest: false,
+            buildingPreferences: prefs,
+        });
 
-            <Text style={styles.inputLabel}>Last name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Last name"
-              placeholderTextColor="#AABCD4"
-              value={lastName}
-              onChangeText={(text) => {
-                setLastName(text);
-                clearError();
-              }}
-            />
+        router.push("/home");
+    };
 
-            <Text style={styles.inputLabel}>Account type</Text>
-            <View style={styles.roleRow}>
-              <TouchableOpacity
-                style={[
-                  styles.roleButton,
-                  role === "concordian" && styles.roleButtonActive,
-                ]}
+    const RequiredLabel = ({ label }: { label: string }) => (
+        <View style={localStyles.labelRow}>
+            <Text style={styles.inputLabel}>{label}</Text>
+            <Asterisk size={12} color="#D7263D" strokeWidth={2.5} />
+        </View>
+    );
+
+    const OptionalLabel = ({ label }: { label: string }) => (
+        <Text style={styles.inputLabel}>{label}</Text>
+    );
+
+    return (
+        <SafeAreaView style={styles.background}>
+            <StatusBar backgroundColor="#F7F9FF" barStyle="dark-content" />
+
+            <TouchableOpacity
+                style={[styles.topBackButton, { top: insets.top + 6 }]}
                 onPress={() => {
-                  setRole("concordian");
-                  clearError();
+                    if (step === "preferences") {
+                        setStep("account");
+                        return;
+                    }
+                    router.back();
                 }}
-                activeOpacity={0.8}
-              >
-                <Text
-                  style={[
-                    styles.roleButtonText,
-                    role === "concordian" && styles.roleButtonTextActive,
-                  ]}
-                >
-                  Concordian
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.roleButton,
-                  role === "security" && styles.roleButtonActive,
-                ]}
-                onPress={() => {
-                  setRole("security");
-                  clearError();
-                }}
-                activeOpacity={0.8}
-              >
-                <Text
-                  style={[
-                    styles.roleButtonText,
-                    role === "security" && styles.roleButtonTextActive,
-                  ]}
-                >
-                  Security
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.inputLabel}>
-              {role === "security" ? "Employee ID" : "Student ID"}
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder={role === "security" ? "Employee ID" : "Student ID"}
-              placeholderTextColor="#AABCD4"
-              value={idNumber}
-              onChangeText={(text) => {
-                setIdNumber(text);
-                clearError();
-              }}
-            />
-
-            <Text style={styles.inputLabel}>Phone number</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="5141234567"
-              placeholderTextColor="#AABCD4"
-              value={phone}
-              keyboardType="phone-pad"
-              onChangeText={(text) => {
-                setPhone(text);
-                clearError();
-              }}
-            />
-
-            <Text style={styles.inputLabel}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="you@university.ca"
-              placeholderTextColor="#AABCD4"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                clearError();
-              }}
-            />
-
-            <Text style={styles.inputLabel}>Password</Text>
-            <View style={styles.passwordRow}>
-              <TextInput
-                style={[styles.input, styles.passwordInput]}
-                placeholder="Min. 8 characters"
-                placeholderTextColor="#AABCD4"
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  clearError();
-                }}
-              />
-              <TouchableOpacity
-                style={styles.showHideButton}
-                onPress={() => setShowPassword((v) => !v)}
                 activeOpacity={0.7}
-              >
-                <Image
-                  source={
-                    showPassword
-                      ? require("../assets/images/iconmonstr-eye-off-thin-240.png")
-                      : require("../assets/images/iconmonstr-eye-thin-240.png")
-                  }
-                  style={{ width: 24, height: 24 }}
-                />
-              </TouchableOpacity>
-            </View>
-
-            {error && (
-              <View style={styles.errorBox}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            )}
-
-            <TouchableOpacity
-              style={styles.primaryButton}
-              activeOpacity={0.85}
-              onPress={handleSignUp}
             >
-              <Text style={styles.primaryButtonText}>Create Account</Text>
+                <View style={localStyles.backRow}>
+                    {step === "preferences" && <ChevronLeft size={16} color="#243447" />}
+                    <Text style={styles.topBackText}>
+                        {step === "preferences" ? "Back to account form" : "← Back"}
+                    </Text>
+                </View>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.guestLinkWrapper}
-              activeOpacity={0.7}
-              onPress={handleContinueAsGuest}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.keyboardView}
             >
-              <Text style={styles.guestLink}>Continue as guest</Text>
-            </TouchableOpacity>
-          </View>
+                <ScrollView
+                    contentContainerStyle={styles.scrollableContent}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    <View style={styles.logoArea}>
+                        <Text style={styles.appTitle}>App Name</Text>
+                    </View>
 
-          <View style={styles.footerRow}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => router.push("/signin")}
-            >
-              <Text style={styles.footerLink}>Sign In</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
+                    <View style={styles.card}>
+                        {step === "account" ? (
+                            <>
+                                <Text style={styles.cardTitle}>Create an account</Text>
+
+                                <View style={localStyles.requiredInfoBox}>
+                                    <CircleAlert size={16} color="#7A3E00" />
+                                    <Text style={localStyles.requiredInfoText}>
+                                        Fields marked with this icon (*) are mandatory.
+                                    </Text>
+                                </View>
+
+                                <RequiredLabel label="First name" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="First name"
+                                    placeholderTextColor="#AABCD4"
+                                    value={firstName}
+                                    onChangeText={(text) => {
+                                        setFirstName(text);
+                                        clearError();
+                                    }}
+                                />
+
+                                <OptionalLabel label="Last name" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Last name"
+                                    placeholderTextColor="#AABCD4"
+                                    value={lastName}
+                                    onChangeText={(text) => {
+                                        setLastName(text);
+                                        clearError();
+                                    }}
+                                />
+
+                                <RequiredLabel label="Account type" />
+                                <View style={styles.roleRow}>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.roleButton,
+                                            role === "concordian" && styles.roleButtonActive,
+                                        ]}
+                                        onPress={() => {
+                                            setRole("concordian");
+                                            clearError();
+                                        }}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.roleButtonText,
+                                                role === "concordian" && styles.roleButtonTextActive,
+                                            ]}
+                                        >
+                                            Student
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.roleButton,
+                                            role === "security" && styles.roleButtonActive,
+                                        ]}
+                                        onPress={() => {
+                                            setRole("security");
+                                            clearError();
+                                        }}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.roleButtonText,
+                                                role === "security" && styles.roleButtonTextActive,
+                                            ]}
+                                        >
+                                            Security
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.roleButton,
+                                            role === "admin" && styles.roleButtonActive,
+                                        ]}
+                                        onPress={() => {
+                                            setRole("admin");
+                                            clearError();
+                                        }}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.roleButtonText,
+                                                role === "admin" && styles.roleButtonTextActive,
+                                            ]}
+                                        >
+                                            Admin
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <RequiredLabel label="Student ID" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Student ID"
+                                    placeholderTextColor="#AABCD4"
+                                    value={idNumber}
+                                    onChangeText={(text) => {
+                                        setIdNumber(text);
+                                        clearError();
+                                    }}
+                                />
+
+                                <OptionalLabel label="Phone number" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="5141234567"
+                                    placeholderTextColor="#AABCD4"
+                                    value={phone}
+                                    keyboardType="phone-pad"
+                                    onChangeText={(text) => {
+                                        setPhone(text);
+                                        clearError();
+                                    }}
+                                />
+
+                                <RequiredLabel label="Email" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="you@university.ca"
+                                    placeholderTextColor="#AABCD4"
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                    value={email}
+                                    onChangeText={(text) => {
+                                        setEmail(text);
+                                        clearError();
+                                    }}
+                                />
+
+                                <RequiredLabel label="Password" />
+                                <View style={styles.passwordRow}>
+                                    <TextInput
+                                        style={[styles.input, styles.passwordInput]}
+                                        placeholder="Min. 8 characters"
+                                        placeholderTextColor="#AABCD4"
+                                        secureTextEntry={!showPassword}
+                                        autoCapitalize="none"
+                                        value={password}
+                                        onChangeText={(text) => {
+                                            setPassword(text);
+                                            clearError();
+                                        }}
+                                    />
+                                    <TouchableOpacity
+                                        style={styles.showHideButton}
+                                        onPress={() => setShowPassword((v) => !v)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff size={22} color="#5A6B7B" />
+                                        ) : (
+                                            <Eye size={22} color="#5A6B7B" />
+                                        )}
+                                    </TouchableOpacity>
+                                </View>
+
+                                {error && (
+                                    <View style={styles.errorBox}>
+                                        <Text style={styles.errorText}>{error}</Text>
+                                    </View>
+                                )}
+
+                                <TouchableOpacity style={styles.primaryButton} onPress={handleNextStep}>
+                                    <Text style={styles.primaryButtonText}>Continue</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.guestLinkWrapper}
+                                    onPress={handleContinueAsGuest}
+                                >
+                                    <Text style={styles.guestLink}>Continue as guest</Text>
+                                </TouchableOpacity>
+                            </>
+                        ) : (
+                            <BuildingPreferencesWizard
+                                showIntro
+                                allowSkip
+                                initialPreferences={[]}
+                                onCancel={() => setStep("account")}
+                                onSkip={() => createAccount([])}
+                                onSave={(prefs) => createAccount(prefs)}
+                                saveButtonLabel="Create Account"
+                            />
+                        )}
+                    </View>
+
+                    <View style={styles.footerRow}>
+                        <Text style={styles.footerText}>Already have an account? </Text>
+                        <TouchableOpacity onPress={() => router.push("/signin")}>
+                            <Text style={styles.footerLink}>Sign In</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+    );
 }
+
+const localStyles = StyleSheet.create({
+    labelRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        marginBottom: 6,
+    },
+    requiredInfoBox: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        backgroundColor: "#FFF4E5",
+        borderRadius: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        marginBottom: 18,
+    },
+    requiredInfoText: {
+        color: "#7A3E00",
+        fontSize: 13,
+        flex: 1,
+    },
+    backRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+    },
+});

@@ -1,11 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { usePathname, useRouter } from "expo-router";
-import React from "react";
-import { TouchableOpacity, useColorScheme, View } from "react-native";
-import { bottomNavStyles as importStyles } from "../styles/bottomNavStyles";
+import React, { useState } from "react";
+import { TouchableOpacity, View } from "react-native";
+import { bottomNavStyles as styles } from "../styles/bottomNavStyles";
+import { getCurrentUser } from "../utils/authStorage";
+import AuthRequiredModal from "./authRequiredModel";
 
 import { Bell, Calendar, House, Plus, User } from "lucide-react-native";
-import { Themes } from "../styles/Themes";
 
 interface BottomNavProps {
   onPressAdd?: () => void;
@@ -22,46 +23,61 @@ const navItems = [
 export default function BottomNav({ onPressAdd }: BottomNavProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
 
-  const styles = importStyles(
-    useColorScheme() === "dark" ? Themes.dark : Themes.light,
-  );
-  const theme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const handleCreatePress = async () => {
+    const currentUser = await getCurrentUser();
+    const isLoggedIn = currentUser && !currentUser.isGuest;
+
+    if (!isLoggedIn) {
+      setShowAuthRequiredModal(true);
+      return;
+    }
+
+    if (onPressAdd) {
+      onPressAdd();
+    }
+  };
 
   return (
-    <View style={styles.wrapper}>
-      <LinearGradient
-        colors={[theme.surface_bright, theme.background, theme.background]}
-        style={styles.bottomNav}
-      >
-        {navItems.map((item) => {
-          const isCreate = item.key === "create";
-          const isActive = !isCreate && pathname === item.route;
-          const Icon = item.icon;
+    <>
+      <View style={styles.wrapper}>
+        <LinearGradient
+          colors={["#F7F9FF", "#FFFFFF", "#FFFFFF"]}
+          style={styles.bottomNav}
+        >
+          {navItems.map((item) => {
+            const isCreate = item.key === "create";
+            const isActive = !isCreate && pathname === item.route;
+            const Icon = item.icon;
 
-          return (
-            <TouchableOpacity
-              key={item.key}
-              style={[styles.navItem, isActive && styles.activeNavItem]}
-              onPress={() => {
-                if (isCreate) {
-                  onPressAdd?.();
-                } else {
-                  router.replace(item.route as any);
-                }
-              }}
-            >
-              <Icon
-                size={26}
-                color={
-                  isActive ? theme.on_surface : theme.on_surface_variant_light
-                }
-                strokeWidth={2}
-              />
-            </TouchableOpacity>
-          );
-        })}
-      </LinearGradient>
-    </View>
+            return (
+              <TouchableOpacity
+                key={item.key}
+                style={[styles.navItem, isActive && styles.activeNavItem]}
+                onPress={() => {
+                  if (isCreate) {
+                    handleCreatePress();
+                  } else {
+                    router.replace(item.route as any);
+                  }
+                }}
+              >
+                <Icon
+                  size={26}
+                  color={isActive ? "#1B1B1B" : "#A0A0A0"}
+                  strokeWidth={2}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </LinearGradient>
+      </View>
+
+      <AuthRequiredModal
+        visible={showAuthRequiredModal}
+        onClose={() => setShowAuthRequiredModal(false)}
+      />
+    </>
   );
 }

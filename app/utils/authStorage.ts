@@ -1,6 +1,33 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export type UserRole = "concordian" | "security";
+export type UserRole = "concordian" | "security" | "admin";
+
+
+
+
+export type DayKey =
+    | "Mon"
+    | "Tue"
+    | "Wed"
+    | "Thu"
+    | "Fri"
+    | "Sat"
+    | "Sun";
+
+export type DayPreference = {
+    day: DayKey;
+    enabled: boolean;
+    allDay: boolean;
+    startTime: string;
+    endTime: string;
+};
+
+export type BuildingPreference = {
+    buildingId: string;
+    buildingName: string;
+    subscribed: boolean;
+    dayPreferences: DayPreference[];
+};
 
 export type StoredUser = {
     firstName: string;
@@ -10,6 +37,7 @@ export type StoredUser = {
     phone: string;
     email: string;
     password: string;
+    buildingPreferences?: BuildingPreference[];
 };
 
 export type CurrentUser = Omit<StoredUser, "password"> & {
@@ -37,7 +65,9 @@ export async function saveUsers(users: StoredUser[]): Promise<void> {
     }
 }
 
-export async function addUser(user: StoredUser): Promise<{ ok: boolean; message?: string }> {
+export async function addUser(
+    user: StoredUser
+): Promise<{ ok: boolean; message?: string }> {
     const users = await getUsers();
 
     const existingUser = users.find(
@@ -92,7 +122,6 @@ export async function clearCurrentUser(): Promise<void> {
     } catch (error) {
         console.error("Error clearing current user:", error);
     }
-
 }
 
 export async function updateCurrentUser(
@@ -102,7 +131,7 @@ export async function updateCurrentUser(
         const currentUser = await getCurrentUser();
         if (!currentUser) return;
 
-        const updatedUser = {
+        const updatedUser: CurrentUser = {
             ...currentUser,
             ...updatedFields,
         };
@@ -112,8 +141,10 @@ export async function updateCurrentUser(
         if (!updatedUser.isGuest) {
             const users = await getUsers();
 
+            const oldEmail = currentUser.email.toLowerCase();
+
             const updatedUsers = users.map((user) =>
-                user.email.toLowerCase() === currentUser.email.toLowerCase()
+                user.email.toLowerCase() === oldEmail
                     ? {
                         ...user,
                         firstName: updatedUser.firstName,
@@ -122,6 +153,7 @@ export async function updateCurrentUser(
                         idNumber: updatedUser.idNumber,
                         phone: updatedUser.phone,
                         email: updatedUser.email,
+                        buildingPreferences: updatedUser.buildingPreferences ?? [],
                     }
                     : user
             );
