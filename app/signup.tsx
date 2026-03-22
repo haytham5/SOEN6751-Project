@@ -2,8 +2,16 @@ import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
+import {
+    Asterisk,
+    ChevronLeft,
+    CircleAlert,
+    Eye,
+    EyeOff,
+} from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
+    Image,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -18,13 +26,6 @@ import {
     SafeAreaView,
     useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import {
-    Asterisk,
-    ChevronLeft,
-    CircleAlert,
-    Eye,
-    EyeOff,
-} from "lucide-react-native";
 
 import BuildingPreferencesWizard from "./components/buildingPreferences";
 import { styles } from "./styles/userAuthStyles";
@@ -177,8 +178,8 @@ export default function SignUp() {
                         {step === "preferences" ? "Back to account form" : "← Back"}
                     </Text>
                 </View>
-            </TouchableOpacity>
 
+            </TouchableOpacity>
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.keyboardView}
@@ -189,6 +190,11 @@ export default function SignUp() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.logoArea}>
+                        <Image
+                        source={require('../assets/images/logo.png')}
+                        style={styles.logoBig}
+                        resizeMode="contain"
+                        />
                         <Text style={styles.appTitle}>Compass</Text>
                     </View>
 

@@ -3,11 +3,12 @@ import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import AppLoading from "expo-app-loading";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { StatusBar, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect } from 'react';
+import { Image, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "./styles/userAuthStyles";
 import { clearCurrentUser } from "./utils/authStorage";
+
 
 export default function Welcome() {
   let [fontsLoaded] = useFonts({
@@ -28,11 +29,15 @@ export default function Welcome() {
   return (
     <SafeAreaView style={styles.background}>
       <StatusBar backgroundColor="#F7F9FF" barStyle="dark-content" />
-
       <View style={styles.container}>
         <View style={styles.logoArea}>
-          <Text style={styles.title}>App Name</Text>
-          <Text style={styles.tagline}>Subtitle here</Text>
+          <Image
+              source={require('../assets/images/logo.png')}
+              style={styles.logoBig}
+              resizeMode="contain"
+            />
+          <Text style={styles.title}>Compass</Text>
+          <Text style={styles.tagline}>Calm Navigation at Concordia University</Text>
         </View>
 
         <View style={styles.buttonGroup}>

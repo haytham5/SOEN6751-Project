@@ -98,7 +98,6 @@ export default function Signin() {
     return (
         <SafeAreaView style={styles.background}>
             <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-
             <TouchableOpacity
                 style={[styles.topBackButton, { top: insets.top + 6 }]}
                 onPress={() => router.back()}
@@ -106,6 +105,15 @@ export default function Signin() {
             >
                 <Text style={styles.topBackText}>← Back</Text>
             </TouchableOpacity>
+
+            <View style={styles.logoArea}>
+                <Image
+                    source={require('../assets/images/logo.png')}
+                    style={styles.logoBig}
+                    resizeMode="contain"
+                    />
+                <Text style={styles.title}>Compass</Text>
+            </View>
 
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -116,9 +124,6 @@ export default function Signin() {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
-                    <View style={styles.logoArea}>
-                        <Text style={styles.appTitle}>Compass</Text>
-                    </View>
 
                     <View style={styles.card}>
                         <Text style={styles.cardTitle}>Log in to account</Text>

@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
 
   title: {
     fontFamily: "Lexend_400Regular",
-    fontSize: 25,
+    fontSize: 45,
     color: COLORS.black,
     marginBottom: 8,
   },
@@ -315,5 +315,28 @@ export const styles = StyleSheet.create({
 
   roleButtonTextActive: {
     color: COLORS.primaryDark,
+  },
+
+  container2: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  container3: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 120, 
+  },
+
+  logoBig: {
+    width: 200,
+    height: 200,
+  },
+
+  logoMedium: {
+    width: 100,
+    height: 100,
   },
 });
