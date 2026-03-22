@@ -537,4 +537,9 @@ export const styles = StyleSheet.create({
     color: COLORS.muted,
     fontStyle: "italic",
   },
+
+  actionButtonUpvoted: {
+    backgroundColor: "#E8F0F7",
+    borderColor: "#276389",
+  },
 });

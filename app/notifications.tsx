@@ -345,59 +345,50 @@ export default function Notifications() {
 
                         <View style={styles.updateCardActions}>
                           <TouchableOpacity
-                              style={[
-                                styles.actionButton,
-                                (hasUpvoted || isDisabled) &&
-                                styles.actionButtonDisabled,
-                              ]}
-                              onPress={() => handleUpvote(report.id)}
-                              disabled={hasUpvoted || isDisabled}
+                            style={[
+                              styles.actionButton,
+                              isDisabled && styles.actionButtonDisabled,      // disabled if guest
+                              hasUpvoted && styles.actionButtonUpvoted,       // highlighted if upvoted
+                            ]}
+                            onPress={() => handleUpvote(report.id)}
+                            disabled={isDisabled}  // ← only disabled for guests, not for having upvoted
                           >
                             <ThumbsUp
-                                size={18}
-                                color={
-                                  hasUpvoted || isDisabled ? "#B8BDC7" : "#56bab8"
-                                }
+                              size={18}
+                              color={isDisabled ? "#aaa" : hasUpvoted ? "#276389" : "#276389"}
                             />
-                            <Text
-                                style={[
-                                  styles.actionCount,
-                                  (hasUpvoted || isDisabled) &&
-                                  styles.actionCountDisabled,
-                                ]}
-                            >
+                            <Text style={[
+                              styles.actionCount,
+                              isDisabled && styles.actionCountDisabled,
+                            ]}>
                               {report.upvotedBy?.length ?? 0}
                             </Text>
                           </TouchableOpacity>
 
+                            {/* Resolved button */}
                           <TouchableOpacity
-                              style={[
-                                styles.actionButton,
-                                (isResolved || isDisabled) &&
-                                styles.actionButtonDisabled,
-                              ]}
-                              onPress={() => handleResolve(report.id)}
-                              disabled={isResolved || isDisabled}
+                            style={[
+                              styles.actionButton,
+                              isDisabled && styles.actionButtonDisabled,
+                              (report.resolvedBy ?? []).includes(currentUserRole ?? "") && styles.actionButtonUpvoted,
+                            ]}
+                            onPress={() => handleResolve(report.id)}
+                            disabled={isDisabled}
                           >
                             <CheckCircle
-                                size={18}
-                                color={
-                                  isResolved || isDisabled ? "#B8BDC7" : "#56bab8"
-                                }
+                              size={18}
+                              color={isDisabled ? "#aaa" : "#276389"}
                             />
-                            <Text
-                                style={[
-                                  styles.actionCount,
-                                  (isResolved || isDisabled) &&
-                                  styles.actionCountDisabled,
-                                ]}
-                            >
-                              {isResolved ? "✓" : "0"}
+                            <Text style={[
+                              styles.actionCount,
+                              isDisabled && styles.actionCountDisabled,
+                            ]}>
+                              {report.resolvedBy?.length ?? 0}
                             </Text>
                           </TouchableOpacity>
                         </View>
                       </View>
-
+                            {/* See more button */}
                       <TouchableOpacity
                           style={styles.chevronButton}
                           onPress={() => setSelectedReport(report)}

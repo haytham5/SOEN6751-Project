@@ -34,7 +34,11 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }: any) => {
     );
 
     // Check if building has any active reports
-    const hasReports = reports.some((r) => r.building === id);
+    const hasReports = reports.some((r) => 
+      r.building === id && 
+      !r.isResolved && 
+      !r.isScheduledEvent
+    );
 
     if (distance <= GEOFENCE_RADIUS && !notifiedBuildings.has(id) && hasReports) {
       await AsyncStorage.setItem("nearBuilding", JSON.stringify({
