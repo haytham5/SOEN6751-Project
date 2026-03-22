@@ -925,4 +925,9 @@ export const styles = StyleSheet.create({
   reportModeButtonTextDisabled: {
     color: COLORS.black,
   },
+
+  actionButtonUpvoted: {
+    backgroundColor: "#E8F0F7",
+    borderColor: "#276389",
+  },
 });

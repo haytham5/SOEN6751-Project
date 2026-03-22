@@ -34,7 +34,7 @@ export type Report = {
   isSevere: boolean;
   upvotedBy: string[];
   isResolved: boolean;
-  resolvedBy?: string;
+  resolvedBy?: string[]; 
   isVerifiedBySecurity: boolean;
   eventStartDate?: string;
   eventEndDate?: string;
@@ -151,8 +151,8 @@ export const getActiveReports = async (): Promise<Report[]> => {
 };
 
 export const upvoteReport = async (
-    reportId: string,
-    userId: string
+  reportId: string,
+  userId: string,
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -160,26 +160,33 @@ export const upvoteReport = async (
       hour: "2-digit",
       minute: "2-digit",
     });
-
     const updated = reports.map((r) => {
       if (r.id !== reportId) return r;
-      if (r.name === userId) return r;
-      if ((r.upvotedBy ?? []).includes(userId)) return r;
-
-      return {
-        ...r,
-        upvotedBy: [...(r.upvotedBy ?? []), userId],
-        timeline: [
-          ...(r.timeline ?? []),
-          {
+      
+      const hasUpvoted = (r.upvotedBy ?? []).includes(userId);
+      
+      if (hasUpvoted) {
+        // ← remove upvote
+        return {
+          ...r,
+          upvotedBy: r.upvotedBy.filter((id) => id !== userId),
+          timeline: r.timeline.filter((e) => 
+            !(e.action === "upvoted" && e.by === userId)
+          ),
+        };
+      } else {
+        // ← add upvote
+        return {
+          ...r,
+          upvotedBy: [...(r.upvotedBy ?? []), userId],
+          timeline: [...(r.timeline ?? []), {
             action: "upvoted" as const,
             by: userId,
             time: now,
-          },
-        ],
-      };
+          }],
+        };
+      }
     });
-
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error("Error upvoting report:", error);
@@ -187,8 +194,8 @@ export const upvoteReport = async (
 };
 
 export const markReportResolved = async (
-    reportId: string,
-    resolvedBy: string
+  reportId: string,
+  resolvedBy: string,
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -196,25 +203,36 @@ export const markReportResolved = async (
       hour: "2-digit",
       minute: "2-digit",
     });
+    const updated = reports.map((r) => {
+      if (r.id !== reportId) return r;
 
-    const updated = reports.map((r) =>
-        r.id === reportId
-            ? {
-              ...r,
-              isResolved: true,
-              resolvedBy,
-              timeline: [
-                ...(r.timeline ?? []),
-                {
-                  action: "resolved" as const,
-                  by: resolvedBy,
-                  time: now,
-                },
-              ],
-            }
-            : r
-    );
+      const hasResolved = (r.resolvedBy ?? []).includes(resolvedBy);
 
+      if (hasResolved) {
+        // ← remove resolution
+        const newResolvedBy = (r.resolvedBy ?? []).filter((id) => id !== resolvedBy);
+        return {
+          ...r,
+          resolvedBy: newResolvedBy,
+          isResolved: newResolvedBy.length > 0,
+          timeline: r.timeline.filter((e) =>
+            !(e.action === "resolved" && e.by === resolvedBy)
+          ),
+        };
+      } else {
+        // ← add resolution
+        return {
+          ...r,
+          resolvedBy: [...(r.resolvedBy ?? []), resolvedBy],
+          isResolved: true,
+          timeline: [...(r.timeline ?? []), {
+            action: "resolved" as const,
+            by: resolvedBy,
+            time: now,
+          }],
+        };
+      }
+    });
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error("Error marking report resolved:", error);

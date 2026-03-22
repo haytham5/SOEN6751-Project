@@ -92,6 +92,7 @@ export const testReports: Report[] = [
     ],
     upvotedBy: ["user1@test.com", "user2@test.com"],
     isResolved: false,
+    resolvedBy: [],
   },
   {
     id: "test-concordian-2",
@@ -113,7 +114,7 @@ export const testReports: Report[] = [
     ],
     upvotedBy: [],
     isResolved: true,
-    resolvedBy: "user3@test.com",
+    resolvedBy: ["user3@test.com"],
   },
   {
     id: "test-security-1",
@@ -135,6 +136,7 @@ export const testReports: Report[] = [
     ],
     upvotedBy: ["user1@test.com"],
     isResolved: false,
+    resolvedBy: [],
   },
   {
     id: "test-security-2",
@@ -159,6 +161,7 @@ export const testReports: Report[] = [
     ],
     upvotedBy: ["user1@test.com", "user2@test.com", "user3@test.com"],
     isResolved: false,
+    resolvedBy: [],
   },
   {
     id: "test-admin-1",
@@ -178,6 +181,7 @@ export const testReports: Report[] = [
     ],
     upvotedBy: [],
     isResolved: false,
+    resolvedBy: [],
     eventStartDate: "2026-03-25T09:00:00.000Z",
     eventEndDate: "2026-03-25T17:00:00.000Z",
   },
