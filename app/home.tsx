@@ -329,6 +329,11 @@ export default function Home() {
     setTimeout(() => setIsReportModalVisible(true), 150);
   };
 
+  const handleCalmModeFromExpandedMap = () => {
+    setIsMapExpanded(false);
+    handleCalmMode();
+  };
+
   const onMapReady = (mapInstance: MapView | null) => {
     if (!mapInstance) return;
 
@@ -581,7 +586,10 @@ export default function Home() {
               <Icon name="filter-alt" size={24} color="#276389" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.fullScreenRelaxMode}>
+            <TouchableOpacity
+              style={styles.fullScreenRelaxMode}
+              onPress={handleCalmModeFromExpandedMap}
+            >
               <Icon name="bedtime" size={24} color="#276389" />
             </TouchableOpacity>
           </View>
