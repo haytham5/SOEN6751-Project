@@ -68,8 +68,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -98,7 +96,7 @@ export const styles = StyleSheet.create({
   },
 
   subBody: {
-    fontSize: 22,
+    fontSize: 18,
     fontFamily: "Lexend_400Regular",
     color: COLORS.black,
   },
@@ -135,7 +133,6 @@ export const styles = StyleSheet.create({
 
   unsubbed: {
     backgroundColor: COLORS.softBg,
-    opacity: 1,
   },
 
   modalOverlay: {
@@ -322,7 +319,7 @@ export const styles = StyleSheet.create({
   subscriptions: {
     flexDirection: "row",
     gap: 0,
-    marginBottom: 26,
+    marginBottom: 30,
   },
 
   subCardActive: {
@@ -452,6 +449,7 @@ export const styles = StyleSheet.create({
     gap: 5,
     marginBottom: 2,
   },
+
   eventPreviewText: {
     marginTop: 8,
     fontSize: 13,

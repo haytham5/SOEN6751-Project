@@ -246,6 +246,7 @@ export default function Events() {
                         >
                             {buildingFilters.map((building) => {
                                 const isActive = selectedBuildings.includes(building);
+                                const color = buildingColorMap[building] ?? "#9c9c9c";
 
                                 return (
                                     <TouchableOpacity
@@ -262,16 +263,30 @@ export default function Events() {
                                         <View
                                             style={[
                                                 styles.subCard,
-                                                isActive ? styles.green : styles.unsubbed,
+                                                {
+                                                    backgroundColor: isActive ? color : "transparent",
+                                                    borderWidth: 2,
+                                                    borderColor: color,
+                                                },
                                                 isActive
                                                     ? styles.subCardActive
                                                     : styles.subCardInactive,
                                             ]}
                                         >
-                                            <Text style={styles.subBody}>{building}</Text>
-                                            <Text style={styles.subLabel}>
-                                                {isActive ? "On" : "Off"}
-                                            </Text>
+                                            <View
+                                                style={[
+                                                    styles.subCard,
+                                                    isActive ? styles.green : styles.unsubbed,
+                                                    isActive
+                                                        ? styles.subCardActive
+                                                        : styles.subCardInactive,
+                                                ]}
+                                            >
+                                                <Text style={styles.subBody}>{building}</Text>
+                                                <Text style={styles.subLabel}>
+                                                    {isActive ? "On" : "Off"}
+                                                </Text>
+                                            </View>
                                         </View>
                                     </TouchableOpacity>
                                 );
