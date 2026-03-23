@@ -26,6 +26,7 @@ import BottomNav from "./components/bottomNav";
 import MapInfo from "./components/mapInfo";
 import NearBuildingBanner from "./components/NearBuildingBanner";
 import OfflineBanner from "./components/offlineBanner";
+import ReportCard from "./components/ReportCard";
 import ReportFormModal from "./components/ReportFormModal";
 import {
   getReports,
@@ -39,19 +40,12 @@ import { styles } from "./styles/indexStyles";
 import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
-// const buildingColorMap: Record<string, string> = {
-//   EV: "#FF9898",
-//   H: "#4CAF50",
-//   FB: "#9C6ADE",
-//   LB: "#FFC107",
-//   JMSB: "#2196F3",
-// };
 const buildingColorMap: Record<string, string> = {
-  EV: "#56bab8",
-  H: "#5a8c8b",
-  FB: "#d6b1c3",
-  LB: "#9796b8",
-  JMSB: "#e7548b",
+    EV: "#FF9898",
+    H: "#4CAF50",
+    FB: "#a683eb",
+    JMSB: "#2196F3",
+    LB: "#FFC107",
 };
 
 const today = new Date().toISOString().split("T")[0];
@@ -815,44 +809,52 @@ export default function Home() {
         </ScrollView>
 
         <Modal
-            visible={selectedBuilding !== null}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setSelectedBuilding(null)}
+          visible={selectedBuilding !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setSelectedBuilding(null)}
         >
           <Pressable style={styles.modalOverlay} onPress={() => setSelectedBuilding(null)}>
             <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
               {selectedBuilding && (
-                  <>
-                    <View style={styles.modalHeader}>
-                      <Text style={styles.modalTitle}>{selectedBuilding}</Text>
-                      <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
-                        <Icon name="close" size={24} color="#276389" />
-                      </TouchableOpacity>
-                    </View>
+                <>
+                  <View style={styles.modalHeader}>
+                    <Text style={styles.modalTitle}>{selectedBuilding}</Text>
+                    <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
+                      <Icon name="close" size={24} color="#276389" />
+                    </TouchableOpacity>
+                  </View>
 
-                    {buildingReports.length === 0 ? (
-                        <Text style={styles.modalEmptyText}>
-                          No reports submitted for this building yet.
-                        </Text>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    {buildingReports.filter((r) => r.date === today && !r.isScheduledEvent).length === 0 ? (
+                      <Text style={styles.modalEmptyText}>
+                        No reports for this building today.
+                      </Text>
                     ) : (
-                        buildingReports.map((report) => (
-                            <View key={report.id} style={styles.modalRow}>
-                              <Text style={styles.modalRowText}>{report.name}</Text>
-                              <Text style={styles.modalRowMeta}>
-                                {report.type} · Floor {report.floor} · {report.time}
-                              </Text>
-                              {report.description ? (
-                                  <Text style={styles.modalRowMeta}>{report.description}</Text>
-                              ) : null}
-                            </View>
+                      buildingReports
+                        .filter((r) => r.date === today && !r.isScheduledEvent)
+                        .map((report) => (
+                          <ReportCard
+                            key={report.id}
+                            report={report}
+                            currentUserId={currentUserId}
+                            currentUserRole={currentUserRole}
+                            isGuest={isGuest}
+                            onUpvote={handleUpvote}
+                            onResolve={handleResolve}
+                            onVerify={handleVerify}
+                            onMarkSevere={handleMarkSevere}
+                            onChevronPress={(r) => {
+                              setSelectedBuilding(null);
+                              setTimeout(() => setSelectedReport(r), 300);
+                            }}
+                            styles={styles}
+                            normalizeBuildingId={normalizeBuildingId}
+                          />
                         ))
                     )}
-
-                    <Text style={styles.modalSecurityCount}>
-                      Total reports: {buildingReports.length}
-                    </Text>
-                  </>
+                  </ScrollView>
+                </>
               )}
             </Pressable>
           </Pressable>

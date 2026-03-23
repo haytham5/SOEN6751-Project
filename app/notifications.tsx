@@ -33,11 +33,11 @@ import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/notificationsStyles";
 
 const buildingColorMap: Record<string, string> = {
-  EV: "#56bab8",
-  H: "#5a8c8b",
-  JMSB: "#e7548b",
-  LB: "#9796b8",
-  FB: "#d6b1c3",
+    EV: "#FF9898",
+    H: "#4CAF50",
+    FB: "#a683eb",
+    JMSB: "#2196F3",
+    LB: "#FFC107",
 };
 
 const today = new Date().toISOString().split("T")[0];
