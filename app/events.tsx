@@ -54,11 +54,12 @@ const typeDotColorMap: Record<string, string> = {
 };
 
 const buildingColorMap: Record<string, string> = {
-    EV: "#56bab8",
-    H: "#5a8c8b",
-    JMSB: "#e7548b",
-    LB: "#9796b8",
-    FB: "#d6b1c3",
+    EV: "#FF9898",
+    H: "#4CAF50",
+    FB: "#a683eb",
+    JMSB: "#2196F3",
+    JM: "#2196F3",
+    LB: "#FFC107",
 };
 
 export default function Events() {
@@ -168,11 +169,14 @@ export default function Events() {
 
     const selectedEvents = (allEvents[selectedDate] || []).filter((event) =>
         selectedBuildings.length > 0
-            ? selectedBuildings.includes(event.location)
+            ? selectedBuildings.some(b => 
+                b === event.location || 
+                (b === "JM" && event.location === "JMSB")  
+            )
             : true
     );
 
-    const buildingFilters = ["EV", "LB", "H", "JMSB", "FB"];
+    const buildingFilters = ["EV", "LB", "H", "JM", "FB"];
 
     if (!fontsLoaded || loadingReports) {
         return null;
@@ -226,11 +230,15 @@ export default function Events() {
                                         }
                                     >
                                         <View
-                                            style={[
-                                                styles.subCard,
-                                                isActive ? styles.green : styles.unsubbed,
-                                                isActive ? styles.subCardActive : styles.subCardInactive,
-                                            ]}
+                                        style={[
+                                            styles.subCard,
+                                            {
+                                            backgroundColor: isActive ? buildingColorMap[building] : "transparent",
+                                            borderWidth: 2,
+                                            borderColor: buildingColorMap[building] ?? "#9c9c9c",
+                                            },
+                                            isActive ? styles.subCardActive : styles.subCardInactive,
+                                        ]}
                                         >
                                             <Text style={styles.subBody}>{building}</Text>
                                             <Text style={styles.subLabel}>
