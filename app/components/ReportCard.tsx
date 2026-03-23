@@ -4,11 +4,11 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { Report } from "../data/reportSH";
 
 const buildingColorMap: Record<string, string> = {
-  EV: "#56bab8",
-  H: "#5a8c8b",
-  FB: "#d6b1c3",
-  LB: "#9796b8",
-  JMSB: "#e7548b",
+    EV: "#FF9898",
+    H: "#4CAF50",
+    FB: "#a683eb",
+    JMSB: "#2196F3",
+    LB: "#FFC107",
 };
 
 type Props = {
