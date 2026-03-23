@@ -21,14 +21,13 @@ import {
 import { getCurrentUser } from "./utils/authStorage";
 
 import {
-  Image,
   Modal,
   Pressable,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -226,6 +225,7 @@ export default function Notifications() {
                     >
                       <Text style={styles.subBody}>{sub.label}</Text>
                       <Text style={styles.subLabel}>{isActive ? "On" : "Off"}</Text>
+                    </View>
                     </View>
                   </TouchableOpacity>
               );
