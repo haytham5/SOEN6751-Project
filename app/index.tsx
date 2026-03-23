@@ -4,12 +4,7 @@ import AppLoading from "expo-app-loading";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect } from "react";
-import {
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Image, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles as importStyles } from "./styles/userAuthStyles";
 import { clearCurrentUser } from "./utils/authStorage";
@@ -41,8 +36,12 @@ export default function Welcome() {
 
       <View style={styles.container}>
         <View style={styles.logoArea}>
-          <Text style={styles.title}>App Name</Text>
-          <Text style={styles.tagline}>Subtitle here</Text>
+          <Image
+            source={require("../assets/images/logo.png")}
+            style={styles.logoBig}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Compass</Text>
         </View>
 
         <View style={styles.buttonGroup}>

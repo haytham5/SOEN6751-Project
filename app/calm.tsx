@@ -28,18 +28,18 @@ import MapView, { Circle } from "react-native-maps";
 const today = new Date().toISOString().split("T")[0];
 
 const buildingColorMap: Record<string, string> = {
-  EV: "#56bab8",
-  H: "#5a8c8b",
-  FB: "#d6b1c3",
-  LB: "#9796b8",
-  JMSB: "#e7548b",
+  EV: "#FF9898",
+  H: "#4CAF50",
+  FB: "#a683eb",
+  JMSB: "#2196F3",
+  LB: "#FFC107",
 };
 const buildingColorMapOpacity: Record<string, string> = {
-  EV: "#56bab830",
-  H: "#5a8c8b30",
-  FB: "#d6b1c330",
-  LB: "#9796b830",
-  JMSB: "#e7548b30",
+  EV: "#FF989830",
+  H: "#4CAF5030",
+  FB: "#a683eb30",
+  JMSB: "#2196F330",
+  LB: "#FFC10730",
 };
 
 export default function Calm() {
