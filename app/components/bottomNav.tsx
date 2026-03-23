@@ -6,18 +6,18 @@ import { bottomNavStyles as styles } from "../styles/bottomNavStyles";
 import { getCurrentUser } from "../utils/authStorage";
 import AuthRequiredModal from "./authRequiredModel";
 
-import { House, Calendar, Plus, Bell, User } from "lucide-react-native";
+import { Binoculars, Calendar, House, Plus, User } from "lucide-react-native";
 
 interface BottomNavProps {
     onPressAdd?: () => void;
 }
 
 const navItems = [
-    { route: "/home", icon: House, key: "home" },
-    { route: "/events", icon: Calendar, key: "events" },
-    { route: "/create", icon: Plus, key: "create" },
-    { route: "/notifications", icon: Bell, key: "notifications" },
-    { route: "/settings", icon: User, key: "profile" },
+    { route: "/home",          icon: House,       key: "home"          },
+    { route: "/events",        icon: Calendar,    key: "events"        },
+    { route: "/create",        icon: Plus,        key: "create"        },
+    { route: "/notifications", icon: Binoculars,  key: "notifications" },
+    { route: "/settings",      icon: User,        key: "profile"       },
 ];
 
 export default function BottomNav({ onPressAdd }: BottomNavProps) {

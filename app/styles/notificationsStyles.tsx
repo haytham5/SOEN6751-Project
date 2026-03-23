@@ -72,8 +72,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -89,8 +87,6 @@ export const styles = StyleSheet.create({
   },
 
   subCardActive: {
-    borderWidth: 1.5,
-    borderColor: COLORS.primary,
     transform: [{ scale: 1.02 }],
     margin: 2,
   },

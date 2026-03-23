@@ -12,6 +12,7 @@ export default function MapInfo({ title, protests, accessibility }: Props) {
   const buildingColors: any = {
     EV: "#FF9898",
     H: "#4CAF50",
+    FB: "#a683eb",
     JMSB: "#2196F3",
     LB: "#FFC107",
   };
