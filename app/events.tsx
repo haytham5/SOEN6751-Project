@@ -168,10 +168,6 @@ export default function Events() {
   }, [reports]);
 
   const filteredEventsByDate = useMemo(() => {
-    if (selectedBuildings.length === 0) {
-      return reportEventsByDate;
-    }
-
     const filtered: Record<string, Event[]> = {};
 
     Object.entries(reportEventsByDate).forEach(([date, events]) => {

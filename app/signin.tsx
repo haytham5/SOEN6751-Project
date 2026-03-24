@@ -2,9 +2,9 @@ import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
+import { Eye, EyeOff } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,7 +12,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import {
   SafeAreaView,
@@ -161,14 +161,11 @@ export default function Signin() {
                 onPress={() => setShowPassword((v) => !v)}
                 activeOpacity={0.7}
               >
-                <Image
-                  source={
-                    showPassword
-                      ? require("../assets/images/iconmonstr-eye-off-thin-240.png")
-                      : require("../assets/images/iconmonstr-eye-thin-240.png")
-                  }
-                  style={{ width: 24, height: 24 }}
-                />
+                {showPassword ? (
+                  <EyeOff size={22} color="#5a8c8b" />
+                ) : (
+                  <Eye size={22} color="#5a8c8b" />
+                )}
               </TouchableOpacity>
             </View>
 

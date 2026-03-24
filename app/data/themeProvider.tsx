@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from "react";
-import { useColorScheme } from "react-native";
 import { Themes } from "../styles/Themes";
 
 type Scheme = "light" | "dark";
@@ -11,8 +10,8 @@ const ThemeContext = createContext({
 });
 
 export const ThemeProvider = ({ children }: any) => {
-  const systemScheme = useColorScheme();
-  const [mode, setMode] = useState<Scheme>(systemScheme || "light");
+  // const systemScheme = useColorScheme();
+  const [mode, setMode] = useState<Scheme>("light");
 
   const toggleTheme = () => {
     setMode((prev) => (prev === "light" ? "dark" : "light"));

@@ -149,6 +149,8 @@ export default function Calm() {
     return (
       <MapView
         style={styles.map}
+        showsUserLocation
+        showsMyLocationButton
         initialRegion={mapRegion}
         toolbarEnabled={false}
         showsCompass={false}

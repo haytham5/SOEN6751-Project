@@ -477,50 +477,29 @@ export default function Settings() {
                     </Text>
                   )}
 
-                    {!isGuestUser && (
-                        <TouchableOpacity
-                            style={styles.primaryProfileButtonFull}
-                            onPress={() => setIsPreferencesOpen(true)}
-                        >
-                            <Text style={styles.primaryProfileButtonText}>
-                                Edit Building Preferences
-                            </Text>
-                        </TouchableOpacity>
-                    )}
+                  {!isGuestUser && (
+                    <TouchableOpacity
+                      style={styles.primaryProfileButtonFull}
+                      onPress={() => setIsPreferencesOpen(true)}
+                    >
+                      <Text style={styles.primaryProfileButtonText}>
+                        Edit Building Preferences
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               </>
             )}
           </View>
         ) : (
           <>
-            {/*<View style={styles.settingsCard}>*/}
-            {/*  <SettingRow*/}
-            {/*    label="Light Mode"*/}
-            {/*    value={mode === "light"}*/}
-            {/*    onChange={toggleTheme}*/}
-            {/*  />*/}
-            {/*  <View style={styles.settingsDivider} />*/}
-
-            {/*  <SettingRow*/}
-            {/*    label="Notifications"*/}
-            {/*    value={notifications}*/}
-            {/*    onChange={setNotifications}*/}
-            {/*  />*/}
-            {/*  <View style={styles.settingsDivider} />*/}
-
-            {/*  <SettingRow*/}
-            {/*    label="Accessibility"*/}
-            {/*    value={accessibility}*/}
-            {/*    onChange={setAccessibility}*/}
-            {/*  />*/}
-            {/*</View>*/}
-              <View style={styles.settingsCard}>
-                  <SettingRow
-                      label="Light Mode"
-                      value={mode === "light"}
-                      onChange={toggleTheme}
-                  />
-              </View>
+            <View style={styles.settingsCard}>
+              <SettingRow
+                label="Dark Mode"
+                value={mode !== "light"}
+                onChange={toggleTheme}
+              />
+            </View>
 
             {isGuestUser ? (
               <TouchableOpacity
