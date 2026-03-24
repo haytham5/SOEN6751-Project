@@ -493,27 +493,6 @@ export default function Settings() {
           </View>
         ) : (
           <>
-            {/*<View style={styles.settingsCard}>*/}
-            {/*  <SettingRow*/}
-            {/*    label="Light Mode"*/}
-            {/*    value={mode === "light"}*/}
-            {/*    onChange={toggleTheme}*/}
-            {/*  />*/}
-            {/*  <View style={styles.settingsDivider} />*/}
-
-            {/*  <SettingRow*/}
-            {/*    label="Notifications"*/}
-            {/*    value={notifications}*/}
-            {/*    onChange={setNotifications}*/}
-            {/*  />*/}
-            {/*  <View style={styles.settingsDivider} />*/}
-
-            {/*  <SettingRow*/}
-            {/*    label="Accessibility"*/}
-            {/*    value={accessibility}*/}
-            {/*    onChange={setAccessibility}*/}
-            {/*  />*/}
-            {/*</View>*/}
             <View style={styles.settingsCard}>
               <SettingRow
                 label="Dark Mode"
