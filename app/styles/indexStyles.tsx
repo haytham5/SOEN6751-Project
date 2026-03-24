@@ -125,7 +125,7 @@ export const styles = (COLORS: ThemeType) =>
 
     addReport: {
       position: "absolute",
-      bottom: 78,
+      bottom: 18,
       left: 15,
       backgroundColor: COLORS.white,
       padding: 12,
@@ -208,7 +208,7 @@ export const styles = (COLORS: ThemeType) =>
 
     fullScreenAddReport: {
       position: "absolute",
-      bottom: 140,
+      bottom: 80,
       left: 15,
       backgroundColor: COLORS.white,
       padding: 12,

@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { testReports } from "./data/notificationData";
 import { getReports, saveNewReport } from "./data/reportSH";
@@ -7,8 +8,12 @@ import { ThemeProvider } from "./data/themeProvider";
 import { addUser, getUsers } from "./utils/authStorage";
 import { startLocationTracking } from "./utils/backgroundLocation";
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
   useEffect(() => {
+    SplashScreen.hideAsync();
+
     const seedAdminUser = async () => {
       const users = await getUsers();
       const adminExists = false;
