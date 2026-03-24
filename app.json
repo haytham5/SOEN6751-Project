@@ -16,6 +16,7 @@
       }
     },
     "android": {
+      "googleMapsApiKey": "AIzaSyB0pFgRYM2aoL9pU-eHK9ryzoxfkERudjE",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
