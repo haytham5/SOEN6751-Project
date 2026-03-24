@@ -567,9 +567,9 @@ export default function Home() {
             <Icon name="add-circle" size={24} color="#276389" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.reportFilters}>
+          {/* <TouchableOpacity style={styles.reportFilters}>
             <Icon name="filter-alt" size={24} color="#276389" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={styles.relaxMode}
@@ -598,9 +598,9 @@ export default function Home() {
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.fullScreenReportFilters}>
+            {/* <TouchableOpacity style={styles.fullScreenReportFilters}>
               <Icon name="filter-alt" size={24} color="#276389" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.fullScreenRelaxMode}
