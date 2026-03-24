@@ -8,6 +8,7 @@ import AuthRequiredModal from "./authRequiredModel";
 
 import { Binoculars, Calendar, House, Plus, User } from "lucide-react-native";
 import { useTheme } from "../data/themeProvider";
+
 interface BottomNavProps {
   onPressAdd?: () => void;
 }
@@ -44,54 +45,59 @@ export default function BottomNav({ onPressAdd }: BottomNavProps) {
   };
 
   return (
-    <>
-      <View style={styles.wrapper}>
-        <LinearGradient
-          colors={[scheme.softBg, scheme.white, scheme.white]}
-          style={styles.bottomNav}
-        >
-          {navItems.map((item) => {
-            const isCreate = item.key === "create";
-            const isActive = !isCreate && pathname === item.route;
-            const Icon = item.icon;
+      <>
+        <View style={styles.wrapper}>
+          <LinearGradient
+              colors={[scheme.softBg, scheme.white, scheme.white]}
+              style={styles.bottomNav}
+          >
+            {navItems.map((item) => {
+              const isCreate = item.key === "create";
+              const isActive = !isCreate && pathname === item.route;
+              const Icon = item.icon;
 
-            if (isCreate) {
+              if (isCreate) {
+                return (
+                    <TouchableOpacity
+                        key={item.key}
+                        style={styles.createNavItem}
+                        onPress={handleCreatePress}
+                        activeOpacity={0.85}
+                    >
+                      <View style={styles.createButton}>
+                        <Plus size={28} color={scheme.white} strokeWidth={2.5} />
+                      </View>
+                    </TouchableOpacity>
+                );
+              }
+
               return (
-                <TouchableOpacity
-                  key={item.key}
-                  style={styles.createNavItem}
-                  onPress={handleCreatePress}
-                  activeOpacity={0.85}
-                >
-                  <View style={styles.createButton}>
-                    <Plus size={28} color={scheme.white} strokeWidth={2.5} />
-                  </View>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                      key={item.key}
+                      style={[styles.navItem, isActive && styles.activeNavItem]}
+                      onPress={() => {
+                        if (!isActive) {
+                          router.replace(item.route as any);
+                        }
+                      }}
+                      disabled={isActive}
+                      activeOpacity={isActive ? 1 : 0.85}
+                  >
+                    <Icon
+                        size={26}
+                        color={isActive ? scheme.black : scheme.iconInactive}
+                        strokeWidth={2}
+                    />
+                  </TouchableOpacity>
               );
-            }
+            })}
+          </LinearGradient>
+        </View>
 
-            return (
-              <TouchableOpacity
-                key={item.key}
-                style={[styles.navItem, isActive && styles.activeNavItem]}
-                onPress={() => router.replace(item.route as any)}
-                activeOpacity={0.85}
-              >
-                <Icon
-                  size={26}
-                  color={isActive ? scheme.black : scheme.iconInactive}
-                  strokeWidth={2}
-                />
-              </TouchableOpacity>
-            );
-          })}
-        </LinearGradient>
-      </View>
-
-      <AuthRequiredModal
-        visible={showAuthRequiredModal}
-        onClose={() => setShowAuthRequiredModal(false)}
-      />
-    </>
+        <AuthRequiredModal
+            visible={showAuthRequiredModal}
+            onClose={() => setShowAuthRequiredModal(false)}
+        />
+      </>
   );
 }
