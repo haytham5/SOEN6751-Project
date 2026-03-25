@@ -577,7 +577,6 @@ export const styles = (COLORS: ThemeType) =>
       fontSize: 15,
       fontFamily: "Lexend_400Regular",
       color: COLORS.subtext,
-      marginBottom: 10,
     },
 
     modalBadgeRow: {
