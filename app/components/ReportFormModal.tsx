@@ -1,3 +1,4 @@
+
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { X } from "lucide-react-native";
@@ -75,10 +76,10 @@ function formatAccessibilityLabel(value?: AccessibilitySubtype) {
 }
 
 export default function ReportFormModal({
-  visible,
-  onClose,
-  onSubmitSuccess,
-}: ReportFormModalProps) {
+                                          visible,
+                                          onClose,
+                                          onSubmitSuccess,
+                                        }: ReportFormModalProps) {
   const { theme } = useTheme();
   const scheme = theme;
   const styles = importStyles(scheme);
@@ -89,11 +90,11 @@ export default function ReportFormModal({
   const [building, setBuilding] = useState("EV");
   const [floor, setFloor] = useState("1");
   const [type, setType] = useState<"protest" | "event" | "accessibility">(
-    "protest",
+      "protest",
   );
   const [description, setDescription] = useState("");
   const [accessibilitySubtype, setAccessibilitySubtype] =
-    useState<AccessibilitySubtype>("elevator");
+      useState<AccessibilitySubtype>("elevator");
   const [currentUserRole, setCurrentUserRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
@@ -171,7 +172,7 @@ export default function ReportFormModal({
         minute: "2-digit",
       }),
       accessibilitySubtype:
-        type === "accessibility" ? accessibilitySubtype : undefined,
+          type === "accessibility" ? accessibilitySubtype : undefined,
       submittedBy: currentUserRole ?? "concordian",
       isScheduledEvent: false,
       isSevere: false,
@@ -191,162 +192,162 @@ export default function ReportFormModal({
     switch (step) {
       case 1:
         return (
-          <View style={styles.stepContent}>
-            <Text style={styles.stepLabel}>What kind of report is this?</Text>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepLabel}>What kind of report is this?</Text>
 
-            <View style={styles.dropdown}>
-              <Picker selectedValue={type} onValueChange={setType}>
-                <Picker.Item label="Protest" value="protest" />
-                <Picker.Item label="Event" value="event" />
-                <Picker.Item label="Accessibility" value="accessibility" />
-              </Picker>
-            </View>
+              <View style={styles.dropdown}>
+                <Picker selectedValue={type} onValueChange={setType}>
+                  <Picker.Item label="Protest" value="protest" />
+                  <Picker.Item label="Disruptions" value="event" />
+                  <Picker.Item label="Accessibility" value="accessibility" />
+                </Picker>
+              </View>
 
-            {type === "accessibility" && (
-              <>
-                <Text style={styles.stepLabel}>Accessibility issue type</Text>
-                <Text style={styles.stepHelper}>
-                  Choose the option that best describes the accessibility
-                  problem.
+              {type === "accessibility" && (
+                  <>
+                    <Text style={styles.stepLabel}>Accessibility issue type</Text>
+                    <Text style={styles.stepHelper}>
+                      Choose the option that best describes the accessibility
+                      problem.
+                    </Text>
+
+                    <View style={styles.choiceGroup}>
+                      {accessibilityOptions.map((option) => {
+                        const isSelected = accessibilitySubtype === option.value;
+
+                        return (
+                            <TouchableOpacity
+                                key={option.value}
+                                style={[
+                                  styles.choiceCard,
+                                  isSelected && styles.choiceCardSelected,
+                                ]}
+                                onPress={() => setAccessibilitySubtype(option.value)}
+                                activeOpacity={0.85}
+                            >
+                              <Text
+                                  style={[
+                                    styles.choiceTitle,
+                                    isSelected && styles.choiceTitleSelected,
+                                  ]}
+                              >
+                                {option.label}
+                              </Text>
+                              <Text
+                                  style={[
+                                    styles.choiceHelper,
+                                    isSelected && styles.choiceHelperSelected,
+                                  ]}
+                              >
+                                {option.helper}
+                              </Text>
+                            </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  </>
+              )}
+
+              <View style={styles.helperBox}>
+                <Text style={styles.helperText}>
+                  Choose the category that best matches what you are reporting.
                 </Text>
-
-                <View style={styles.choiceGroup}>
-                  {accessibilityOptions.map((option) => {
-                    const isSelected = accessibilitySubtype === option.value;
-
-                    return (
-                      <TouchableOpacity
-                        key={option.value}
-                        style={[
-                          styles.choiceCard,
-                          isSelected && styles.choiceCardSelected,
-                        ]}
-                        onPress={() => setAccessibilitySubtype(option.value)}
-                        activeOpacity={0.85}
-                      >
-                        <Text
-                          style={[
-                            styles.choiceTitle,
-                            isSelected && styles.choiceTitleSelected,
-                          ]}
-                        >
-                          {option.label}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.choiceHelper,
-                            isSelected && styles.choiceHelperSelected,
-                          ]}
-                        >
-                          {option.helper}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              </>
-            )}
-
-            <View style={styles.helperBox}>
-              <Text style={styles.helperText}>
-                Choose the category that best matches what you are reporting.
-              </Text>
+              </View>
             </View>
-          </View>
         );
 
       case 2:
         return (
-          <View style={styles.stepContent}>
-            <Text style={styles.stepLabel}>Where is it happening?</Text>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepLabel}>Where is it happening?</Text>
 
-            <View style={styles.dropdown}>
-              <Picker selectedValue={building} onValueChange={setBuilding}>
-                <Picker.Item label="EV Building" value="EV" />
-                <Picker.Item label="Hall Building" value="H" />
-                <Picker.Item label="JMSB" value="JMSB" />
-                <Picker.Item label="Library (LB)" value="LB" />
-                <Picker.Item label="Faubourg (FB)" value="FB" />
-              </Picker>
+              <View style={styles.dropdown}>
+                <Picker selectedValue={building} onValueChange={setBuilding}>
+                  <Picker.Item label="EV Building" value="EV" />
+                  <Picker.Item label="Hall Building" value="H" />
+                  <Picker.Item label="JMSB" value="JMSB" />
+                  <Picker.Item label="Library (LB)" value="LB" />
+                  <Picker.Item label="Faubourg (FB)" value="FB" />
+                </Picker>
+              </View>
+
+              <View style={styles.floorHeaderRow}>
+                <Text style={styles.stepLabel}>Floor number</Text>
+                <Text style={styles.requiredTag}>Required</Text>
+              </View>
+
+              <Text style={styles.stepHelper}>
+                Please enter the floor where the issue is happening. Example: 1,
+                2, 3, S1, basement, ground floor.
+              </Text>
+
+              <TextInput
+                  style={styles.input}
+                  placeholder="Enter floor number or level"
+                  value={floor}
+                  onChangeText={setFloor}
+                  placeholderTextColor="#8E8E98"
+              />
             </View>
-
-            <View style={styles.floorHeaderRow}>
-              <Text style={styles.stepLabel}>Floor number</Text>
-              <Text style={styles.requiredTag}>Required</Text>
-            </View>
-
-            <Text style={styles.stepHelper}>
-              Please enter the floor where the issue is happening. Example: 1,
-              2, 3, S1, basement, ground floor.
-            </Text>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Enter floor number or level"
-              value={floor}
-              onChangeText={setFloor}
-              placeholderTextColor="#8E8E98"
-            />
-          </View>
         );
 
       case 3:
         return (
-          <View style={styles.stepContent}>
-            <Text style={styles.stepLabel}>Describe the report</Text>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepLabel}>Describe the report</Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Report name"
-              value={name}
-              onChangeText={setName}
-              placeholderTextColor="#8E8E98"
-            />
+              <TextInput
+                  style={styles.input}
+                  placeholder="Report name"
+                  value={name}
+                  onChangeText={setName}
+                  placeholderTextColor="#8E8E98"
+              />
 
-            <TextInput
-              style={styles.description}
-              placeholder="Summary of the event..."
-              multiline
-              numberOfLines={5}
-              value={description}
-              onChangeText={setDescription}
-              placeholderTextColor="#8E8E98"
-            />
-          </View>
+              <TextInput
+                  style={styles.description}
+                  placeholder="Summary of the event..."
+                  multiline
+                  numberOfLines={5}
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholderTextColor="#8E8E98"
+              />
+            </View>
         );
 
       case 4:
         return (
-          <View style={styles.stepContent}>
-            <Text style={styles.stepLabel}>Add an optional photo</Text>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepLabel}>Add an optional photo</Text>
 
-            <TouchableOpacity style={styles.imageBox} onPress={pickImage}>
-              {image ? (
-                <Image source={{ uri: image }} style={styles.image} />
-              ) : (
-                <Text style={styles.imageText}>Tap to add photo</Text>
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.imageBox} onPress={pickImage}>
+                {image ? (
+                    <Image source={{ uri: image }} style={styles.image} />
+                ) : (
+                    <Text style={styles.imageText}>Tap to add photo</Text>
+                )}
+              </TouchableOpacity>
 
-            <View style={styles.reviewCard}>
-              <Text style={styles.reviewTitle}>Review</Text>
-              <Text style={styles.reviewText}>Type: {type}</Text>
+              <View style={styles.reviewCard}>
+                <Text style={styles.reviewTitle}>Review</Text>
+                <Text style={styles.reviewText}>Type: {type}</Text>
 
-              {type === "accessibility" && (
+                {type === "accessibility" && (
+                    <Text style={styles.reviewText}>
+                      Accessibility type:{" "}
+                      {formatAccessibilityLabel(accessibilitySubtype)}
+                    </Text>
+                )}
+
+                <Text style={styles.reviewText}>Building: {building}</Text>
+                <Text style={styles.reviewText}>Floor: {floor || "—"}</Text>
+                <Text style={styles.reviewText}>Title: {name || "—"}</Text>
                 <Text style={styles.reviewText}>
-                  Accessibility type:{" "}
-                  {formatAccessibilityLabel(accessibilitySubtype)}
+                  Description: {description || "—"}
                 </Text>
-              )}
-
-              <Text style={styles.reviewText}>Building: {building}</Text>
-              <Text style={styles.reviewText}>Floor: {floor || "—"}</Text>
-              <Text style={styles.reviewText}>Title: {name || "—"}</Text>
-              <Text style={styles.reviewText}>
-                Description: {description || "—"}
-              </Text>
+              </View>
             </View>
-          </View>
         );
 
       default:
@@ -355,64 +356,64 @@ export default function ReportFormModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-    >
-      <View style={styles.overlay}>
-        <Pressable style={styles.backdrop} onPress={handleClose} />
+      <Modal
+          visible={visible}
+          transparent
+          animationType="fade"
+          onRequestClose={handleClose}
+      >
+        <View style={styles.overlay}>
+          <Pressable style={styles.backdrop} onPress={handleClose} />
 
-        <View style={styles.modalCard}>
-          <View style={styles.header}>
-            <View style={styles.headerTextBlock}>
-              <Text style={styles.title}>Add Report</Text>
-              <Text style={styles.stepTitle}>
-                Step {step} of {TOTAL_STEPS} · {stepTitle}
-              </Text>
+          <View style={styles.modalCard}>
+            <View style={styles.header}>
+              <View style={styles.headerTextBlock}>
+                <Text style={styles.title}>Add Report</Text>
+                <Text style={styles.stepTitle}>
+                  Step {step} of {TOTAL_STEPS} · {stepTitle}
+                </Text>
+              </View>
+
+              <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+                <X size={22} color="#5a8c8b" />
+              </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-              <X size={22} color="#5a8c8b" />
-            </TouchableOpacity>
-          </View>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressFill, { width: progressPercent }]} />
+            </View>
 
-          <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: progressPercent }]} />
-          </View>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.form}
+            >
+              {renderStepContent()}
+            </ScrollView>
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.form}
-          >
-            {renderStepContent()}
-          </ScrollView>
+            <View style={styles.footer}>
+              {step > 1 ? (
+                  <TouchableOpacity style={styles.secondaryButton} onPress={goBack}>
+                    <Text style={styles.secondaryButtonText}>Back</Text>
+                  </TouchableOpacity>
+              ) : (
+                  <View style={styles.footerSpacer} />
+              )}
 
-          <View style={styles.footer}>
-            {step > 1 ? (
-              <TouchableOpacity style={styles.secondaryButton} onPress={goBack}>
-                <Text style={styles.secondaryButtonText}>Back</Text>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.footerSpacer} />
-            )}
-
-            {step < TOTAL_STEPS ? (
-              <TouchableOpacity style={styles.submitButton} onPress={goNext}>
-                <Text style={styles.submitText}>Next</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={submitReport}
-              >
-                <Text style={styles.submitText}>Submit Report</Text>
-              </TouchableOpacity>
-            )}
+              {step < TOTAL_STEPS ? (
+                  <TouchableOpacity style={styles.submitButton} onPress={goNext}>
+                    <Text style={styles.submitText}>Next</Text>
+                  </TouchableOpacity>
+              ) : (
+                  <TouchableOpacity
+                      style={styles.submitButton}
+                      onPress={submitReport}
+                  >
+                    <Text style={styles.submitText}>Submit Report</Text>
+                  </TouchableOpacity>
+              )}
+            </View>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
   );
 }
