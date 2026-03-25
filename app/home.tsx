@@ -35,6 +35,7 @@ import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import ViewShot, { captureRef } from "react-native-view-shot";
+import type { BuildingPreference } from "./utils/authStorage";
 
 import AuthRequiredModal from "./components/authRequiredModel";
 import BottomNav from "./components/bottomNav";
@@ -112,35 +113,11 @@ const buildings: Record<string, { latitude: number; longitude: number }> = {
   JMSB: { latitude: 45.49515518152054, longitude: -73.57885668774541 },
 };
 
-function extractPreferredBuildings(user: any): string[] {
+function extractPreferredBuildings(user: any): BuildingPreference[] {
   if (!user) return [];
-
   if (Array.isArray(user.buildingPreferences)) {
-    return user.buildingPreferences
-      .filter((b: any) => b?.subscribed === true)
-      .map((b: any) => normalizeBuildingId(b?.buildingId))
-      .filter(Boolean);
+    return user.buildingPreferences.filter((b: any) => b?.subscribed === true);
   }
-
-  if (Array.isArray(user.preferredBuildings)) {
-    return user.preferredBuildings
-      .filter(Boolean)
-      .map((b: string) => normalizeBuildingId(b));
-  }
-
-  if (Array.isArray(user.preferences?.buildings)) {
-    return user.preferences.buildings
-      .filter(Boolean)
-      .map((b: string) => normalizeBuildingId(b));
-  }
-
-  if (Array.isArray(user.subscriptions)) {
-    return user.subscriptions
-      .filter((b: any) => b?.isSubscribed === true)
-      .map((b: any) => normalizeBuildingId(b?.id))
-      .filter(Boolean);
-  }
-
   return [];
 }
 
@@ -155,7 +132,7 @@ export default function Home() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isGuest, setIsGuest] = useState(true);
 
-  const [preferredBuildings, setPreferredBuildings] = useState<string[]>([]);
+  const [preferredBuildings, setPreferredBuildings] = useState<BuildingPreference[]>([]);
   const [reportViewMode, setReportViewMode] =
     useState<ReportViewMode>("preferences");
 
@@ -219,8 +196,6 @@ export default function Home() {
     NavigationBar.setButtonStyleAsync("dark");
     NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
-
-  const activeBuildingIds = preferredBuildings;
 
   const toggleSection = (section: string) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -364,19 +339,40 @@ export default function Home() {
     return reports.filter((r) => !r.isScheduledEvent && r.date === today);
   }, [reports]);
 
-  const filteredTodayReports = useMemo(() => {
-    if (reportViewMode === "preferences" && activeBuildingIds.length > 0) {
-      return allTodayReports.filter((r) =>
-        activeBuildingIds.includes(normalizeBuildingId(r.building)),
-      );
-    }
+  const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
-    if (reportViewMode === "preferences" && activeBuildingIds.length === 0) {
-      return [];
+  const filteredTodayReports = useMemo(() => {
+    if (reportViewMode === "preferences") {
+      if (preferredBuildings.length === 0) return [];
+
+      const now = new Date();
+      const todayLabel = DAY_LABELS[now.getDay()];
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      return allTodayReports.filter((r) => {
+        const normalizedBuilding = normalizeBuildingId(r.building);
+
+        const pref = preferredBuildings.find(
+          (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
+        );
+        if (!pref) return false;
+
+        const dayPref = pref.dayPreferences?.find((d) => d.day === todayLabel);
+        if (!dayPref?.enabled) return false;
+
+        if (dayPref.allDay) return true;
+
+        const [startH, startM] = dayPref.startTime.split(":").map(Number);
+        const [endH, endM] = dayPref.endTime.split(":").map(Number);
+        const startMinutes = (startH ?? 8) * 60 + (startM ?? 0);
+        const endMinutes = (endH ?? 17) * 60 + (endM ?? 0);
+
+        return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+      });
     }
 
     return allTodayReports;
-  }, [allTodayReports, reportViewMode, activeBuildingIds]);
+  }, [allTodayReports, reportViewMode, preferredBuildings]);
 
   const buildingCounts: Record<
     string,
