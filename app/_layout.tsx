@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { testReports } from "./data/notificationData";
-import { getReports, saveNewReport } from "./data/reportSH";
+import { getReports } from "./data/reportSH";
 import { ThemeProvider } from "./data/themeProvider";
 import { addUser, getUsers } from "./utils/authStorage";
 import { startLocationTracking } from "./utils/backgroundLocation";
@@ -49,22 +49,26 @@ export default function RootLayout() {
     };
 
     const seedTestReports = async () => {
-      // Remove old test reports
       const existing = await getReports();
       const realReports = existing.filter((r) => !r.id.startsWith("test-"));
-      await AsyncStorage.setItem("reports", JSON.stringify(realReports));
+      const today = new Date().toISOString().split("T")[0];
 
-      // Re-seed with today's date
-      for (const report of testReports) {
-        await saveNewReport(report);
-      }
+      const merged = [
+        ...realReports,
+        ...testReports.map((r) => ({
+          ...r,
+          date: today, // ← inject today's date here
+          isVerifiedBySecurity: r.isVerifiedBySecurity ?? r.submittedBy === "security",
+          verifiedBy: r.verifiedBy ?? [],
+          severeBy: r.severeBy ?? [],
+        })),
+      ];
+
+      await AsyncStorage.setItem("reports", JSON.stringify(merged));
 
       const after = await getReports();
       console.log("reports after seeding:", after.length);
-      console.log(
-        "dates:",
-        after.map((r) => r.date),
-      );
+      console.log("dates:", after.map((r) => r.date));
     };
 
     const setup = async () => {
