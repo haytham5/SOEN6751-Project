@@ -679,7 +679,7 @@ export default function Home() {
             const sections = [
               {
                 key: "access",
-                label: "Access",
+                label: "Accessibility",
                 reports: accessReports,
                 icon: "accessible",
                 severeCount: accessReports.filter((r) => r.isSevere).length,
