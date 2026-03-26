@@ -261,7 +261,7 @@ export default function SignUp() {
                         role === "concordian" && styles.roleButtonTextActive,
                       ]}
                     >
-                      Student
+                      Concordian
                     </Text>
                   </TouchableOpacity>
 
