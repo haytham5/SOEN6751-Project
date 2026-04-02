@@ -471,6 +471,19 @@ export default function Home() {
 
           if (!markerImages[b]) return null;
 
+          // Don't show marker if no reports for this building
+          const counts = buildingCounts[b];
+          const hasReports = counts && (counts.protests > 0 || counts.accessibility > 0);
+          if (!hasReports) return null;
+
+          // If in preferences mode, only show buildings the user has subscribed to
+          if (reportViewMode === "preferences") {
+            const isPreferred = preferredBuildings.some(
+              (pref) => normalizeBuildingId(pref.buildingId) === b
+            );
+            if (!isPreferred) return null;
+          }
+
           return (
             <Marker
               key={b}
