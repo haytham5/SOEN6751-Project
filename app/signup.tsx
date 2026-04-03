@@ -34,6 +34,7 @@ import {
   addUser,
   setCurrentUser,
   type BuildingPreference,
+  type UserRole,
 } from "./utils/authStorage";
 
 type SignUpStep = "account" | "preferences";
@@ -54,6 +55,7 @@ export default function SignUp() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [idNumber, setIdNumber] = useState("");
+  const [role, setRole] = useState<UserRole>("concordian");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -106,7 +108,15 @@ export default function SignUp() {
       return false;
     }
 
-    if (!email.trim().toLowerCase().endsWith("concordia.ca")) {
+    const lowerEmail = email.trim().toLowerCase();
+
+    if (lowerEmail.endsWith("@security.concordia.ca")) {
+      setRole("security");
+    } else if (lowerEmail.endsWith("@admin.concordia.ca")) {
+      setRole("admin");
+    } else if (lowerEmail.endsWith("@concordia.ca")) {
+      setRole("concordian");
+    } else {
       setError("Please use your Concordia email address.");
       return false;
     }
@@ -124,7 +134,7 @@ export default function SignUp() {
     const newUser = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      role: "concordian" as const,
+      role,
       idNumber: idNumber.trim(),
       phone: phone.trim(),
       email: email.trim().toLowerCase(),
