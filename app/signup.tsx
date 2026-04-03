@@ -34,7 +34,6 @@ import {
   addUser,
   setCurrentUser,
   type BuildingPreference,
-  type UserRole,
 } from "./utils/authStorage";
 
 type SignUpStep = "account" | "preferences";
@@ -54,7 +53,6 @@ export default function SignUp() {
   const [step, setStep] = useState<SignUpStep>("account");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState<UserRole>("concordian");
   const [idNumber, setIdNumber] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -126,7 +124,7 @@ export default function SignUp() {
     const newUser = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      role,
+      role: "concordian" as const,
       idNumber: idNumber.trim(),
       phone: phone.trim(),
       email: email.trim().toLowerCase(),
@@ -243,7 +241,7 @@ export default function SignUp() {
                   }}
                 />
 
-                <RequiredLabel label="Account type" />
+                {/* <RequiredLabel label="Account type" />
                 <View style={styles.roleRow}>
                   <TouchableOpacity
                     style={[
@@ -304,7 +302,7 @@ export default function SignUp() {
                       Admin
                     </Text>
                   </TouchableOpacity>
-                </View>
+                </View> */}
 
                 <OptionalLabel label="Student ID" />
                 <TextInput
