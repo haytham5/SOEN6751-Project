@@ -1,7 +1,7 @@
 
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { X } from "lucide-react-native";
+import { Asterisk, Info, X } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Image,
@@ -83,6 +83,13 @@ function formatAccessibilityLabel(value?: AccessibilitySubtype) {
   }
 }
 
+const RequiredLabel = ({ label, styles }: { label: string; styles: ReturnType<typeof importStyles> }) => (
+  <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
+    <Text style={styles.stepLabel}>{label}</Text>
+    <Asterisk size={12} color="#e7548b" strokeWidth={2.5} />
+  </View>
+);
+
 export default function ReportFormModal({
                                           visible,
                                           onClose,
@@ -92,6 +99,15 @@ export default function ReportFormModal({
   const scheme = theme;
   const styles = importStyles(scheme);
 
+  const RequiredLabel = ({ label, styles }: { label: string; styles: any }) => (
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
+      <Text style={styles.stepLabel}>{label}</Text>
+      <Asterisk size={12} color="#e7548b" strokeWidth={2.5} />
+    </View>
+  );
+
+  const [showTypeInfo, setShowTypeInfo] = useState(false);
+  const [showFloorInfo, setShowFloorInfo] = useState(false);
   const [step, setStep] = useState(1);
   const [image, setImage] = useState<string | undefined>(undefined);
   const [name, setName] = useState("");
@@ -201,7 +217,7 @@ export default function ReportFormModal({
       case 1:
         return (
             <View style={styles.stepContent}>
-              <Text style={styles.stepLabel}>What kind of report is this?</Text>
+              <RequiredLabel label="What kind of report is this?"  styles={styles} />
 
               <View style={styles.dropdown}>
                 <Picker selectedValue={type} onValueChange={setType}>
@@ -209,6 +225,17 @@ export default function ReportFormModal({
                   <Picker.Item label="Disruptions" value="event" />
                   <Picker.Item label="Accessibility" value="accessibility" />
                 </Picker>
+              </View>
+
+              <View style={{ alignItems: "flex-end" }}>
+                <TouchableOpacity onPress={() => setShowTypeInfo((prev) => !prev)}>
+                  <Info size={16} color="#276389" />
+                </TouchableOpacity>
+                {showTypeInfo && (
+                  <Text style={styles.stepHelper}>
+                    Choose the category that best matches what you are reporting.
+                  </Text>
+                )}
               </View>
 
               {type === "accessibility" && (
@@ -255,19 +282,13 @@ export default function ReportFormModal({
                     </View>
                   </>
               )}
-
-              <View style={styles.helperBox}>
-                <Text style={styles.helperText}>
-                  Choose the category that best matches what you are reporting.
-                </Text>
-              </View>
             </View>
         );
 
       case 2:
         return (
             <View style={styles.stepContent}>
-              <Text style={styles.stepLabel}>Where is it happening?</Text>
+              <RequiredLabel label="Where is it happening?"  styles={styles} />
 
               <View style={styles.dropdown}>
                 <Picker
@@ -285,13 +306,8 @@ export default function ReportFormModal({
               </View>
 
              <View style={styles.floorHeaderRow}>
-                <Text style={styles.stepLabel}>Floor number</Text>
-                <Text style={styles.requiredTag}>Required</Text>
+                <RequiredLabel label="Floor number"  styles={styles} />
               </View>
-
-              <Text style={styles.stepHelper}>
-                Select the floor where the issue is happening.
-              </Text>
 
               <View style={styles.dropdown}>
                 <Picker
@@ -303,18 +319,31 @@ export default function ReportFormModal({
                   ))}
                 </Picker>
               </View>
+
+             <View style={{ alignItems: "flex-end" }}>
+                <TouchableOpacity onPress={() => setShowFloorInfo((prev) => !prev)}>
+                  <Info size={16} color="#276389" />
+                </TouchableOpacity>
+                {showFloorInfo && (
+                  <Text style={styles.stepHelper}>
+                    Select the floor where the issue is happening. If the issue is happening outside of the building, select the "Floor 1 (Ground Floor)""
+                  </Text>
+                )}
+              </View>
             </View>
         );
 
       case 3:
         return (
           <View style={styles.stepContent}>
-            <Text style={styles.stepLabel}>Describe the report</Text>
+            <RequiredLabel label="Report title"  styles={styles} />
 
             <View style={{ position: "relative" }}>
               <TextInput
                 style={styles.input}
-                placeholder="Report name"
+                placeholder="Construction blocking ramp..."
+                multiline
+                numberOfLines={2}
                 value={name}
                 onChangeText={setName}
                 placeholderTextColor="#8E8E98"
@@ -329,6 +358,7 @@ export default function ReportFormModal({
               </Text>
             </View>
 
+            <Text style={styles.stepLabel}>Summary (optional)</Text>
             <View style={{ position: "relative" }}>
               <TextInput
                 style={styles.description}
