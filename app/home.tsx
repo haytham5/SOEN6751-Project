@@ -241,7 +241,7 @@ export default function Home() {
 
       if (selectedBuilding) {
         const filtered = data.filter(
-          (r) => normalizeBuildingId(r.building) === selectedBuilding,
+          (r) => normalizeBuildingId(r.building) === selectedBuilding && r.type !== "event",
         );
         setBuildingReports(filtered);
       }
@@ -265,7 +265,7 @@ export default function Home() {
 
   const handleMarkerPress = (buildingId: string) => {
     const filtered = filteredTodayReports.filter(
-      (r) => normalizeBuildingId(r.building) === buildingId,
+      (r) => normalizeBuildingId(r.building) === buildingId && r.type !== "event",
     );
 
     if (filtered.length === 0) return;
@@ -1057,7 +1057,7 @@ export default function Home() {
           })()}
         </View>
       </ScrollView>
-
+          
       <Modal
         visible={selectedBuilding !== null}
         transparent
@@ -1419,7 +1419,7 @@ export default function Home() {
                 ) : null}
 
                 <Text style={styles.modalSectionTitle}></Text>
-                {(selectedReport.timeline ?? []).map((event, index) => (
+                {(selectedReport.timeline ?? []).slice().reverse().map((event, index) => (
                   <View key={index} style={styles.timelineRow}>
                     <View style={styles.timelineDot} />
                     <Text style={styles.timelineText}>
