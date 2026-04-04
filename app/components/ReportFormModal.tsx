@@ -58,6 +58,14 @@ const accessibilityOptions: {
   },
 ];
 
+const buildingFloors: Record<string, string[]> = {
+  EV:   ["1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"],
+  H:    ["S2", "S1", "1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+  JMSB: ["S2", "S1", "1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
+  LB:   ["S1", "1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+  FB:   ["1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+};
+
 function formatAccessibilityLabel(value?: AccessibilitySubtype) {
   switch (value) {
     case "elevator":
@@ -262,7 +270,12 @@ export default function ReportFormModal({
               <Text style={styles.stepLabel}>Where is it happening?</Text>
 
               <View style={styles.dropdown}>
-                <Picker selectedValue={building} onValueChange={setBuilding}>
+                <Picker
+                onValueChange={(val: string) => {
+                  setBuilding(val);
+                  setFloor("1 (Ground Floor)");
+                }}
+                >
                   <Picker.Item label="EV Building" value="EV" />
                   <Picker.Item label="Hall Building" value="H" />
                   <Picker.Item label="JMSB" value="JMSB" />
@@ -271,23 +284,25 @@ export default function ReportFormModal({
                 </Picker>
               </View>
 
-              <View style={styles.floorHeaderRow}>
+             <View style={styles.floorHeaderRow}>
                 <Text style={styles.stepLabel}>Floor number</Text>
                 <Text style={styles.requiredTag}>Required</Text>
               </View>
 
               <Text style={styles.stepHelper}>
-                Please enter the floor where the issue is happening. Example: 1,
-                2, 3, S1, basement, ground floor.
+                Select the floor where the issue is happening.
               </Text>
 
-              <TextInput
-                  style={styles.input}
-                  placeholder="Enter floor number or level"
-                  value={floor}
-                  onChangeText={setFloor}
-                  placeholderTextColor="#8E8E98"
-              />
+              <View style={styles.dropdown}>
+                <Picker
+                  selectedValue={floor}
+                  onValueChange={(val) => setFloor(val)}
+                >
+                  {(buildingFloors[building] ?? []).map((f) => (
+                    <Picker.Item key={f} label={`Floor ${f}`} value={f} />
+                  ))}
+                </Picker>
+              </View>
             </View>
         );
 
