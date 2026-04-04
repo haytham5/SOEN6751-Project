@@ -308,29 +308,49 @@ export default function ReportFormModal({
 
       case 3:
         return (
-            <View style={styles.stepContent}>
-              <Text style={styles.stepLabel}>Describe the report</Text>
+          <View style={styles.stepContent}>
+            <Text style={styles.stepLabel}>Describe the report</Text>
 
+            <View style={{ position: "relative" }}>
               <TextInput
-                  style={styles.input}
-                  placeholder="Report name"
-                  value={name}
-                  onChangeText={setName}
-                  placeholderTextColor="#8E8E98"
+                style={styles.input}
+                placeholder="Report name"
+                value={name}
+                onChangeText={setName}
+                placeholderTextColor="#8E8E98"
+                maxLength={60}
               />
-
-              <TextInput
-                  style={styles.description}
-                  placeholder="Summary of the event..."
-                  multiline
-                  numberOfLines={5}
-                  value={description}
-                  onChangeText={setDescription}
-                  placeholderTextColor="#8E8E98"
-              />
+              <Text style={[
+                styles.charCount,
+                name.length >= 55 && styles.charCountWarning,
+                name.length === 60 && styles.charCountLimit,
+              ]}>
+                {name.length}/60
+              </Text>
             </View>
-        );
 
+            <View style={{ position: "relative" }}>
+              <TextInput
+                style={styles.description}
+                placeholder="Summary of the event..."
+                multiline
+                numberOfLines={5}
+                value={description}
+                onChangeText={setDescription}
+                placeholderTextColor="#8E8E98"
+                maxLength={150}
+              />
+              <Text style={[
+                styles.charCount,
+                styles.charCountMultiline,
+                description.length >= 140 && styles.charCountWarning,
+                description.length === 150 && styles.charCountLimit,
+              ]}>
+                {description.length}/150
+              </Text>
+            </View>
+          </View>
+        );
       case 4:
         return (
             <View style={styles.stepContent}>
