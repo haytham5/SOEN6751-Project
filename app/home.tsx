@@ -359,31 +359,55 @@ export default function Home() {
     return reports.filter((r) => !r.isScheduledEvent && r.date === today);
   }, [reports]);
 
-  const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+  function normalizeDayKey(day?: string): string {
+    return day?.toLowerCase().trim() ?? "";
+  }
+
+  function getTodayDayKey(date = new Date()): string {
+    const dayNames = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ];
+
+    return dayNames[date.getDay()];
+  }
 
   const filteredTodayReports = useMemo(() => {
     if (reportViewMode === "preferences") {
       if (preferredBuildings.length === 0) return [];
 
       const now = new Date();
-      const todayLabel = DAY_LABELS[now.getDay()];
+      const todayKey = getTodayDayKey(now);
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
       return allTodayReports.filter((r) => {
         const normalizedBuilding = normalizeBuildingId(r.building);
 
         const pref = preferredBuildings.find(
-          (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
+            (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
         );
-        if (!pref) return false;
+        if (!pref || !pref.subscribed) return false;
 
-        const dayPref = pref.dayPreferences?.find((d) => d.day === todayLabel);
+        const dayPref = pref.dayPreferences?.find(
+            (d) => normalizeDayKey(d.day) === todayKey,
+        );
+
         if (!dayPref?.enabled) return false;
 
         if (dayPref.allDay) return true;
 
-        const [startH, startM] = dayPref.startTime.split(":").map(Number);
-        const [endH, endM] = dayPref.endTime.split(":").map(Number);
+        const [startH, startM] = (dayPref.startTime ?? "08:00")
+            .split(":")
+            .map(Number);
+        const [endH, endM] = (dayPref.endTime ?? "17:00")
+            .split(":")
+            .map(Number);
+
         const startMinutes = (startH ?? 8) * 60 + (startM ?? 0);
         const endMinutes = (endH ?? 17) * 60 + (endM ?? 0);
 
