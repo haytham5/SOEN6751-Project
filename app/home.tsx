@@ -167,6 +167,9 @@ export default function Home() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loadingReports, setLoading] = useState(true);
 
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const snackbarOpacity = useRef(new Animated.Value(0)).current;
+
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     access: false,
     disruptions: false,
@@ -207,6 +210,25 @@ export default function Home() {
     }
   }, []);
 
+  const triggerSnackbar = () => {
+    setShowSnackbar(true);
+    snackbarOpacity.setValue(0);
+
+    Animated.sequence([
+      Animated.timing(snackbarOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.delay(2000),
+      Animated.timing(snackbarOpacity, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setShowSnackbar(false));
+  };
+
   useEffect(() => {
     loadCurrentUserState();
   }, [loadCurrentUserState]);
@@ -241,7 +263,7 @@ export default function Home() {
 
       if (selectedBuilding) {
         const filtered = data.filter(
-          (r) => normalizeBuildingId(r.building) === selectedBuilding,
+          (r) => normalizeBuildingId(r.building) === selectedBuilding && r.type !== "event",
         );
         setBuildingReports(filtered);
       }
@@ -265,7 +287,7 @@ export default function Home() {
 
   const handleMarkerPress = (buildingId: string) => {
     const filtered = filteredTodayReports.filter(
-      (r) => normalizeBuildingId(r.building) === buildingId,
+      (r) => normalizeBuildingId(r.building) === buildingId && r.type !== "event",
     );
 
     if (filtered.length === 0) return;
@@ -276,6 +298,7 @@ export default function Home() {
 
   const handleReportSubmitSuccess = async () => {
     await loadReports();
+    triggerSnackbar();
   };
 
   const handleUpvote = async (reportId: string) => {
@@ -290,17 +313,6 @@ export default function Home() {
     await loadReports();
   };
 
-  // const handleVerify = async (reportId: string) => {
-  //   if (currentUserRole !== "security") return;
-  //   await verifyReport(reportId);
-  //   await loadReports();
-  // };
-  //
-  // const handleMarkSevere = async (reportId: string) => {
-  //   if (currentUserRole !== "security") return;
-  //   await markReportSevere(reportId);
-  //   await loadReports();
-  // };
   const handleVerify = async (reportId: string) => {
     if (currentUserRole !== "security" || !currentUserId) return;
     await verifyReport(reportId, currentUserId);
@@ -1081,7 +1093,7 @@ export default function Home() {
           })()}
         </View>
       </ScrollView>
-
+          
       <Modal
         visible={selectedBuilding !== null}
         transparent
@@ -1443,7 +1455,7 @@ export default function Home() {
                 ) : null}
 
                 <Text style={styles.modalSectionTitle}></Text>
-                {(selectedReport.timeline ?? []).map((event, index) => (
+                {(selectedReport.timeline ?? []).slice().reverse().map((event, index) => (
                   <View key={index} style={styles.timelineRow}>
                     <View style={styles.timelineDot} />
                     <Text style={styles.timelineText}>
@@ -1472,6 +1484,31 @@ export default function Home() {
       </Modal>
 
       {!calmMode && <BottomNav onPressAdd={handleOpenReportFlow} />}
+
+      {showSnackbar && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            bottom: 90,
+            alignSelf: "center",
+            backgroundColor: "#276389",
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            borderRadius: 24,
+            opacity: snackbarOpacity,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 6,
+          }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
+            ✓ Posted
+          </Text>
+        </Animated.View>
+      )}
+
     </SafeAreaView>
   );
 }
