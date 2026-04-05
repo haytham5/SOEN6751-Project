@@ -10,8 +10,7 @@ import {
     ThumbsUp,
     TriangleAlert,
 } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
-import { initialSubscriptions } from "./data/notificationData";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";import { initialSubscriptions } from "./data/notificationData";
 import {
     getReports,
     markReportResolved,
@@ -242,9 +241,9 @@ export default function Notifications() {
                                         <Text style={styles.subBody}>
                                             {buildingLabelMap[sub.id] ?? sub.label}
                                         </Text>
-                                        <Text style={styles.subLabel}>
-                                            {isActive ? "On" : "Off"}
-                                        </Text>
+                                        {/*<Text style={styles.subLabel}>*/}
+                                        {/*    {isActive ? "On" : "Off"}*/}
+                                        {/*</Text>*/}
                                     </View>
                                 </View>
                             </TouchableOpacity>

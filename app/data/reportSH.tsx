@@ -50,6 +50,7 @@ export type Report = {
   eventStartDate?: string;
   eventEndDate?: string;
   timeline: TimelineEvent[];
+  createdBy?: string;
 };
 
 export type NewReportInput = Omit<Report, "isVerifiedBySecurity" | "timeline">;
@@ -361,5 +362,30 @@ export const deleteAllReports = async (): Promise<void> => {
     console.log("All reports deleted successfully");
   } catch (error) {
     console.error("Error deleting reports:", error);
+  }
+};
+export const updateReport = async (updatedReport: Report): Promise<void> => {
+  try {
+    const reports = await parseReports();
+
+    const updated = reports.map((r) =>
+        r.id === updatedReport.id ? updatedReport : r
+    );
+
+    await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
+  } catch (error) {
+    console.error("Error updating report:", error);
+  }
+};
+
+export const deleteReport = async (reportId: string): Promise<void> => {
+  try {
+    const reports = await parseReports();
+
+    const updated = reports.filter((r) => r.id !== reportId);
+
+    await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
+  } catch (error) {
+    console.error("Error deleting report:", error);
   }
 };
