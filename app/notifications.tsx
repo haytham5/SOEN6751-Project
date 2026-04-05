@@ -47,6 +47,15 @@ const buildingColorMap: Record<string, string> = {
     JM: "#2196F3", //backup color
     LB: "#FFC107",
 };
+const buildingLabelMap: Record<string, string> = {
+    EV: "EV",
+    H: "Hall",
+    FB: "FB",
+    JMSB: "JM",
+    JM: "JM",
+    LB: "LB",
+};
+
 const today = new Date().toISOString().split("T")[0];
 
 export default function Notifications() {
@@ -229,7 +238,10 @@ export default function Notifications() {
                                             isActive ? styles.subCardActive : styles.subCardInactive,
                                         ]}
                                     >
-                                        <Text style={styles.subBody}>{sub.label}</Text>
+                                        {/*<Text style={styles.subBody}>{sub.label}</Text>*/}
+                                        <Text style={styles.subBody}>
+                                            {buildingLabelMap[sub.id] ?? sub.label}
+                                        </Text>
                                         <Text style={styles.subLabel}>
                                             {isActive ? "On" : "Off"}
                                         </Text>
