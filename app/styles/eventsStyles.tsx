@@ -461,4 +461,60 @@ export const styles = (COLORS: ThemeType) =>
       color: "#5A6B80",
       fontFamily: "Lexend_400Regular",
     },
+      filterChip: {
+          minWidth: 74,
+          height: 48,
+          paddingHorizontal: 16,
+          marginRight: 10,
+          borderRadius: 16,
+          borderWidth: 1.5,
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          backgroundColor: COLORS.white,
+          ...Platform.select({
+              ios: {
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 8,
+              },
+              android: {
+                  elevation: 2,
+                  shadowColor: "#000",
+              },
+          }),
+      },
+
+      filterChipActive: {
+          transform: [{ scale: 1.03 }],
+      },
+
+      filterChipText: {
+          fontSize: 16,
+          fontFamily: "Lexend_400Regular",
+      },
+
+      filterChipTextActive: {
+          fontWeight: "700",
+      },
+
+      filterChipBadge: {
+          position: "absolute",
+          top: -1,
+          right: -1,
+          width: 20,
+          height: 20,
+          borderRadius: 10,
+          alignItems: "center",
+          justifyContent: "center",
+          borderWidth: 2,
+          borderColor: COLORS.white,
+      },
+
+      filterChipBadgeText: {
+          color: COLORS.white,
+          fontSize: 11,
+          fontFamily: "Lexend_400Regular",
+      },
   });
