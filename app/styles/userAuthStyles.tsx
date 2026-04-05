@@ -264,10 +264,13 @@ export const styles = (COLORS: ThemeType) =>
 
     topBackButton: {
       position: "absolute",
-      left: 12,
       zIndex: 20,
       paddingVertical: 8,
-      paddingHorizontal: 8,
+      paddingHorizontal: 20,
+      backgroundColor: COLORS.white,
+      width: "100%",
+      // borderBottomColor: COLORS.border,
+      // borderBottomWidth: 2,
     },
 
     topBackText: {

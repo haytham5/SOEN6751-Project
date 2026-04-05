@@ -44,6 +44,10 @@ export default function SignUp() {
   const scheme = theme;
   const styles = importStyles(scheme);
 
+  const [showShadow, setShowShadow] = useState(false);
+
+  const SCROLL_THRESHOLD = 125;
+
   const [fontsLoaded] = useFonts({
     Pacifico_400Regular,
     Lexend_400Regular,
@@ -180,7 +184,15 @@ export default function SignUp() {
       <StatusBar backgroundColor={scheme.white} barStyle="dark-content" />
 
       <TouchableOpacity
-        style={[styles.topBackButton, { top: insets.top + 6 }]}
+        style={[
+          styles.topBackButton,
+          {
+            top: insets.top,
+            ...(showShadow && {
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+            }),
+          },
+        ]}
         onPress={() => {
           if (step === "preferences") {
             setStep("account");
@@ -190,7 +202,7 @@ export default function SignUp() {
         }}
         activeOpacity={0.7}
       >
-        <View style={localStyles.backRow}>
+        <View style={[localStyles.backRow, { paddingTop: 0, paddingStart: 0 }]}>
           {step === "preferences" && <ChevronLeft size={16} color="#5a8c8b" />}
           <Text style={styles.topBackText}>
             {step === "preferences" ? "Back to account form" : "← Back"}
@@ -205,6 +217,11 @@ export default function SignUp() {
           contentContainerStyle={styles.scrollableContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          onScroll={(e) => {
+            const offsetY = e.nativeEvent.contentOffset.y;
+            setShowShadow(offsetY > SCROLL_THRESHOLD);
+          }}
+          scrollEventThrottle={16}
         >
           <View style={styles.logoArea}>
             <Image

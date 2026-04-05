@@ -9,6 +9,7 @@ import {
   Clock,
   ThumbsUp,
   TriangleAlert,
+  Turtle,
 } from "lucide-react-native";
 import React, {
   useCallback,
@@ -152,7 +153,9 @@ export default function Home() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isGuest, setIsGuest] = useState(true);
 
-  const [preferredBuildings, setPreferredBuildings] = useState<BuildingPreference[]>([]);
+  const [preferredBuildings, setPreferredBuildings] = useState<
+    BuildingPreference[]
+  >([]);
   const [reportViewMode, setReportViewMode] =
     useState<ReportViewMode>("preferences");
 
@@ -691,7 +694,7 @@ export default function Home() {
             onLayout={(e) => setButtonLayout(e.nativeEvent.layout)}
             onPress={handleCalmMode}
           >
-            <Icon name="bedtime" size={24} color="#276389" />
+            <Turtle size={24} color="#276389" />
           </TouchableOpacity>
         </View>
 
@@ -718,7 +721,7 @@ export default function Home() {
               style={styles.fullScreenRelaxMode}
               onPress={handleCalmModeFromExpandedMap}
             >
-              <Icon name="bedtime" size={24} color="#276389" />
+              <Turtle size={24} color="#276389" />
             </TouchableOpacity>
           </View>
         </Modal>
@@ -1190,7 +1193,9 @@ export default function Home() {
                       const isDisabled = isGuest || !currentUserId;
 
                       const typeIcon =
-                        report.type === "accessibility" ? "accessible" : "campaign";
+                        report.type === "accessibility"
+                          ? "accessible"
+                          : "campaign";
 
                       const typeLabel = report.accessibilitySubtype
                         ? report.accessibilitySubtype.replace("_", " ")
@@ -1239,13 +1244,21 @@ export default function Home() {
                               )}
 
                               <View style={styles.updateTypeRow}>
-                                <Icon name={typeIcon} size={16} color="#276389" />
-                                <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
+                                <Icon
+                                  name={typeIcon}
+                                  size={16}
+                                  color="#276389"
+                                />
+                                <Text style={styles.updateTypeLabel}>
+                                  {typeLabel}
+                                </Text>
                               </View>
 
                               <View style={styles.updateMetaRow}>
                                 <Clock size={13} color="#5A6B80" />
-                                <Text style={styles.updateMeta}>{report.time}</Text>
+                                <Text style={styles.updateMeta}>
+                                  {report.time}
+                                </Text>
                               </View>
 
                               <View style={styles.updateMetaRow}>
@@ -1287,7 +1300,9 @@ export default function Home() {
                                     >
                                       <CheckCircle
                                         size={13}
-                                        color={hasVerified ? "#FFFFFF" : "#1FA64A"}
+                                        color={
+                                          hasVerified ? "#FFFFFF" : "#1FA64A"
+                                        }
                                       />
                                       <Text
                                         style={[
@@ -1301,7 +1316,9 @@ export default function Home() {
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
-                                      onPress={() => handleMarkSevere(report.id)}
+                                      onPress={() =>
+                                        handleMarkSevere(report.id)
+                                      }
                                       style={[
                                         styles.securityActionButton,
                                         hasMarkedSevere &&
@@ -1311,7 +1328,9 @@ export default function Home() {
                                       <TriangleAlert
                                         size={13}
                                         color={
-                                          hasMarkedSevere ? "#FFFFFF" : "#F59E0B"
+                                          hasMarkedSevere
+                                            ? "#FFFFFF"
+                                            : "#F59E0B"
                                         }
                                       />
                                       <Text
@@ -1402,7 +1421,11 @@ export default function Home() {
                               setTimeout(() => setSelectedReport(report), 200);
                             }}
                           >
-                            <Icon name="expand-more" size={24} color="#276389" />
+                            <Icon
+                              name="expand-more"
+                              size={24}
+                              color="#276389"
+                            />
                           </TouchableOpacity>
                         </View>
                       );

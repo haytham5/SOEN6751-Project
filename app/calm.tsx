@@ -21,9 +21,10 @@ import { Themes } from "./styles/Themes";
 import { getReports, Report } from "./data/reportSH";
 
 import { LinearGradient } from "expo-linear-gradient";
+import { Info, Trash2, Turtle, Undo2, X } from "lucide-react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
-import MapView, { Circle } from "react-native-maps";
+import MapView, { Circle, Marker } from "react-native-maps";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -41,6 +42,40 @@ const buildingColorMapOpacity: Record<string, string> = {
   JMSB: "#2196F330",
   LB: "#FFC10730",
 };
+
+function normalizeBuildingId(buildingId?: string): string {
+  const value = buildingId?.toLowerCase().trim();
+
+  switch (value) {
+    case "ev":
+      return "EV";
+
+    case "hall":
+    case "hall building":
+    case "h":
+      return "H";
+
+    case "faubourg":
+    case "faubourg building":
+    case "fb":
+      return "FB";
+
+    case "library":
+    case "webster":
+    case "webster library":
+    case "lb":
+      return "LB";
+
+    case "jmsb":
+    case "jm":
+    case "jmsb/jm":
+    case "jmsb / jm":
+      return "JMSB";
+
+    default:
+      return buildingId ?? "";
+  }
+}
 
 export default function Calm() {
   const { theme } = useTheme();
@@ -60,6 +95,12 @@ export default function Calm() {
   const previewMapRef = useRef<MapView | null>(null);
   const opacities = useRef<Record<string, Animated.Value>>({});
 
+  type ActiveTab = "current" | "deleted";
+
+  const [activeTab, setActiveTab] = useState<ActiveTab>("current");
+
+  const [deletedReports, setDeletedReports] = useState<Report[]>([]);
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -75,12 +116,12 @@ export default function Calm() {
 
     load();
 
-    toggleInfo();
+    // toggleInfo();
   }, []);
 
   const handleReset = () => {
     setReports(originalReports);
-
+    setDeletedReports([]);
     originalReports.forEach((r) => {
       opacities.current[r.id] = new Animated.Value(1);
     });
@@ -92,11 +133,52 @@ export default function Calm() {
     );
   }, [reports]);
 
-  const renderRightActions = () => {
+  const renderDeleteAction = () => {
     return (
-      <Animated.View style={[styles.card, styles.deleteCard]}>
-        <Text style={[styles.title, { fontSize: 18 }]}>Remove</Text>
-        <Text style={[styles.title, { fontSize: 18 }]}>Report</Text>
+      <Animated.View
+        style={[
+          styles.card,
+          styles.deleteCard,
+          {
+            alignItems: "flex-start",
+            width: "100%",
+          },
+        ]}
+      >
+        <Trash2 size={24} color="#fff" style={{ marginTop: 6 }} />
+        <Text
+          style={[
+            styles.title,
+            { textAlign: "left", fontSize: 18, marginTop: -8 },
+          ]}
+        >
+          Delete
+        </Text>
+      </Animated.View>
+    );
+  };
+
+  const renderRestoreAction = () => {
+    return (
+      <Animated.View
+        style={[
+          styles.card,
+          {
+            alignItems: "flex-end",
+            width: "100%",
+            backgroundColor: "#276389",
+          },
+        ]}
+      >
+        <Undo2 size={24} color="#fff" />
+        <Text
+          style={[
+            styles.title,
+            { textAlign: "right", fontSize: 18, marginTop: -8 },
+          ]}
+        >
+          Restore
+        </Text>
       </Animated.View>
     );
   };
@@ -110,9 +192,18 @@ export default function Calm() {
       duration: 80,
       useNativeDriver: true,
     }).start(() => {
+      const removed = reports.find((r) => r.id === id);
+      if (removed) setDeletedReports((prev) => [...prev, removed]);
       setReports((prev) => prev.filter((r) => r.id !== id));
       delete opacities.current[id];
     });
+  };
+
+  const handleRestore = (id: string) => {
+    const restored = deletedReports.find((r) => r.id === id);
+    if (!restored) return;
+    setDeletedReports((prev) => prev.filter((r) => r.id !== id));
+    setReports((prev) => [...prev, restored]);
   };
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -166,18 +257,43 @@ export default function Calm() {
       >
         {calmReports.map((report) => {
           const coord = buildings[report.building];
-
           if (!coord) return null;
 
           return (
-            <Circle
-              key={report.id}
-              center={coord}
-              radius={50}
-              fillColor={buildingColorMapOpacity[report.building]}
-              strokeColor={buildingColorMap[report.building]}
-              strokeWidth={0}
-            />
+            <React.Fragment key={report.id}>
+              <Circle
+                center={coord}
+                radius={50}
+                fillColor={buildingColorMapOpacity[report.building]}
+                strokeColor={buildingColorMap[report.building]}
+                strokeWidth={1}
+              />
+              <Marker
+                coordinate={coord}
+                anchor={{ x: 0.5, y: 0.5 }}
+                tracksViewChanges={true}
+              >
+                <View
+                  style={{
+                    width: 35,
+                    height: 35,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: buildingColorMap[report.building],
+                      fontWeight: "700",
+                      fontSize: 16,
+                      textAlign: "center",
+                    }}
+                  >
+                    {report.building === "JMSB" ? "JM" : report.building}
+                  </Text>
+                </View>
+              </Marker>
+            </React.Fragment>
           );
         })}
       </MapView>
@@ -234,18 +350,40 @@ export default function Calm() {
           style={[styles.background, { backgroundColor: "transparent" }]}
         >
           <View style={styles.textRegion}>
-            <View style={[styles.header, { justifyContent: "space-between" }]}>
+            <View
+              style={[
+                styles.header,
+                {
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                  paddingHorizontal: 20,
+                },
+              ]}
+            >
+              <TouchableOpacity onPress={toggleInfo}>
+                <Info size={24} color="#276389" />
+              </TouchableOpacity>
+
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <TouchableOpacity onPress={toggleInfo}>
-                  <Icon
+                <TouchableOpacity>
+                  <Turtle
                     style={{ marginTop: 2, marginEnd: 6 }}
-                    name="bedtime"
                     size={24}
                     color="#276389"
                   />
                 </TouchableOpacity>
                 <Text style={styles.title}>Calm Mode</Text>
               </View>
+
+              <TouchableOpacity
+                onPress={async () => {
+                  router.push("../home");
+                }}
+              >
+                <X size={24} color="#276389" />
+              </TouchableOpacity>
             </View>
 
             <Text style={styles.subtitle}>
@@ -265,16 +403,19 @@ export default function Calm() {
                 }}
               >
                 <Text style={[styles.subtitle, { fontSize: 12 }]}>
-                  • Swipe reports to remove them
+                  • Swipe reports right to delete them, left to restore them.
                 </Text>
                 <Text style={[styles.subtitle, { fontSize: 12 }]}>
-                  • Areas you keep will be highlighted on the map
+                  • Deleted reports are moved to the "Deleted" tab.
                 </Text>
                 <Text style={[styles.subtitle, { fontSize: 12 }]}>
-                  • You’ll be notified when selected reports are resolved
+                  • Areas you keep will be highlighted on the map.
                 </Text>
                 <Text style={[styles.subtitle, { fontSize: 12 }]}>
-                  • Click the Moon to dismiss this dialog
+                  • You'll be notified when selected reports are resolved.
+                </Text>
+                <Text style={[styles.subtitle, { fontSize: 12 }]}>
+                  • Click the info button to dismiss this dialog.
                 </Text>
               </Animated.View>
             )}
@@ -284,55 +425,160 @@ export default function Calm() {
             {renderMap(previewMapRef)}
           </View>
 
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[
+                styles.tabButton,
+                activeTab === "current" && styles.activeTabButton,
+              ]}
+              onPress={() => setActiveTab("current")}
+            >
+              <Text
+                style={[
+                  styles.tabButtonText,
+                  activeTab === "current" && styles.activeTabButtonText,
+                ]}
+              >
+                Current
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.tabButton,
+                activeTab === "deleted" && styles.activeTabButton,
+              ]}
+              onPress={() => {
+                setActiveTab("deleted");
+              }}
+            >
+              <Text
+                style={[
+                  styles.tabButtonText,
+                  activeTab === "deleted" && styles.activeTabButtonText,
+                ]}
+              >
+                Deleted
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           <ScrollView
-            contentContainerStyle={{ padding: 0 }}
+            contentContainerStyle={{ padding: 0, alignItems: "stretch" }}
             showsVerticalScrollIndicator={false}
           >
-            {calmReports.length === 0 ? (
-              <Text style={styles.subtitle}>No disruptions right now.</Text>
-            ) : (
-              calmReports.map((report) => {
-                if (!opacities.current[report.id]) {
-                  opacities.current[report.id] = new Animated.Value(1);
-                }
-
-                return (
-                  <Swipeable
-                    key={report.id}
-                    onSwipeableWillOpen={() => setActiveRow(report.id)}
-                    ref={(ref) => {
-                      if (activeRow !== report.id && ref) {
-                        ref.close();
-                      }
-                    }}
-                    renderRightActions={renderRightActions}
-                    onSwipeableOpen={() => handleRemove(report.id)}
-                    containerStyle={{ opacity: opacities.current[report.id] }}
-                  >
-                    <Animated.View style={styles.card}>
-                      <View style={styles.cardTextTopRow}>
-                        <Icon
-                          name={
-                            report.type === "protest"
-                              ? "campaign"
-                              : "accessible"
-                          }
-                          size={28}
-                          color="#fff"
-                        />
-
-                        <Text style={[styles.cardText, { fontWeight: "600" }]}>
-                          {report.name}
+            {activeTab === "current" ? (
+              calmReports.length === 0 ? (
+                <Text style={styles.subtitle}>No disruptions right now.</Text>
+              ) : (
+                calmReports.map((report) => {
+                  if (!opacities.current[report.id]) {
+                    opacities.current[report.id] = new Animated.Value(1);
+                  }
+                  return (
+                    <Swipeable
+                      key={`${report.id}-current-${report.date}`}
+                      onSwipeableWillOpen={() => setActiveRow(report.id)}
+                      ref={(ref) => {
+                        if (activeRow !== report.id && ref) ref.close();
+                      }}
+                      renderLeftActions={renderDeleteAction}
+                      onSwipeableOpen={(direction) => {
+                        if (direction === "left") handleRemove(report.id);
+                      }}
+                      containerStyle={{ opacity: opacities.current[report.id] }}
+                      leftThreshold={60}
+                      overshootLeft={false}
+                    >
+                      <Animated.View
+                        style={[
+                          styles.card,
+                          {
+                            overflow: "hidden",
+                            alignSelf: "stretch",
+                            width: "100%",
+                            borderLeftWidth: 5,
+                            borderLeftColor:
+                              buildingColorMap[
+                                normalizeBuildingId(report.building)
+                              ] ?? scheme.border,
+                          },
+                        ]}
+                      >
+                        <View style={styles.cardTextTopRow}>
+                          <Icon
+                            name={
+                              report.type === "protest"
+                                ? "campaign"
+                                : "accessible"
+                            }
+                            size={28}
+                            color="#fff"
+                          />
+                          <Text
+                            style={[styles.cardText, { fontWeight: "600" }]}
+                          >
+                            {report.name}
+                          </Text>
+                        </View>
+                        <Text style={styles.cardText}>
+                          {report.building} {report.floor} · {report.time}
                         </Text>
-                      </View>
-
-                      <Text style={styles.cardText}>
-                        {report.building} {report.floor} · {report.time}
+                      </Animated.View>
+                    </Swipeable>
+                  );
+                })
+              )
+            ) : deletedReports.length === 0 ? (
+              <Text style={styles.subtitle}>No deleted reports.</Text>
+            ) : (
+              deletedReports.map((report) => (
+                <Swipeable
+                  key={`${report.id}-deleted-${report.date}`}
+                  onSwipeableWillOpen={() => setActiveRow(report.id)}
+                  ref={(ref) => {
+                    if (activeRow !== report.id && ref) ref.close();
+                  }}
+                  renderRightActions={renderRestoreAction}
+                  onSwipeableOpen={(direction) => {
+                    if (direction === "right") handleRestore(report.id);
+                  }}
+                  rightThreshold={60}
+                  overshootRight={false}
+                >
+                  <View
+                    style={[
+                      styles.card,
+                      {
+                        overflow: "hidden",
+                        alignSelf: "stretch",
+                        width: "100%",
+                        borderLeftWidth: 5,
+                        borderLeftColor:
+                          buildingColorMap[
+                            normalizeBuildingId(report.building)
+                          ] ?? scheme.border,
+                      },
+                    ]}
+                  >
+                    <View style={styles.cardTextTopRow}>
+                      <Icon
+                        name={
+                          report.type === "protest" ? "campaign" : "accessible"
+                        }
+                        size={28}
+                        color="#fff"
+                      />
+                      <Text style={[styles.cardText, { fontWeight: "600" }]}>
+                        {report.name}
                       </Text>
-                    </Animated.View>
-                  </Swipeable>
-                );
-              })
+                    </View>
+                    <Text style={styles.cardText}>
+                      {report.building} {report.floor} · {report.time}
+                    </Text>
+                  </View>
+                </Swipeable>
+              ))
             )}
           </ScrollView>
 
@@ -342,16 +588,6 @@ export default function Calm() {
             onPress={handleReset}
           >
             <Text style={styles.ghostButtonText}>Reset Reports</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.ghostButton}
-            activeOpacity={0.7}
-            onPress={async () => {
-              router.push("../home");
-            }}
-          >
-            <Text style={styles.ghostButtonText}>Return to Normal Mode</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </LinearGradient>

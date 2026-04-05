@@ -169,4 +169,51 @@ export const styles = (COLORS: ThemeType) =>
         },
       }),
     },
+
+    tabContainer: {
+      flexDirection: "row",
+      backgroundColor: COLORS.softBg,
+      marginHorizontal: 20,
+      marginTop: -7,
+      marginBottom: 12,
+      borderRadius: 18,
+      padding: 4,
+      borderWidth: 1,
+      borderColor: COLORS.border,
+
+      ...Platform.select({
+        ios: {
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.07,
+          shadowRadius: 18,
+        },
+        android: {
+          elevation: 3,
+        },
+      }),
+    },
+
+    tabButton: {
+      flex: 1,
+      paddingVertical: 12,
+      borderRadius: 14,
+      alignItems: "center",
+    },
+
+    activeTabButton: {
+      backgroundColor: COLORS.cardBg,
+      borderWidth: 1,
+      borderColor: COLORS.border,
+    },
+
+    tabButtonText: {
+      fontFamily: "Lexend_400Regular",
+      fontSize: 14,
+      color: COLORS.subtext,
+    },
+
+    activeTabButtonText: {
+      color: COLORS.black,
+    },
   });
