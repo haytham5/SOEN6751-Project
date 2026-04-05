@@ -30,6 +30,7 @@ import {
     type CurrentUser,
 } from "./utils/authStorage";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface RowProps {
     label: string;
@@ -38,6 +39,35 @@ interface RowProps {
 }
 
 type ActiveTab = "profile" | "settings";
+
+function normalizeSubscriptionId(buildingId?: string): string {
+    const value = buildingId?.toLowerCase().trim();
+
+    switch (value) {
+        case "ev":
+            return "EV";
+        case "hall":
+        case "hall building":
+        case "h":
+            return "H";
+        case "faubourg":
+        case "faubourg building":
+        case "fb":
+            return "FB";
+        case "library":
+        case "webster":
+        case "webster library":
+        case "lb":
+            return "LB";
+        case "jmsb":
+        case "jm":
+        case "jmsb/jm":
+        case "jmsb / jm":
+            return "JMSB";
+        default:
+            return buildingId ?? "";
+    }
+}
 
 export default function Settings() {
     const { mode, toggleTheme } = useTheme();
@@ -610,8 +640,27 @@ export default function Settings() {
                         title="Edit Preferences"
                         initialPreferences={currentUser?.buildingPreferences ?? []}
                         onCancel={() => setIsPreferencesOpen(false)}
+                        // onSave={async (prefs) => {
+                        //     await updateCurrentUser({ buildingPreferences: prefs });
+                        //     const refreshedUser = await getCurrentUser();
+                        //     setCurrentUser(refreshedUser);
+                        //     setIsPreferencesOpen(false);
+                        // }}
+
                         onSave={async (prefs) => {
                             await updateCurrentUser({ buildingPreferences: prefs });
+
+                            await AsyncStorage.setItem(
+                                "subscriptions",
+                                JSON.stringify(
+                                    prefs.map((pref) => ({
+                                        id: normalizeSubscriptionId(pref.buildingId),
+                                        label: pref.buildingName,
+                                        isSubscribed: pref.subscribed,
+                                    })),
+                                ),
+                            );
+
                             const refreshedUser = await getCurrentUser();
                             setCurrentUser(refreshedUser);
                             setIsPreferencesOpen(false);

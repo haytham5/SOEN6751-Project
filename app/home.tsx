@@ -296,8 +296,15 @@ export default function Home() {
     setSelectedBuilding(buildingId);
   };
 
+  // const handleReportSubmitSuccess = async () => {
+  //   await loadReports();
+  //   setReportViewMode("all");
+  //   triggerSnackbar();
+  // };
   const handleReportSubmitSuccess = async () => {
+    await loadCurrentUserState();
     await loadReports();
+    setReportViewMode("all");
     triggerSnackbar();
   };
 
@@ -408,46 +415,144 @@ export default function Home() {
     const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     return dayNames[date.getDay()];
   }
+
+  function timeToMinutes(time?: string, fallback = "00:00"): number {
+    const [hours, minutes] = (time ?? fallback).split(":").map(Number);
+    return (hours || 0) * 60 + (minutes || 0);
+  }
+
+  function reportTimeToMinutes(time?: string): number {
+    if (!time) return -1;
+
+    const match = time.match(/(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)?/);
+    if (!match) return -1;
+
+    let hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const meridiem = match[3]?.toLowerCase();
+
+    if (meridiem === "pm" && hours !== 12) hours += 12;
+    if (meridiem === "am" && hours === 12) hours = 0;
+
+    return hours * 60 + minutes;
+  }
+
+  // function doesReportMatchPreferences(
+  //     report: Report,
+  //     preferredBuildings: BuildingPreference[],
+  //     now: Date,
+  // ): boolean {
+  //   const normalizedBuilding = normalizeBuildingId(report.building);
+  //
+  //   const pref = preferredBuildings.find(
+  //       (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
+  //   );
+  //
+  //   if (!pref || !pref.subscribed) return false;
+  //
+  //   const todayKey = getTodayDayKey(now);
+  //
+  //   const dayPref = pref.dayPreferences?.find(
+  //       (d) => normalizeDayKey(d.day) === todayKey,
+  //   );
+  //
+  //   if (!dayPref || !dayPref.enabled) return false;
+  //   if (dayPref.allDay) return true;
+  //
+  //   const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  //   const startMinutes = timeToMinutes(dayPref.startTime, "08:00");
+  //   const endMinutes = timeToMinutes(dayPref.endTime, "17:00");
+  //
+  //   return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+  // }
+
+  function doesReportMatchPreferences(
+      report: Report,
+      preferredBuildings: BuildingPreference[],
+      now: Date,
+  ): boolean {
+    const normalizedBuilding = normalizeBuildingId(report.building);
+
+    const pref = preferredBuildings.find(
+        (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
+    );
+
+    if (!pref || !pref.subscribed) return false;
+
+    const todayKey = getTodayDayKey(now);
+
+    const dayPref = pref.dayPreferences?.find(
+        (d) => normalizeDayKey(d.day) === todayKey,
+    );
+
+    if (!dayPref || !dayPref.enabled) return false;
+    if (dayPref.allDay) return true;
+
+    const reportMinutes = reportTimeToMinutes(report.time);
+    if (reportMinutes < 0) return false;
+
+    const startMinutes = timeToMinutes(dayPref.startTime, "08:00");
+    const endMinutes = timeToMinutes(dayPref.endTime, "17:00");
+
+    return reportMinutes >= startMinutes && reportMinutes <= endMinutes;
+  }
+
+  // const filteredTodayReports = useMemo(() => {
+  //   if (reportViewMode === "preferences") {
+  //     if (preferredBuildings.length === 0) return [];
+  //
+  //     const now = new Date();
+  //     const todayKey = getTodayDayKey(now);
+  //     const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  //
+  //     return allTodayReports.filter((r) => {
+  //       const normalizedBuilding = normalizeBuildingId(r.building);
+  //
+  //       const pref = preferredBuildings.find(
+  //           (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
+  //       );
+  //       if (!pref || !pref.subscribed) return false;
+  //
+  //       const dayPref = pref.dayPreferences?.find(
+  //           (d) => normalizeDayKey(d.day) === todayKey,
+  //       );
+  //
+  //       if (!dayPref) return false;
+  //       if (!dayPref.enabled) return false;
+  //       if (dayPref.allDay) return true;
+  //
+  //
+  //       const [startH, startM] = (dayPref.startTime ?? "08:00")
+  //           .split(":")
+  //           .map(Number);
+  //       const [endH, endM] = (dayPref.endTime ?? "17:00")
+  //           .split(":")
+  //           .map(Number);
+  //
+  //       const startMinutes = (startH ?? 8) * 60 + (startM ?? 0);
+  //       const endMinutes = (endH ?? 17) * 60 + (endM ?? 0);
+  //
+  //       return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+  //     });
+  //   }
+  //
+  //   return allTodayReports;
+  // }, [allTodayReports, reportViewMode, preferredBuildings]);
+
   const filteredTodayReports = useMemo(() => {
-    if (reportViewMode === "preferences") {
-      if (preferredBuildings.length === 0) return [];
-
-      const now = new Date();
-      const todayKey = getTodayDayKey(now);
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      return allTodayReports.filter((r) => {
-        const normalizedBuilding = normalizeBuildingId(r.building);
-
-        const pref = preferredBuildings.find(
-            (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
-        );
-        if (!pref || !pref.subscribed) return false;
-
-        const dayPref = pref.dayPreferences?.find(
-            (d) => normalizeDayKey(d.day) === todayKey,
-        );
-
-        if (!dayPref) return false;
-        if (!dayPref.enabled) return false;
-        if (dayPref.allDay) return true;
-
-
-        const [startH, startM] = (dayPref.startTime ?? "08:00")
-            .split(":")
-            .map(Number);
-        const [endH, endM] = (dayPref.endTime ?? "17:00")
-            .split(":")
-            .map(Number);
-
-        const startMinutes = (startH ?? 8) * 60 + (startM ?? 0);
-        const endMinutes = (endH ?? 17) * 60 + (endM ?? 0);
-
-        return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
-      });
+    if (reportViewMode !== "preferences") {
+      return allTodayReports;
     }
 
-    return allTodayReports;
+    if (preferredBuildings.length === 0) {
+      return [];
+    }
+
+    const now = new Date();
+
+    return allTodayReports.filter((report) =>
+        doesReportMatchPreferences(report, preferredBuildings, now),
+    );
   }, [allTodayReports, reportViewMode, preferredBuildings]);
 
   const buildingCounts: Record<

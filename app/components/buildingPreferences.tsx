@@ -231,6 +231,14 @@ export default function BuildingPreferencesWizard({
         }
     };
 
+    const normalizeTimeString = (time: string) => {
+        const [rawHour, rawMinute] = time.split(":").map(Number);
+        const hour = Math.max(0, Math.min(23, rawHour || 0));
+        const minute = Math.max(0, Math.min(59, rawMinute || 0));
+
+        return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+    };
+
     const updateTime = (
         buildingId: string,
         dayKey: DayKey,
@@ -248,9 +256,15 @@ export default function BuildingPreferencesWizard({
                     dayPreferences: pref.dayPreferences.map((day) => {
                         if (day.day !== dayKey) return day;
 
+                        // const updatedDay = {
+                        //     ...day,
+                        //     [field]: nextValue,
+                        // };
+                        const safeNextValue = normalizeTimeString(nextValue);
+
                         const updatedDay = {
                             ...day,
-                            [field]: nextValue,
+                            [field]: safeNextValue,
                         };
 
                         const error = getDayTimeError(updatedDay);
@@ -276,22 +290,45 @@ export default function BuildingPreferencesWizard({
         );
     };
 
+    // const cycleTime = (
+    //     current: string,
+    //     direction: "up" | "down",
+    //     minHour = 0,
+    //     maxHour = 23,
+    // ) => {
+    //     const [h, m] = current.split(":").map(Number);
+    //     let nextHour = h + (direction === "up" ? 1 : -1);
+    //
+    //     if (nextHour > maxHour) nextHour = minHour;
+    //     if (nextHour < minHour) nextHour = maxHour;
+    //
+    //     return `${String(nextHour).padStart(2, "0")}:${String(m || 0).padStart(
+    //         2,
+    //         "0",
+    //     )}`;
+    // };
     const cycleTime = (
         current: string,
         direction: "up" | "down",
-        minHour = 0,
-        maxHour = 23,
+        stepMinutes = 15,
     ) => {
         const [h, m] = current.split(":").map(Number);
-        let nextHour = h + (direction === "up" ? 1 : -1);
+        const totalMinutes = (h || 0) * 60 + (m || 0);
 
-        if (nextHour > maxHour) nextHour = minHour;
-        if (nextHour < minHour) nextHour = maxHour;
+        let nextTotal =
+            direction === "up"
+                ? totalMinutes + stepMinutes
+                : totalMinutes - stepMinutes;
 
-        return `${String(nextHour).padStart(2, "0")}:${String(m || 0).padStart(
-            2,
-            "0",
-        )}`;
+        const minutesInDay = 24 * 60;
+
+        if (nextTotal >= minutesInDay) nextTotal = 0;
+        if (nextTotal < 0) nextTotal = minutesInDay - stepMinutes;
+
+        const nextHour = Math.floor(nextTotal / 60);
+        const nextMinute = nextTotal % 60;
+
+        return `${String(nextHour).padStart(2, "0")}:${String(nextMinute).padStart(2, "0")}`;
     };
 
     const timeToMinutes = (time: string) => {
