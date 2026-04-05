@@ -339,4 +339,21 @@ export const styles = (COLORS: ThemeType) =>
     choiceHelperSelected: {
       color: "#4B6475",
     },
+
+    charCount: {
+      position: "absolute",
+      bottom: 8,
+      right: 10,
+      fontSize: 11,
+      color: "#aaa",
+    },
+    charCountMultiline: {
+      bottom: 12,
+    },
+    charCountWarning: {
+      color: "#F59E0B",
+    },
+    charCountLimit: {
+      color: "#EF4444",
+    },
   });

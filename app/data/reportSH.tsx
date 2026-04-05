@@ -2,11 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const REPORTS_STORAGE_KEY = "reports";
 
-// export type TimelineEvent = {
-//   action: "reported" | "upvoted" | "verified" | "resolved" | "severe";
-//   by: string;
-//   time: string;
-// };
 export type TimelineEvent = {
   action:
     | "reported"

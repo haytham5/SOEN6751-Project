@@ -54,8 +54,8 @@ export default function SignUp() {
   const [step, setStep] = useState<SignUpStep>("account");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState<UserRole>("concordian");
   const [idNumber, setIdNumber] = useState("");
+  const [role, setRole] = useState<UserRole>("concordian");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -108,7 +108,15 @@ export default function SignUp() {
       return false;
     }
 
-    if (!email.trim().toLowerCase().endsWith("concordia.ca")) {
+    const lowerEmail = email.trim().toLowerCase();
+
+    if (lowerEmail.endsWith("@security.concordia.ca")) {
+      setRole("security");
+    } else if (lowerEmail.endsWith("@admin.concordia.ca")) {
+      setRole("admin");
+    } else if (lowerEmail.endsWith("@concordia.ca")) {
+      setRole("concordian");
+    } else {
       setError("Please use your Concordia email address.");
       return false;
     }
@@ -243,7 +251,7 @@ export default function SignUp() {
                   }}
                 />
 
-                <RequiredLabel label="Account type" />
+                {/* <RequiredLabel label="Account type" />
                 <View style={styles.roleRow}>
                   <TouchableOpacity
                     style={[
@@ -304,7 +312,7 @@ export default function SignUp() {
                       Admin
                     </Text>
                   </TouchableOpacity>
-                </View>
+                </View> */}
 
                 <OptionalLabel label="Student ID" />
                 <TextInput

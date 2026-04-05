@@ -113,7 +113,7 @@ export const testReports: Report[] = [
     ],
     upvotedBy: [],
     isResolved: true,
-    resolvedBy: "user3@test.com",
+    // resolvedBy: "user3@test.com",
   },
   {
     id: "test-security-1",

@@ -1,7 +1,7 @@
 
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { X } from "lucide-react-native";
+import { Asterisk, Info, X } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Image,
@@ -58,6 +58,14 @@ const accessibilityOptions: {
   },
 ];
 
+const buildingFloors: Record<string, string[]> = {
+  EV:   ["1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"],
+  H:    ["S2", "S1", "1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+  JMSB: ["S2", "S1", "1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
+  LB:   ["S1", "1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+  FB:   ["1 (Ground Floor)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+};
+
 function formatAccessibilityLabel(value?: AccessibilitySubtype) {
   switch (value) {
     case "elevator":
@@ -75,6 +83,13 @@ function formatAccessibilityLabel(value?: AccessibilitySubtype) {
   }
 }
 
+const RequiredLabel = ({ label, styles }: { label: string; styles: ReturnType<typeof importStyles> }) => (
+  <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
+    <Text style={styles.stepLabel}>{label}</Text>
+    <Asterisk size={12} color="#e7548b" strokeWidth={2.5} />
+  </View>
+);
+
 export default function ReportFormModal({
                                           visible,
                                           onClose,
@@ -84,6 +99,15 @@ export default function ReportFormModal({
   const scheme = theme;
   const styles = importStyles(scheme);
 
+  const RequiredLabel = ({ label, styles }: { label: string; styles: any }) => (
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
+      <Text style={styles.stepLabel}>{label}</Text>
+      <Asterisk size={12} color="#e7548b" strokeWidth={2.5} />
+    </View>
+  );
+
+  const [showTypeInfo, setShowTypeInfo] = useState(false);
+  const [showFloorInfo, setShowFloorInfo] = useState(false);
   const [step, setStep] = useState(1);
   const [image, setImage] = useState<string | undefined>(undefined);
   const [name, setName] = useState("");
@@ -116,7 +140,7 @@ export default function ReportFormModal({
       case 3:
         return "Details";
       case 4:
-        return "Photo & Submit";
+        return "Photo & Review";
       default:
         return "Add Report";
     }
@@ -193,7 +217,7 @@ export default function ReportFormModal({
       case 1:
         return (
             <View style={styles.stepContent}>
-              <Text style={styles.stepLabel}>What kind of report is this?</Text>
+              <RequiredLabel label="What kind of report is this?"  styles={styles} />
 
               <View style={styles.dropdown}>
                 <Picker selectedValue={type} onValueChange={setType}>
@@ -201,6 +225,17 @@ export default function ReportFormModal({
                   <Picker.Item label="Disruptions" value="event" />
                   <Picker.Item label="Accessibility" value="accessibility" />
                 </Picker>
+              </View>
+
+              <View style={{ alignItems: "flex-end" }}>
+                <TouchableOpacity onPress={() => setShowTypeInfo((prev) => !prev)}>
+                  <Info size={16} color="#276389" />
+                </TouchableOpacity>
+                {showTypeInfo && (
+                  <Text style={styles.stepHelper}>
+                    Choose the category that best matches what you are reporting.
+                  </Text>
+                )}
               </View>
 
               {type === "accessibility" && (
@@ -247,22 +282,21 @@ export default function ReportFormModal({
                     </View>
                   </>
               )}
-
-              <View style={styles.helperBox}>
-                <Text style={styles.helperText}>
-                  Choose the category that best matches what you are reporting.
-                </Text>
-              </View>
             </View>
         );
 
       case 2:
         return (
             <View style={styles.stepContent}>
-              <Text style={styles.stepLabel}>Where is it happening?</Text>
+              <RequiredLabel label="Where is it happening?"  styles={styles} />
 
               <View style={styles.dropdown}>
-                <Picker selectedValue={building} onValueChange={setBuilding}>
+                <Picker
+                onValueChange={(val: string) => {
+                  setBuilding(val);
+                  setFloor("1 (Ground Floor)");
+                }}
+                >
                   <Picker.Item label="EV Building" value="EV" />
                   <Picker.Item label="Hall Building" value="H" />
                   <Picker.Item label="JMSB" value="JMSB" />
@@ -271,51 +305,82 @@ export default function ReportFormModal({
                 </Picker>
               </View>
 
-              <View style={styles.floorHeaderRow}>
-                <Text style={styles.stepLabel}>Floor number</Text>
-                <Text style={styles.requiredTag}>Required</Text>
+             <View style={styles.floorHeaderRow}>
+                <RequiredLabel label="Floor number"  styles={styles} />
               </View>
 
-              <Text style={styles.stepHelper}>
-                Please enter the floor where the issue is happening. Example: 1,
-                2, 3, S1, basement, ground floor.
-              </Text>
+              <View style={styles.dropdown}>
+                <Picker
+                  selectedValue={floor}
+                  onValueChange={(val) => setFloor(val)}
+                >
+                  {(buildingFloors[building] ?? []).map((f) => (
+                    <Picker.Item key={f} label={`Floor ${f}`} value={f} />
+                  ))}
+                </Picker>
+              </View>
 
-              <TextInput
-                  style={styles.input}
-                  placeholder="Enter floor number or level"
-                  value={floor}
-                  onChangeText={setFloor}
-                  placeholderTextColor="#8E8E98"
-              />
+             <View style={{ alignItems: "flex-end" }}>
+                <TouchableOpacity onPress={() => setShowFloorInfo((prev) => !prev)}>
+                  <Info size={16} color="#276389" />
+                </TouchableOpacity>
+                {showFloorInfo && (
+                  <Text style={styles.stepHelper}>
+                    Select the floor where the issue is happening. If the issue is happening outside of the building, select the "Floor 1 (Ground Floor)""
+                  </Text>
+                )}
+              </View>
             </View>
         );
 
       case 3:
         return (
-            <View style={styles.stepContent}>
-              <Text style={styles.stepLabel}>Describe the report</Text>
+          <View style={styles.stepContent}>
+            <RequiredLabel label="Report title"  styles={styles} />
 
+            <View style={{ position: "relative" }}>
               <TextInput
-                  style={styles.input}
-                  placeholder="Report name"
-                  value={name}
-                  onChangeText={setName}
-                  placeholderTextColor="#8E8E98"
+                style={styles.input}
+                placeholder="Construction blocking ramp..."
+                multiline
+                numberOfLines={2}
+                value={name}
+                onChangeText={setName}
+                placeholderTextColor="#8E8E98"
+                maxLength={60}
               />
-
-              <TextInput
-                  style={styles.description}
-                  placeholder="Summary of the event..."
-                  multiline
-                  numberOfLines={5}
-                  value={description}
-                  onChangeText={setDescription}
-                  placeholderTextColor="#8E8E98"
-              />
+              <Text style={[
+                styles.charCount,
+                name.length >= 55 && styles.charCountWarning,
+                name.length === 60 && styles.charCountLimit,
+              ]}>
+                {name.length}/60
+              </Text>
             </View>
-        );
 
+            <Text style={styles.stepLabel}>Summary (optional)</Text>
+            <View style={{ position: "relative" }}>
+              <TextInput
+                style={styles.description}
+                placeholder="Summary of the event..."
+                multiline
+                numberOfLines={5}
+                value={description}
+                onChangeText={setDescription}
+                placeholderTextColor="#8E8E98"
+                maxLength={150}
+              />
+              <Text style={[
+                styles.charCount,
+                styles.charCountMultiline,
+                description.length >= 140 && styles.charCountWarning,
+                description.length === 150 && styles.charCountLimit,
+              ]}>
+                {description.length}/150
+              </Text>
+            </View>
+          </View>
+        );
       case 4:
         return (
             <View style={styles.stepContent}>

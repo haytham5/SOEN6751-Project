@@ -114,6 +114,26 @@ const buildings: Record<string, { latitude: number; longitude: number }> = {
   JMSB: { latitude: 45.49515518152054, longitude: -73.57885668774541 },
 };
 
+// Adjust markers so they don't overlap
+const buildingOffsets: Record<string, { latitude: number; longitude: number }> = {
+  EV:   { latitude:  0.0000, longitude:  0.0005 },  // nudge EV right
+  JMSB: { latitude:  0.0000, longitude: -0.0003 },  // nudge JMSB left
+  H:    { latitude:  0.0000, longitude:  0.0000 },  // fine as-is
+  LB:   { latitude:  -0.0003, longitude:  0.0000 },  // fine as-is
+  FB:   { latitude:  -0.0003, longitude:  -0.0009 },  // fine as-is
+};
+
+const markerCoordinates: Record<string, { latitude: number; longitude: number }> =
+  Object.fromEntries(
+    Object.entries(buildings).map(([id, coord]) => [
+      id,
+      {
+        latitude:  coord.latitude  + (buildingOffsets[id]?.latitude  ?? 0),
+        longitude: coord.longitude + (buildingOffsets[id]?.longitude ?? 0),
+      },
+    ])
+  );
+
 function extractPreferredBuildings(user: any): BuildingPreference[] {
   if (!user) return [];
   if (Array.isArray(user.buildingPreferences)) {
@@ -149,6 +169,9 @@ export default function Home() {
   const [buildingReports, setBuildingReports] = useState<Report[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
   const [loadingReports, setLoading] = useState(true);
+
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const snackbarOpacity = useRef(new Animated.Value(0)).current;
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     access: false,
@@ -190,6 +213,25 @@ export default function Home() {
     }
   }, []);
 
+  const triggerSnackbar = () => {
+    setShowSnackbar(true);
+    snackbarOpacity.setValue(0);
+
+    Animated.sequence([
+      Animated.timing(snackbarOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.delay(2000),
+      Animated.timing(snackbarOpacity, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setShowSnackbar(false));
+  };
+
   useEffect(() => {
     loadCurrentUserState();
   }, [loadCurrentUserState]);
@@ -224,7 +266,7 @@ export default function Home() {
 
       if (selectedBuilding) {
         const filtered = data.filter(
-          (r) => normalizeBuildingId(r.building) === selectedBuilding,
+          (r) => normalizeBuildingId(r.building) === selectedBuilding && r.type !== "event",
         );
         setBuildingReports(filtered);
       }
@@ -248,7 +290,7 @@ export default function Home() {
 
   const handleMarkerPress = (buildingId: string) => {
     const filtered = filteredTodayReports.filter(
-      (r) => normalizeBuildingId(r.building) === buildingId,
+      (r) => normalizeBuildingId(r.building) === buildingId && r.type !== "event",
     );
 
     if (filtered.length === 0) return;
@@ -258,7 +300,10 @@ export default function Home() {
   };
 
   const handleReportSubmitSuccess = async () => {
+    await loadCurrentUserState();
     await loadReports();
+    setReportViewMode("all");
+    triggerSnackbar();
   };
 
   const handleUpvote = async (reportId: string) => {
@@ -273,17 +318,6 @@ export default function Home() {
     await loadReports();
   };
 
-  // const handleVerify = async (reportId: string) => {
-  //   if (currentUserRole !== "security") return;
-  //   await verifyReport(reportId);
-  //   await loadReports();
-  // };
-  //
-  // const handleMarkSevere = async (reportId: string) => {
-  //   if (currentUserRole !== "security") return;
-  //   await markReportSevere(reportId);
-  //   await loadReports();
-  // };
   const handleVerify = async (reportId: string) => {
     if (currentUserRole !== "security" || !currentUserId) return;
     await verifyReport(reportId, currentUserId);
@@ -342,39 +376,111 @@ export default function Home() {
     return reports.filter((r) => !r.isScheduledEvent && r.date === today);
   }, [reports]);
 
-  const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+  function normalizeDayKey(day?: string): string {
+    const value = day?.toLowerCase().trim() ?? "";
+
+    switch (value) {
+      case "mon":
+      case "monday":
+        return "mon";
+      case "tue":
+      case "tues":
+      case "tuesday":
+        return "tue";
+      case "wed":
+      case "wednesday":
+        return "wed";
+      case "thu":
+      case "thur":
+      case "thurs":
+      case "thursday":
+        return "thu";
+      case "fri":
+      case "friday":
+        return "fri";
+      case "sat":
+      case "saturday":
+        return "sat";
+      case "sun":
+      case "sunday":
+        return "sun";
+      default:
+        return value;
+    }
+  }
+
+  function getTodayDayKey(date = new Date()): string {
+    const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    return dayNames[date.getDay()];
+  }
+
+  function timeToMinutes(time?: string, fallback = "00:00"): number {
+    const [hours, minutes] = (time ?? fallback).split(":").map(Number);
+    return (hours || 0) * 60 + (minutes || 0);
+  }
+
+  function reportTimeToMinutes(time?: string): number {
+    if (!time) return -1;
+
+    const match = time.match(/(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)?/);
+    if (!match) return -1;
+
+    let hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const meridiem = match[3]?.toLowerCase();
+
+    if (meridiem === "pm" && hours !== 12) hours += 12;
+    if (meridiem === "am" && hours === 12) hours = 0;
+
+    return hours * 60 + minutes;
+  }
+
+
+  function doesReportMatchPreferences(
+      report: Report,
+      preferredBuildings: BuildingPreference[],
+      now: Date,
+  ): boolean {
+    const normalizedBuilding = normalizeBuildingId(report.building);
+
+    const pref = preferredBuildings.find(
+        (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
+    );
+
+    if (!pref || !pref.subscribed) return false;
+
+    const todayKey = getTodayDayKey(now);
+
+    const dayPref = pref.dayPreferences?.find(
+        (d) => normalizeDayKey(d.day) === todayKey,
+    );
+
+    if (!dayPref || !dayPref.enabled) return false;
+    if (dayPref.allDay) return true;
+
+    const reportMinutes = reportTimeToMinutes(report.time);
+    if (reportMinutes < 0) return false;
+
+    const startMinutes = timeToMinutes(dayPref.startTime, "08:00");
+    const endMinutes = timeToMinutes(dayPref.endTime, "17:00");
+
+    return reportMinutes >= startMinutes && reportMinutes <= endMinutes;
+  }
 
   const filteredTodayReports = useMemo(() => {
-    if (reportViewMode === "preferences") {
-      if (preferredBuildings.length === 0) return [];
-
-      const now = new Date();
-      const todayLabel = DAY_LABELS[now.getDay()];
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      return allTodayReports.filter((r) => {
-        const normalizedBuilding = normalizeBuildingId(r.building);
-
-        const pref = preferredBuildings.find(
-          (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
-        );
-        if (!pref) return false;
-
-        const dayPref = pref.dayPreferences?.find((d) => d.day === todayLabel);
-        if (!dayPref?.enabled) return false;
-
-        if (dayPref.allDay) return true;
-
-        const [startH, startM] = dayPref.startTime.split(":").map(Number);
-        const [endH, endM] = dayPref.endTime.split(":").map(Number);
-        const startMinutes = (startH ?? 8) * 60 + (startM ?? 0);
-        const endMinutes = (endH ?? 17) * 60 + (endM ?? 0);
-
-        return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
-      });
+    if (reportViewMode !== "preferences") {
+      return allTodayReports;
     }
 
-    return allTodayReports;
+    if (preferredBuildings.length === 0) {
+      return [];
+    }
+
+    const now = new Date();
+
+    return allTodayReports.filter((report) =>
+        doesReportMatchPreferences(report, preferredBuildings, now),
+    );
   }, [allTodayReports, reportViewMode, preferredBuildings]);
 
   const buildingCounts: Record<
@@ -450,9 +556,22 @@ export default function Home() {
         customMapStyle={scheme === Themes.dark ? darkMapTheme : lightMapTheme}
       >
         {Object.keys(buildings).map((b) => {
-          const coord = buildings[b];
+          const coord = markerCoordinates[b];
 
           if (!markerImages[b]) return null;
+
+          // Don't show marker if no reports for this building
+          const counts = buildingCounts[b];
+          const hasReports = counts && (counts.protests > 0 || counts.accessibility > 0);
+          if (!hasReports) return null;
+
+          // If in preferences mode, only show buildings the user has subscribed to
+          if (reportViewMode === "preferences") {
+            const isPreferred = preferredBuildings.some(
+              (pref) => normalizeBuildingId(pref.buildingId) === b
+            );
+            if (!isPreferred) return null;
+          }
 
           return (
             <Marker
@@ -597,9 +716,6 @@ export default function Home() {
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
 
-            {/* <TouchableOpacity style={styles.fullScreenReportFilters}>
-              <Icon name="filter-alt" size={24} color="#276389" />
-            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.fullScreenRelaxMode}
@@ -714,12 +830,9 @@ export default function Home() {
                     <View style={styles.accordionHeaderLeft}>
                       <Icon name={icon} size={22} color="#276389" />
                       <Text style={styles.accordionLabel}>{label}</Text>
+                    </View>
 
-                      <View style={styles.accordionBadge}>
-                        <Text style={styles.accordionBadgeText}>
-                          {sectionReports.length}
-                        </Text>
-                      </View>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
 
                       {severeCount > 0 && (
                         <View style={styles.severeBadge}>
@@ -729,13 +842,19 @@ export default function Home() {
                           </Text>
                         </View>
                       )}
-                    </View>
+
+                      <View style={styles.accordionBadge}>
+                        <Text style={styles.accordionBadgeText}>
+                          {sectionReports.length}
+                        </Text>
+                      </View>
 
                     <Icon
                       name={openSections[key] ? "expand-less" : "expand-more"}
                       size={24}
                       color="#276389"
                     />
+                    </View>
                   </TouchableOpacity>
 
                   {openSections[key] && (
@@ -1024,7 +1143,7 @@ export default function Home() {
           })()}
         </View>
       </ScrollView>
-
+          
       <Modal
         visible={selectedBuilding !== null}
         transparent
@@ -1406,7 +1525,7 @@ export default function Home() {
                 ) : null}
 
                 <Text style={styles.modalSectionTitle}></Text>
-                {(selectedReport.timeline ?? []).map((event, index) => (
+                {(selectedReport.timeline ?? []).slice().reverse().map((event, index) => (
                   <View key={index} style={styles.timelineRow}>
                     <View style={styles.timelineDot} />
                     <Text style={styles.timelineText}>
@@ -1435,6 +1554,31 @@ export default function Home() {
       </Modal>
 
       {!calmMode && <BottomNav onPressAdd={handleOpenReportFlow} />}
+
+      {showSnackbar && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            bottom: 90,
+            alignSelf: "center",
+            backgroundColor: "#276389",
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            borderRadius: 24,
+            opacity: snackbarOpacity,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 6,
+          }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
+            ✓ Posted
+          </Text>
+        </Animated.View>
+      )}
+
     </SafeAreaView>
   );
 }
