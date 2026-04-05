@@ -27,6 +27,7 @@ import { deleteReport, getReports, Report } from "./data/reportSH";
 import { useTheme } from "./data/themeProvider";
 import { styles as importStyles } from "./styles/eventsStyles";
 import { getCurrentUser } from "./utils/authStorage";
+import { BUILDING_FILTER_ORDER } from "./utils/buildingOrder";
 
 type Event = {
     id: string;
@@ -49,6 +50,8 @@ const buildingNameMap: Record<string, string> = {
     LB: "Main Library",
     FB: "Faubourg Building",
 };
+
+const buildingFilters = BUILDING_FILTER_ORDER;
 
 const buildingColorMap: Record<string, string> = {
     EV: "#FF9898",
@@ -338,6 +341,52 @@ export default function Events() {
                             Tap a building to filter events.
                         </Text>
 
+                        {/*<ScrollView*/}
+                        {/*    horizontal*/}
+                        {/*    showsHorizontalScrollIndicator={false}*/}
+                        {/*    contentContainerStyle={styles.subscriptions}*/}
+                        {/*>*/}
+                        {/*    {buildingFilters.map((building) => {*/}
+                        {/*        const isActive = selectedBuildings.includes(building);*/}
+                        {/*        const color = getBuildingColor(building);*/}
+
+                        {/*        return (*/}
+                        {/*            <TouchableOpacity*/}
+                        {/*                key={building}*/}
+                        {/*                activeOpacity={0.9}*/}
+                        {/*                onPress={() =>*/}
+                        {/*                    setSelectedBuildings((prev) =>*/}
+                        {/*                        prev.includes(building)*/}
+                        {/*                            ? prev.filter((b) => b !== building)*/}
+                        {/*                            : [...prev, building],*/}
+                        {/*                    )*/}
+                        {/*                }*/}
+                        {/*            >*/}
+                        {/*                <View*/}
+                        {/*                    style={[*/}
+                        {/*                        styles.subCard,*/}
+                        {/*                        {*/}
+                        {/*                            backgroundColor: isActive ? color : "transparent",*/}
+                        {/*                            borderWidth: 2,*/}
+                        {/*                            borderColor: color,*/}
+                        {/*                        },*/}
+                        {/*                        isActive ? styles.subCardActive : styles.subCardInactive,*/}
+                        {/*                    ]}*/}
+                        {/*                >*/}
+                        {/*                    <View*/}
+                        {/*                        style={[*/}
+                        {/*                            styles.subCard,*/}
+                        {/*                            isActive ? styles.green : styles.unsubbed,*/}
+                        {/*                            isActive ? styles.subCardActive : styles.subCardInactive,*/}
+                        {/*                        ]}*/}
+                        {/*                    >*/}
+                        {/*                        <Text style={styles.subBody}>{building}</Text>*/}
+                        {/*                    </View>*/}
+                        {/*                </View>*/}
+                        {/*            </TouchableOpacity>*/}
+                        {/*        );*/}
+                        {/*    })}*/}
+                        {/*</ScrollView>*/}
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}
@@ -358,28 +407,30 @@ export default function Events() {
                                                     : [...prev, building],
                                             )
                                         }
+                                        style={[
+                                            styles.filterChip,
+                                            {
+                                                borderColor: color,
+                                                backgroundColor: isActive ? `${color}20` : scheme.white,
+                                            },
+                                            isActive && styles.filterChipActive,
+                                        ]}
                                     >
-                                        <View
+                                        <Text
                                             style={[
-                                                styles.subCard,
-                                                {
-                                                    backgroundColor: isActive ? color : "transparent",
-                                                    borderWidth: 2,
-                                                    borderColor: color,
-                                                },
-                                                isActive ? styles.subCardActive : styles.subCardInactive,
+                                                styles.filterChipText,
+                                                { color: isActive ? color : scheme.text },
+                                                isActive && styles.filterChipTextActive,
                                             ]}
                                         >
-                                            <View
-                                                style={[
-                                                    styles.subCard,
-                                                    isActive ? styles.green : styles.unsubbed,
-                                                    isActive ? styles.subCardActive : styles.subCardInactive,
-                                                ]}
-                                            >
-                                                <Text style={styles.subBody}>{building}</Text>
+                                            {building}
+                                        </Text>
+
+                                        {isActive && (
+                                            <View style={[styles.filterChipBadge, { backgroundColor: color }]}>
+                                                <Text style={styles.filterChipBadgeText}>✓</Text>
                                             </View>
-                                        </View>
+                                        )}
                                     </TouchableOpacity>
                                 );
                             })}
