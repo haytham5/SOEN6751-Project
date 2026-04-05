@@ -112,8 +112,7 @@ export default function ReportFormModal({
   const [image, setImage] = useState<string | undefined>(undefined);
   const [name, setName] = useState("");
   const [building, setBuilding] = useState("EV");
-  const [floor, setFloor] = useState("1");
-  const [type, setType] = useState<"protest" | "event" | "accessibility">(
+  const [floor, setFloor] = useState("1 (Ground Floor)");  const [type, setType] = useState<"protest" | "event" | "accessibility">(
       "protest",
   );
   const [description, setDescription] = useState("");
@@ -162,7 +161,7 @@ export default function ReportFormModal({
     setImage(undefined);
     setName("");
     setBuilding("EV");
-    setFloor("1");
+    setFloor("1 (Ground Floor)");
     setType("protest");
     setDescription("");
     setAccessibilitySubtype("elevator");
@@ -292,10 +291,11 @@ export default function ReportFormModal({
 
               <View style={styles.dropdown}>
                 <Picker
-                onValueChange={(val: string) => {
-                  setBuilding(val);
-                  setFloor("1 (Ground Floor)");
-                }}
+                    selectedValue={building}
+                    onValueChange={(val: string) => {
+                      setBuilding(val);
+                      setFloor("1 (Ground Floor)");
+                    }}
                 >
                   <Picker.Item label="EV Building" value="EV" />
                   <Picker.Item label="Hall Building" value="H" />
@@ -325,9 +325,9 @@ export default function ReportFormModal({
                   <Info size={16} color="#276389" />
                 </TouchableOpacity>
                 {showFloorInfo && (
-                  <Text style={styles.stepHelper}>
-                    Select the floor where the issue is happening. If the issue is happening outside of the building, select the "Floor 1 (Ground Floor)""
-                  </Text>
+                    <Text style={styles.stepHelper}>
+                      Select the floor where the issue is happening. If the issue is happening outside of the building, select the &quot;Floor 1 (Ground Floor)&quot;
+                    </Text>
                 )}
               </View>
             </View>

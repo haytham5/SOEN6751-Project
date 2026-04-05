@@ -204,94 +204,11 @@ export default function Notifications() {
                     Tap building names to change filter
                 </Text>
 
-                {/*<ScrollView*/}
-                {/*    horizontal*/}
-                {/*    showsHorizontalScrollIndicator={false}*/}
-                {/*    contentContainerStyle={styles.subscriptions}*/}
-                {/*>*/}
-                {/*    {subscriptions.map((sub) => {*/}
-                {/*        const isActive = sub.isSubscribed;*/}
-                {/*        const color = buildingColorMap[sub.id] ?? "#9c9c9c";*/}
-
-                {/*        return (*/}
-                {/*            <TouchableOpacity*/}
-                {/*                key={sub.id}*/}
-                {/*                activeOpacity={0.9}*/}
-                {/*                onPress={() => handleToggleSubscription(sub.id)}*/}
-                {/*            >*/}
-                {/*                <View*/}
-                {/*                    style={[*/}
-                {/*                        styles.subCard,*/}
-                {/*                        {*/}
-                {/*                            backgroundColor: isActive ? color : "transparent",*/}
-                {/*                            borderWidth: 2,*/}
-                {/*                            borderColor: color,*/}
-                {/*                        },*/}
-                {/*                        isActive ? styles.subCardActive : styles.subCardInactive,*/}
-                {/*                    ]}*/}
-                {/*                >*/}
-                {/*                    <View*/}
-                {/*                        style={[*/}
-                {/*                            styles.subCard,*/}
-                {/*                            isActive ? styles.green : styles.unsubbed,*/}
-                {/*                            isActive ? styles.subCardActive : styles.subCardInactive,*/}
-                {/*                        ]}*/}
-                {/*                    >*/}
-                {/*                        /!*<Text style={styles.subBody}>{sub.label}</Text>*!/*/}
-                {/*                        <Text style={styles.subBody}>*/}
-                {/*                            {buildingLabelMap[sub.id] ?? sub.label}*/}
-                {/*                        </Text>*/}
-                {/*                        /!*<Text style={styles.subLabel}>*!/*/}
-                {/*                        /!*    {isActive ? "On" : "Off"}*!/*/}
-                {/*                        /!*</Text>*!/*/}
-                {/*                    </View>*/}
-                {/*                </View>*/}
-                {/*            </TouchableOpacity>*/}
-                {/*        );*/}
-                {/*    })}*/}
-                {/*</ScrollView>*/}
-
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.subscriptions}
                 >
-                    {/*{subscriptions.map((sub) => {*/}
-                    {/*    const isActive = sub.isSubscribed;*/}
-                    {/*    const color = buildingColorMap[sub.id] ?? "#9c9c9c";*/}
-
-                    {/*    return (*/}
-                    {/*        <TouchableOpacity*/}
-                    {/*            key={sub.id}*/}
-                    {/*            activeOpacity={0.9}*/}
-                    {/*            onPress={() => handleToggleSubscription(sub.id)}*/}
-                    {/*            style={[*/}
-                    {/*                styles.filterChip,*/}
-                    {/*                {*/}
-                    {/*                    borderColor: color,*/}
-                    {/*                    backgroundColor: isActive ? `${color}20` : scheme.white,*/}
-                    {/*                },*/}
-                    {/*                isActive && styles.filterChipActive,*/}
-                    {/*            ]}*/}
-                    {/*        >*/}
-                    {/*            <Text*/}
-                    {/*                style={[*/}
-                    {/*                    styles.filterChipText,*/}
-                    {/*                    { color: isActive ? color : scheme.text },*/}
-                    {/*                    isActive && styles.filterChipTextActive,*/}
-                    {/*                ]}*/}
-                    {/*            >*/}
-                    {/*                {buildingLabelMap[sub.id] ?? sub.label}*/}
-                    {/*            </Text>*/}
-
-                    {/*            {isActive && (*/}
-                    {/*                <View style={[styles.filterChipBadge, { backgroundColor: color }]}>*/}
-                    {/*                    <Text style={styles.filterChipBadgeText}>✓</Text>*/}
-                    {/*                </View>*/}
-                    {/*            )}*/}
-                    {/*        </TouchableOpacity>*/}
-                    {/*    );*/}
-                    {/*})}*/}
 
                     {BUILDING_FILTER_ORDER.map((buildingId) => {
                         const sub = subscriptions.find((item) => item.id === buildingId);
