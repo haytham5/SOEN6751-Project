@@ -100,7 +100,6 @@ export default function Settings() {
                     <Text style={styles.collapsibleTitle}>{title}</Text>
                 </View>
 
-
                 <View style={styles.collapsibleRight}>
                     <Icon
                         name={isOpen ? "expand-less" : "expand-more"}
