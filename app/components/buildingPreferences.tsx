@@ -25,6 +25,7 @@ import {
     type DayPreference,
 } from "../utils/authStorage";
 import { ThemeType, useTheme } from "../data/themeProvider";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const DEFAULT_BUILDINGS = [
     { id: "ev", name: "EV Building" },
@@ -43,6 +44,15 @@ const DAY_ORDER: DayKey[] = [
     "Sat",
     "Sun",
 ];
+const DAY_LABELS: Record<DayKey, string> = {
+    Mon: "Monday",
+    Tue: "Tuesday",
+    Wed: "Wednesday",
+    Thu: "Thursday",
+    Fri: "Friday",
+    Sat: "Saturday",
+    Sun: "Sunday",
+};
 
 const WEEKDAY_SET = new Set<DayKey>([
     "Mon",
@@ -92,6 +102,23 @@ export default function BuildingPreferencesWizard({
     const [isSaving, setIsSaving] = useState(false);
     const [activeBuildingIndex, setActiveBuildingIndex] = useState(0);
 
+    // const [timePickerState, setTimePickerState] = useState<{
+    //     visible: boolean;
+    //     buildingId: string;
+    //     dayKey: DayKey;
+    //     field: "startTime" | "endTime";
+    //     label: string;
+    // } | null>(null);
+
+    const [timePickerState, setTimePickerState] = useState<{
+        visible: boolean;
+        buildingId: string;
+        dayKey: DayKey;
+        field: "startTime" | "endTime";
+        label: string;
+        value: Date;
+    } | null>(null);
+
     useEffect(() => {
         setPreferences(normalizedInitialPreferences);
     }, [normalizedInitialPreferences]);
@@ -118,6 +145,20 @@ export default function BuildingPreferencesWizard({
         [preferences],
     );
 
+    const TIME_OPTIONS = useMemo(() => {
+        const options: string[] = [];
+
+        for (let hour = 0; hour < 24; hour++) {
+            for (let minute = 0; minute < 60; minute += 15) {
+                options.push(
+                    `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+                );
+            }
+        }
+
+        return options;
+    }, []);
+
     const activeBuilding = preferences[activeBuildingIndex] ?? preferences[0];
     const isFirstBuilding = activeBuildingIndex === 0;
     const isLastBuilding = activeBuildingIndex === preferences.length - 1;
@@ -142,17 +183,6 @@ export default function BuildingPreferencesWizard({
         }
     };
 
-    // const handleSave = async () => {
-    //     if (!canSave) return;
-    //
-    //     try {
-    //         setIsSaving(true);
-    //         await onSave(preferences);
-    //     } finally {
-    //         setIsSaving(false);
-    //     }
-    // };
-
 
     const handleOpenReview = () => {
         if (!canSave) return;
@@ -168,6 +198,39 @@ export default function BuildingPreferencesWizard({
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const openTimePicker = (
+        buildingId: string,
+        dayKey: DayKey,
+        field: "startTime" | "endTime",
+        label: string,
+        currentValue: string,
+    ) => {
+        setTimePickerState({
+            visible: true,
+            buildingId,
+            dayKey,
+            field,
+            label,
+            value: timeStringToDate(currentValue),
+        });
+    };
+
+    const closeTimePicker = () => {
+        setTimePickerState(null);
+    };
+
+
+    const handleSelectTime = (date: Date) => {
+        if (!timePickerState) return;
+
+        updateTime(
+            timePickerState.buildingId,
+            timePickerState.dayKey,
+            timePickerState.field,
+            dateToTimeString(date),
+        );
     };
 
 
@@ -261,6 +324,20 @@ export default function BuildingPreferencesWizard({
         return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
     };
 
+    const timeStringToDate = (time: string) => {
+        const [hours, minutes] = time.split(":").map(Number);
+        const date = new Date();
+        date.setHours(hours || 0, minutes || 0, 0, 0);
+        return date;
+    };
+
+    const dateToTimeString = (date: Date) => {
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return `${hours}:${minutes}`;
+    };
+
+
     const updateTime = (
         buildingId: string,
         dayKey: DayKey,
@@ -278,10 +355,6 @@ export default function BuildingPreferencesWizard({
                     dayPreferences: pref.dayPreferences.map((day) => {
                         if (day.day !== dayKey) return day;
 
-                        // const updatedDay = {
-                        //     ...day,
-                        //     [field]: nextValue,
-                        // };
                         const safeNextValue = normalizeTimeString(nextValue);
 
                         const updatedDay = {
@@ -312,23 +385,6 @@ export default function BuildingPreferencesWizard({
         );
     };
 
-    // const cycleTime = (
-    //     current: string,
-    //     direction: "up" | "down",
-    //     minHour = 0,
-    //     maxHour = 23,
-    // ) => {
-    //     const [h, m] = current.split(":").map(Number);
-    //     let nextHour = h + (direction === "up" ? 1 : -1);
-    //
-    //     if (nextHour > maxHour) nextHour = minHour;
-    //     if (nextHour < minHour) nextHour = maxHour;
-    //
-    //     return `${String(nextHour).padStart(2, "0")}:${String(m || 0).padStart(
-    //         2,
-    //         "0",
-    //     )}`;
-    // };
     const cycleTime = (
         current: string,
         direction: "up" | "down",
@@ -491,7 +547,8 @@ export default function BuildingPreferencesWizard({
                     }
                 >
                     <View style={styles.dayTitleWrap}>
-                        <Text style={styles.dayTitle}>{dayPref.day}</Text>
+                        {/*<Text style={styles.dayTitle}>{dayPref.day}</Text>*/}
+                        <Text style={styles.dayTitle}>{DAY_LABELS[dayPref.day]}</Text>
                         <Text style={styles.daySubtitle}>
                             {dayPref.enabled
                                 ? dayPref.allDay
@@ -532,49 +589,36 @@ export default function BuildingPreferencesWizard({
                             />
                         </View>
 
-
                         {!dayPref.allDay ? (
                             <>
+
                                 <View style={styles.timeRow}>
-                                    <TimeStepper
+
+                                    <TimeSelectCard
                                         label="Start"
                                         value={dayPref.startTime}
-                                        onIncrease={() =>
-                                            updateTime(
+                                        onPress={() =>
+                                            openTimePicker(
                                                 buildingId,
                                                 dayPref.day,
                                                 "startTime",
-                                                cycleTime(dayPref.startTime, "up"),
-                                            )
-                                        }
-                                        onDecrease={() =>
-                                            updateTime(
-                                                buildingId,
-                                                dayPref.day,
-                                                "startTime",
-                                                cycleTime(dayPref.startTime, "down"),
+                                                "Select start time",
+                                                dayPref.startTime
                                             )
                                         }
                                         theme={theme}
                                     />
 
-                                    <TimeStepper
+                                    <TimeSelectCard
                                         label="End"
                                         value={dayPref.endTime}
-                                        onIncrease={() =>
-                                            updateTime(
+                                        onPress={() =>
+                                            openTimePicker(
                                                 buildingId,
                                                 dayPref.day,
                                                 "endTime",
-                                                cycleTime(dayPref.endTime, "up"),
-                                            )
-                                        }
-                                        onDecrease={() =>
-                                            updateTime(
-                                                buildingId,
-                                                dayPref.day,
-                                                "endTime",
-                                                cycleTime(dayPref.endTime, "down"),
+                                                "Select end time",
+                                                dayPref.endTime
                                             )
                                         }
                                         theme={theme}
@@ -680,54 +724,7 @@ export default function BuildingPreferencesWizard({
                 )}
             </View>
 
-            <View style={styles.navigationRow}>
-                <TouchableOpacity
-                    style={[
-                        styles.navButton,
-                        isFirstBuilding && styles.navButtonDisabled,
-                    ]}
-                    onPress={() =>
-                        !isFirstBuilding && setActiveBuildingIndex((prev) => prev - 1)
-                    }
-                    disabled={isFirstBuilding}
-                >
-                    <ChevronLeft
-                        size={18}
-                        color={isFirstBuilding ? theme.muted : theme.primaryDark}
-                        strokeWidth={2.5}
-                    />
-                    <Text
-                        style={[
-                            styles.navButtonText,
-                            isFirstBuilding && styles.navButtonTextDisabled,
-                        ]}
-                    >
-                        Previous
-                    </Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[
-                        styles.navButton,
-                        styles.navButtonPrimary,
-                        isLastBuilding && styles.navButtonPrimaryDisabled,
-                    ]}
-                    onPress={() =>
-                        !isLastBuilding && setActiveBuildingIndex((prev) => prev + 1)
-                    }
-                    disabled={isLastBuilding}
-                >
-                    <Text
-                        style={[
-                            styles.navButtonPrimaryText,
-                            isLastBuilding && styles.navButtonPrimaryTextDisabled,
-                        ]}
-                    >
-                        Next
-                    </Text>
-                    <ChevronRight size={18} color={theme.white} strokeWidth={2.5} />
-                </TouchableOpacity>
-            </View>
 
         </>
     );
@@ -735,10 +732,7 @@ export default function BuildingPreferencesWizard({
     const renderReview = () => (
         <>
             <View style={styles.sectionIntro}>
-                {/*<Text style={styles.sectionTitle}>Review your preferences</Text>*/}
-                {/*<Text style={styles.sectionDescription}>*/}
-                {/*    Only your selected buildings are shown below. Please confirm before saving.*/}
-                {/*</Text>*/}
+
                 <Text style={styles.sectionTitle}>Review before saving</Text>
                 <Text style={styles.sectionDescription}>
                     Here is a summary of the alerts you selected. Only subscribed buildings are shown.
@@ -766,7 +760,8 @@ export default function BuildingPreferencesWizard({
                             ) : (
                                 enabledDays.map((day) => (
                                     <View key={day.day} style={styles.reviewRow}>
-                                        <Text style={styles.reviewDay}>{day.day}</Text>
+                                        {/*<Text style={styles.reviewDay}>{day.day}</Text>*/}
+                                        <Text style={styles.reviewDay}>{DAY_LABELS[day.day]}</Text>
                                         <Text style={styles.reviewTime}>
                                             {day.allDay
                                                 ? "All day"
@@ -899,6 +894,60 @@ export default function BuildingPreferencesWizard({
                 </View>
             ) : null}
 
+            {timePickerState?.visible ? (
+                <View style={styles.confirmOverlay}>
+                    <Pressable
+                        style={styles.confirmBackdrop}
+                        onPress={closeTimePicker}
+                    />
+
+                    <View style={styles.timePickerModal}>
+                        <Text style={styles.timePickerTitle}>
+                            {timePickerState.label}
+                        </Text>
+
+                        <View style={styles.wheelPickerWrap}>
+                            <DateTimePicker
+                                value={timePickerState.value}
+                                mode="time"
+                                display="spinner"
+                                minuteInterval={15}
+                                onChange={(_, selectedDate) => {
+                                    if (!selectedDate) return;
+
+                                    setTimePickerState((prev) =>
+                                        prev
+                                            ? {
+                                                ...prev,
+                                                value: selectedDate,
+                                            }
+                                            : prev
+                                    );
+
+                                    handleSelectTime(selectedDate);
+                                }}
+                                textColor={theme.black}
+                                style={styles.wheelPicker}
+                            />
+                        </View>
+
+                        <TouchableOpacity
+                            style={styles.primaryButton}
+                            onPress={closeTimePicker}
+                        >
+                            <Text style={styles.primaryButtonText}>Done</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.secondaryButton}
+                            onPress={closeTimePicker}
+                        >
+                            <Text style={styles.secondaryButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            ) : null}
+
             {showExitConfirm ? (
                 <View style={styles.confirmOverlay}>
                     <Pressable
@@ -947,46 +996,34 @@ export default function BuildingPreferencesWizard({
     );
 }
 
-function TimeStepper({
-                         label,
-                         value,
-                         onIncrease,
-                         onDecrease,
-                         theme,
-                     }: {
+function TimeSelectCard({
+                            label,
+                            value,
+                            onPress,
+                            theme,
+                        }: {
     label: string;
     value: string;
-    onIncrease: () => void;
-    onDecrease: () => void;
+    onPress: () => void;
     theme: ThemeType;
 }) {
     const styles = makeStyles(theme);
 
     return (
-        <View style={styles.timeCard}>
+        <TouchableOpacity
+            style={styles.timeCard}
+            onPress={onPress}
+            activeOpacity={0.8}
+        >
             <Text style={styles.timeLabel}>{label}</Text>
 
-            <View style={styles.timeStepperRow}>
-                <TouchableOpacity
-                    style={styles.timeStepperButton}
-                    onPress={onDecrease}
-                >
-                    <ChevronLeft size={16} color={theme.primaryDark} strokeWidth={2.4} />
-                </TouchableOpacity>
-
+            <View style={styles.timeSelectRow}>
                 <Text style={styles.timeValue}>{value}</Text>
-
-                <TouchableOpacity
-                    style={styles.timeStepperButton}
-                    onPress={onIncrease}
-                >
-                    <ChevronRight size={16} color={theme.primaryDark} strokeWidth={2.4} />
-                </TouchableOpacity>
+                <ChevronRight size={16} color={theme.primaryDark} strokeWidth={2.4} />
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
-
 function normalizePreferences(
     initialPreferences: BuildingPreference[],
 ): BuildingPreference[] {
@@ -1639,5 +1676,46 @@ const makeStyles = (COLORS: ThemeType) =>
 
         footerSaveButton: {
             width: "100%",
+        },
+
+        timeSelectRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
+
+        timePickerModal: {
+            width: "88%",
+            maxHeight: "70%",
+            backgroundColor: COLORS.white,
+            borderRadius: 24,
+            padding: 20,
+            borderWidth: 1,
+            borderColor: COLORS.border,
+        },
+
+        timePickerTitle: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 18,
+            color: COLORS.black,
+            marginBottom: 14,
+            textAlign: "center",
+        },
+
+        wheelPickerWrap: {
+            backgroundColor: COLORS.softBg,
+            borderWidth: 1,
+            borderColor: COLORS.border,
+            borderRadius: 18,
+            marginBottom: 16,
+            overflow: "hidden",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingVertical: 6,
+        },
+
+        wheelPicker: {
+            width: "100%",
+            height: 180,
         },
     });
