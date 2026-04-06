@@ -634,4 +634,11 @@ export const styles = (COLORS: ThemeType) =>
           fontSize: 11,
           fontFamily: "Lexend_400Regular",
       },
+      eventPreviewText: {
+          marginTop: 8,
+          fontSize: 13,
+          lineHeight: 18,
+          color: "#5A6B80",
+          fontFamily: "Lexend_400Regular",
+      },
   });
