@@ -23,6 +23,7 @@ import { getCurrentUser } from "./utils/authStorage";
 import {
     Image,
     Modal,
+    Platform,
     Pressable,
     ScrollView,
     StatusBar,
@@ -180,6 +181,20 @@ export default function Notifications() {
         return toMins(b.time) - toMins(a.time);
     });
 
+
+    const simulatedOpacity = (hex:string, alpha = 0.2) => {
+        const clean = hex.replace("#", "");
+        const r = parseInt(clean.substring(0, 2), 16);
+        const g = parseInt(clean.substring(2, 4), 16);
+        const b = parseInt(clean.substring(4, 6), 16);
+
+        const blend = (c: number) => Math.round(alpha * c + (1 - alpha) * 255);
+
+        const toHex = (c: number) => c.toString(16).padStart(2, "0");
+
+        return `#${toHex(blend(r))}${toHex(blend(g))}${toHex(blend(b))}`;
+    };
+
     if (!fontsLoaded) {
         return null;
     }
@@ -220,7 +235,19 @@ export default function Notifications() {
                                     styles.filterChip,
                                     {
                                         borderColor: color,
-                                        backgroundColor: isActive ? `${color}20` : scheme.white,
+                                        marginTop: isActive ? 1 : 0,
+                                        ...Platform.select({
+                                            ios: {
+                                                backgroundColor: isActive
+                                                ? `${color}20`
+                                                : scheme.white,
+                                            },
+                                            android: {
+                                                backgroundColor: isActive
+                                                ? simulatedOpacity(color, 0.2)
+                                                : scheme.white,
+                                            },
+                                        }),
                                     },
                                     isActive && styles.filterChipActive,
                                 ]}
@@ -228,7 +255,7 @@ export default function Notifications() {
                                 <Text
                                     style={[
                                         styles.filterChipText,
-                                        { color: isActive ? color : scheme.text },
+                                        { color: isActive ? color : scheme.text, opacity: 1 },
                                         isActive && styles.filterChipTextActive,
                                     ]}
                                 >

@@ -8,6 +8,7 @@ import {
     Alert,
     FlatList,
     Modal,
+    Platform,
     Pressable,
     ScrollView,
     StatusBar,
@@ -304,6 +305,19 @@ export default function Events() {
         );
     };
 
+    const simulatedOpacity = (hex:string, alpha = 0.2) => {
+        const clean = hex.replace("#", "");
+        const r = parseInt(clean.substring(0, 2), 16);
+        const g = parseInt(clean.substring(2, 4), 16);
+        const b = parseInt(clean.substring(4, 6), 16);
+
+        const blend = (c: number) => Math.round(alpha * c + (1 - alpha) * 255);
+
+        const toHex = (c: number) => c.toString(16).padStart(2, "0");
+
+        return `#${toHex(blend(r))}${toHex(blend(g))}${toHex(blend(b))}`;
+    };
+
     if (!fontsLoaded || loadingReports) {
         return null;
     }
@@ -359,8 +373,21 @@ export default function Events() {
                                         style={[
                                             styles.filterChip,
                                             {
+                                                
+                                                marginTop: isActive ? 1 : 0,
                                                 borderColor: color,
-                                                backgroundColor: isActive ? `${color}20` : scheme.white,
+                                                ...Platform.select({
+                                                    ios: {
+                                                        backgroundColor: isActive
+                                                        ? `${color}20`
+                                                        : scheme.white,
+                                                    },
+                                                    android: {
+                                                        backgroundColor: isActive
+                                                        ? simulatedOpacity(color, 0.2)
+                                                        : scheme.white,
+                                                    },
+                                                }),
                                             },
                                             isActive && styles.filterChipActive,
                                         ]}
@@ -420,7 +447,7 @@ export default function Events() {
 
                     const typeLabel = formatEventType(item.type);
                     const eventColor = getBuildingColor(item.location);
-                    const eventBackground = `${eventColor}12`;
+                    const eventBackground = simulatedOpacity(eventColor, 0.12);
                     return (
                         // <View
                         //     style={[
