@@ -1,50 +1,73 @@
-# Welcome to your Expo app 👋
+# Compass - Concordia Campus Safety & Navigation
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Overview
 
-## Get started
+**Compass** is a mobile app built to improve **campus navigation, safety awareness, and accessibility** for the Concordia University community.
 
-1. Install dependencies
+Built with **React Native** and leveraging **Calm UX**,  the app provides real-time, crowdsourced information about campus conditions, helping users make informed decisions while minimizing stress and cognitive overload.
 
-   ```bash
-   npm install
-   ```
+## Key Features
 
-2. Start the app
+### User Reports
+* Get information on and warn the community about:
+  * Accessibility issues (elevator, escalator, ramps)
+  * Crowding disruptions
+  * Events or unusual activity
+  
+* Reports and Events include:
+  * Time, location, category
+  * User role (student, security, admin)
+  * Community validation (likes, resolved status by campus security)
 
-   ```bash
-   npx expo start
-   ```
+### Map Interface
+* User localization on campus
+* data visualization using color-coded bubbles
+* Zone-based alerts for nearby activity
 
-In the output, you'll find options to open the app in a
+### Personalized Updates
+* Get Notifications when in a zone of interest
+* Personalize notifications and preferences for reports appearing on the home screen
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Event Calendar
+* View upcoming campus events (e.g., protests, activities)
+* Filter by building and date
+* Admin-controlled event posting
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Calm Mode
+* A simplified interface for high-stress situations
+   * Reduced UI complexity
+   * Essential information only
+   * Swipe-to-dismiss reports
 
-## Get a fresh project
+## Running the App
 
-When you're ready, run:
+### Prerequisites
+
+* Node.js
+* npm or yarn
+* Expo CLI
+
+### Installation
 
 ```bash
-npm run reset-project
+git clone https://github.com/haytham5/SOEN6751-Project.git
+cd SOEN6751-Project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Run the App
 
-## Learn more
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Team Members
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-## Join the community
+* Amr Abdalla (ID: 40310151)
+* Michel Assouka (ID: 40295568)
+* Ynes-Tamazight Djoudi (ID: 40212570)
+* Haytham Hnine (ID: 40128181)
+* Melina Medjdoub (ID: 40101065)
+* Celeste Mittelhauser (ID: 40307980)
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
