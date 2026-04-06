@@ -205,17 +205,27 @@ export default function Notifications() {
     });
 
 
-    const simulatedOpacity = (hex:string, alpha = 0.2) => {
-        const clean = hex.replace("#", "");
-        const r = parseInt(clean.substring(0, 2), 16);
-        const g = parseInt(clean.substring(2, 4), 16);
-        const b = parseInt(clean.substring(4, 6), 16);
+    const simulatedOpacity = (fgHex: string, alpha = 0.2) => {
+        const parseHex = (hex: string) => {
+            const clean = hex.replace("#", "");
+            return {
+            r: parseInt(clean.substring(0, 2), 16),
+            g: parseInt(clean.substring(2, 4), 16),
+            b: parseInt(clean.substring(4, 6), 16),
+            };
+        };
 
-        const blend = (c: number) => Math.round(alpha * c + (1 - alpha) * 255);
+        const fg = parseHex(fgHex);
+        const bg = parseHex(scheme.white);
+
+        const blend = (fgC: number, bgC: number) =>
+            Math.round(alpha * fgC + (1 - alpha) * bgC);
 
         const toHex = (c: number) => c.toString(16).padStart(2, "0");
 
-        return `#${toHex(blend(r))}${toHex(blend(g))}${toHex(blend(b))}`;
+        return `#${toHex(blend(fg.r, bg.r))}${toHex(blend(fg.g, bg.g))}${toHex(
+            blend(fg.b, bg.b)
+        )}`;
     };
 
     if (!fontsLoaded) {

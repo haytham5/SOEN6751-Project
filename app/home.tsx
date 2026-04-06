@@ -682,7 +682,7 @@ export default function Home() {
             style={styles.addReport}
             onPress={handleOpenReportFlow}
           >
-            <Icon name="add-circle" size={24} color="#276389" />
+            <Icon name="add-circle" size={24} color={scheme === Themes.light ? "#276389" :scheme.primary} />
           </TouchableOpacity>
 
           {/* <TouchableOpacity style={styles.reportFilters}>
@@ -694,7 +694,7 @@ export default function Home() {
             onLayout={(e) => setButtonLayout(e.nativeEvent.layout)}
             onPress={handleCalmMode}
           >
-            <Turtle size={24} color="#276389" />
+            <Turtle size={24} color={scheme === Themes.light ? "#276389" :scheme.primary}/>
           </TouchableOpacity>
         </View>
 
