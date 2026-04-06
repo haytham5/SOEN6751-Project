@@ -6,7 +6,6 @@ import { testReports } from "./data/notificationData";
 import { getReports } from "./data/reportSH";
 import { ThemeProvider } from "./data/themeProvider";
 import { addUser, getUsers } from "./utils/authStorage";
-import { startLocationTracking } from "./utils/backgroundLocation";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -51,7 +50,7 @@ export default function RootLayout() {
     const seedTestReports = async () => {
       const existing = await getReports();
       const realReports = existing.filter((r) => !r.id.startsWith("test-"));
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toLocaleDateString("en-CA");
 
       const merged = [
         ...realReports,
@@ -67,8 +66,6 @@ export default function RootLayout() {
       await AsyncStorage.setItem("reports", JSON.stringify(merged));
 
       const after = await getReports();
-      console.log("reports after seeding:", after.length);
-      console.log("dates:", after.map((r) => r.date));
     };
 
     const setup = async () => {
@@ -79,7 +76,7 @@ export default function RootLayout() {
     };
 
     setup();
-    startLocationTracking();
+    //startLocationTracking();
   }, []);
 
   return (

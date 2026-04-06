@@ -23,7 +23,7 @@ export const initialSubscriptions: SubscriptionItem[] = [
     { id: "EV", label: "EV", tone: "red", isSubscribed: true },
     { id: "LB", label: "LB", tone: "green", isSubscribed: true },
     { id: "H", label: "H", tone: "red", isSubscribed: true },
-    { id: "JM", label: "JM", tone: "green", isSubscribed: true },
+    { id: "JMSB", label: "JMSB", tone: "green", isSubscribed: true },
     { id: "FB", label: "FB", tone: "red", isSubscribed: true },
 ];
 

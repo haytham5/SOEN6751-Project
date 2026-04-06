@@ -68,7 +68,7 @@ const buildingColorMap: Record<string, string> = {
   LB: "#FFC107",
 };
 
-const today = new Date().toISOString().split("T")[0];
+const today = new Date().toLocaleDateString("en-CA");
 
 type ReportViewMode = "all" | "preferences";
 
