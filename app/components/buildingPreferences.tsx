@@ -1,3 +1,12 @@
+import {
+    ChevronLeft,
+    ChevronRight,
+    Clock3,
+    MapPin,
+    Square,
+    SquareCheckBig,
+    X
+} from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import {
     Pressable,
@@ -9,28 +18,18 @@ import {
     View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-    Check,
-    ChevronLeft,
-    ChevronRight,
-    Clock3,
-    MapPin,
-    Square,
-    SquareCheckBig,
-    X,
-} from "lucide-react-native";
+import { ThemeType, useTheme } from "../data/themeProvider";
 import {
     type BuildingPreference,
     type DayKey,
     type DayPreference,
 } from "../utils/authStorage";
-import { ThemeType, useTheme } from "../data/themeProvider";
 // import DateTimePicker from "@react-native-community/datetimepicker";
 
-import { Platform } from "react-native";
 import DateTimePicker, {
     DateTimePickerAndroid,
 } from "@react-native-community/datetimepicker";
+import { Platform } from "react-native";
 
 const DEFAULT_BUILDINGS = [
     { id: "ev", name: "EV Building" },
@@ -862,7 +861,7 @@ export default function BuildingPreferencesWizard({
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={[
                     styles.contentScroll,
-                    { paddingBottom: 150 },
+                    { paddingBottom: 150 + Math.max(insets.bottom, 12) },
                 ]}
             >
                 {step === 0
