@@ -65,13 +65,18 @@ export default function Signin() {
       return;
     }
 
+    // await setCurrentUser({
+    //   firstName: user.firstName,
+    //   lastName: user.lastName,
+    //   role: user.role,
+    //   idNumber: user.idNumber,
+    //   phone: user.phone,
+    //   email: user.email,
+    //   isGuest: false,
+    // });
+
     await setCurrentUser({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      idNumber: user.idNumber,
-      phone: user.phone,
-      email: user.email,
+      ...user,
       isGuest: false,
     });
 
