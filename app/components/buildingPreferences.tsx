@@ -25,7 +25,12 @@ import {
     type DayPreference,
 } from "../utils/authStorage";
 import { ThemeType, useTheme } from "../data/themeProvider";
-import DateTimePicker from "@react-native-community/datetimepicker";
+// import DateTimePicker from "@react-native-community/datetimepicker";
+
+import { Platform } from "react-native";
+import DateTimePicker, {
+    DateTimePickerAndroid,
+} from "@react-native-community/datetimepicker";
 
 const DEFAULT_BUILDINGS = [
     { id: "ev", name: "EV Building" },
@@ -145,19 +150,19 @@ export default function BuildingPreferencesWizard({
         [preferences],
     );
 
-    const TIME_OPTIONS = useMemo(() => {
-        const options: string[] = [];
-
-        for (let hour = 0; hour < 24; hour++) {
-            for (let minute = 0; minute < 60; minute += 15) {
-                options.push(
-                    `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
-                );
-            }
-        }
-
-        return options;
-    }, []);
+    // const TIME_OPTIONS = useMemo(() => {
+    //     const options: string[] = [];
+    //
+    //     for (let hour = 0; hour < 24; hour++) {
+    //         for (let minute = 0; minute < 60; minute += 15) {
+    //             options.push(
+    //                 `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+    //             );
+    //         }
+    //     }
+    //
+    //     return options;
+    // }, []);
 
     const activeBuilding = preferences[activeBuildingIndex] ?? preferences[0];
     const isFirstBuilding = activeBuildingIndex === 0;
@@ -200,6 +205,72 @@ export default function BuildingPreferencesWizard({
         }
     };
 
+    const roundToNearest15 = (date: Date) => {
+        const rounded = new Date(date);
+        const minutes = rounded.getMinutes();
+        const remainder = minutes % 15;
+
+        if (remainder !== 0) {
+            if (remainder < 8) {
+                rounded.setMinutes(minutes - remainder);
+            } else {
+                rounded.setMinutes(minutes + (15 - remainder));
+            }
+        }
+
+        rounded.setSeconds(0);
+        rounded.setMilliseconds(0);
+
+        // handle wrap to next hour/day automatically
+        return rounded;
+    };
+
+    const handleAndroidTimePick = (
+        buildingId: string,
+        dayKey: DayKey,
+        field: "startTime" | "endTime",
+        currentValue: string,
+    ) => {
+        const currentDate = timeStringToDate(currentValue);
+
+        DateTimePickerAndroid.open({
+            value: currentDate,
+            mode: "time",
+            is24Hour: true,
+            display: "clock",
+            onChange: (event, selectedDate) => {
+                if (event.type !== "set" || !selectedDate) return;
+
+                const roundedDate = roundToNearest15(selectedDate);
+
+                updateTime(
+                    buildingId,
+                    dayKey,
+                    field,
+                    dateToTimeString(roundedDate),
+                );
+            },
+        });
+    };
+
+
+    // const openTimePickermePicker = (
+    //     buildingId: string,
+    //     dayKey: DayKey,
+    //     field: "startTime" | "endTime",
+    //     label: string,
+    //     currentValue: string,
+    // ) => {
+    //     setTimePickerState({
+    //         visible: true,
+    //         buildingId,
+    //         dayKey,
+    //         field,
+    //         label,
+    //         value: timeStringToDate(currentValue),
+    //     });
+    // };
+
     const openTimePicker = (
         buildingId: string,
         dayKey: DayKey,
@@ -207,6 +278,11 @@ export default function BuildingPreferencesWizard({
         label: string,
         currentValue: string,
     ) => {
+        if (Platform.OS === "android") {
+            handleAndroidTimePick(buildingId, dayKey, field, currentValue);
+            return;
+        }
+
         setTimePickerState({
             visible: true,
             buildingId,
@@ -912,20 +988,38 @@ export default function BuildingPreferencesWizard({
                                 mode="time"
                                 display="spinner"
                                 minuteInterval={15}
+                                // onChange={(_, selectedDate) => {
+                                //     if (!selectedDate) return;
+                                //
+                                //     setTimePickerState((prev) =>
+                                //         prev
+                                //             ? {
+                                //                 ...prev,
+                                //                 value: selectedDate,
+                                //             }
+                                //             : prev
+                                //     );
+                                //
+                                //     handleSelectTime(selectedDate);
+                                // }}
+
                                 onChange={(_, selectedDate) => {
                                     if (!selectedDate) return;
+
+                                    const roundedDate = roundToNearest15(selectedDate);
 
                                     setTimePickerState((prev) =>
                                         prev
                                             ? {
                                                 ...prev,
-                                                value: selectedDate,
+                                                value: roundedDate,
                                             }
                                             : prev
                                     );
 
-                                    handleSelectTime(selectedDate);
+                                    handleSelectTime(roundedDate);
                                 }}
+
                                 textColor={theme.black}
                                 style={styles.wheelPicker}
                             />
