@@ -702,7 +702,7 @@ export const styles = (COLORS: ThemeType) =>
       alignItems: "center",
       justifyContent: "center",
       padding: 7,
-      width: 55,
+      width: 59,
       borderRadius: 12,
       borderWidth: 1,
       borderColor: COLORS.primary,
