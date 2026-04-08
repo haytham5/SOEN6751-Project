@@ -5,6 +5,7 @@ import { BUILDING_LOCATIONS } from "./geofencing";
 
 export async function simulateNearBuilding(buildingId: string) {
   const building = BUILDING_LOCATIONS[buildingId];
+
   if (!building) return;
 
   // Check user's buildingPreferences for this building
@@ -14,10 +15,15 @@ export async function simulateNearBuilding(buildingId: string) {
     return;
   }
 
+  //console.log("User buildingPreferences:", user.buildingPreferences);
+ 
+
   const prefs: any[] = user.buildingPreferences ?? [];
   const pref = prefs.find(
-    (p: any) => p.buildingId === buildingId && p.subscribed === true,
+    (p: any) => p.buildingId.toLowerCase() === buildingId.toLowerCase() && p.subscribed === true
   );
+
+   //console.log("Matching pref:", pref);
 
   if (!pref) {
     console.log(`${buildingId} is not subscribed — no banner`);
@@ -54,6 +60,10 @@ export async function simulateNearBuilding(buildingId: string) {
   // Check if there are active reports for this building today
   const today = new Date().toISOString().split("T")[0];
   const reports = await getReports();
+
+  // console.log("Today:", today);
+  // console.log("Reports for building:", reports.filter(r => r.building.toLowerCase() === buildingId.toLowerCase()));
+
   const hasReports = reports.some(
     (r) => r.building === buildingId && r.date === today && !r.isScheduledEvent,
   );
